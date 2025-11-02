@@ -125,9 +125,9 @@ namespace Application
                 {
                     HttpOnly = true,
                     Secure = true,
-                    SameSite = SameSiteMode.None,    // ✅ BẮT BUỘC CHO CROSS-DOMAIN
+                    SameSite = SameSiteMode.None,    //BẮT BUỘC CHO CROSS-DOMAIN
                     Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.RefreshTokenExpiredTime), // hạn sử dụng
-                    Domain = ".greenwheel.site",     // ✅ để FE gửi cookie vào BE
+                    //Domain = ".greenwheel.site",     //để FE gửi cookie vào BE
                     Path = "/"
                 });
             }
@@ -220,9 +220,9 @@ namespace Application
                 {
                     HttpOnly = true,
                     Secure = true,
-                    SameSite = SameSiteMode.None,    // ✅ BẮT BUỘC CHO CROSS-DOMAIN
+                    SameSite = SameSiteMode.None,    //BẮT BUỘC CHO CROSS-DOMAIN
                     Expires = DateTime.UtcNow.AddMinutes(expiredTime),
-                    Domain = ".greenwheel.site",     // ✅ để FE gửi cookie vào BE
+                    //Domain = ".greenwheel.site",     //để FE gửi cookie vào BE
                     Path = "/"
                 });
             }
