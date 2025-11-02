@@ -124,9 +124,11 @@ namespace Application
                 _context.Response.Cookies.Append(CookieKeys.RefreshToken, token, new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = true,         // chỉ gửi qua HTTPS
-                    SameSite = SameSiteMode.Strict, // tránh CSRF
-                    Expires = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiredTime) // hạn sử dụng
+                    Secure = true,
+                    SameSite = SameSiteMode.None,    // ✅ BẮT BUỘC CHO CROSS-DOMAIN
+                    Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.RefreshTokenExpiredTime), // hạn sử dụng
+                    Domain = ".greenwheel.site",     // ✅ để FE gửi cookie vào BE
+                    Path = "/"
                 });
             }
             return token;
@@ -217,9 +219,11 @@ namespace Application
                 _context.Response.Cookies.Append(cookieKey, token, new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = true,         // chỉ gửi qua HTTPS
-                    SameSite = SameSiteMode.Strict, // tránh CSRF
-                    Expires = DateTime.UtcNow.AddMinutes(expiredTime) // hạn sử dụng
+                    Secure = true,
+                    SameSite = SameSiteMode.None,    // ✅ BẮT BUỘC CHO CROSS-DOMAIN
+                    Expires = DateTime.UtcNow.AddMinutes(expiredTime),
+                    Domain = ".greenwheel.site",     // ✅ để FE gửi cookie vào BE
+                    Path = "/"
                 });
             }
             return token;
