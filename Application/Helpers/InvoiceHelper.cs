@@ -48,13 +48,17 @@ namespace Application.Helpers
             i.Type != (int)InvoiceItemType.Refund)
                 .Sum(item => item.UnitPrice * item.Quantity); 
         }
-        //hàm này sẽ dùng để tính nội bộ trong này chứ k dùng ở ngoài
         private static decimal _CalculateSubTotalAmount(IEnumerable<InvoiceItem> items)
         {
             if (items == null || !items.Any() || items.Any(x => x == null))
                 return 0;
             return items
                 .Sum(item => item.UnitPrice * item.Quantity);
+        }
+        public static decimal SafeCalculateTotal(Invoice invoice)
+        {
+            try { return CalculateTotalAmount(invoice); }
+            catch { return 0; }
         }
     }
 }
