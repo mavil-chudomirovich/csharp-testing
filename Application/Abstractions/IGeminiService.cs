@@ -9,5 +9,6 @@ namespace Application.Abstractions
         Task<CreateCitizenIdentityReq?> ExtractCitizenIdAsync(string imageUrl);
 
         Task<CreateDriverLicenseReq?> ExtractDriverLicenseAsync(string imageUrl);
+        Task<string?> DetectDocumentTypeAsync(string imageUrl);
     }
 }

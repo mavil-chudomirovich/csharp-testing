@@ -22,7 +22,26 @@ namespace Infrastructure.ExternalService
             _settings = options.Value;
             _httpClient.Timeout = TimeSpan.FromSeconds(_settings.HttpTimeoutSeconds);
         }
+        public async Task<string?> DetectDocumentTypeAsync(string imageUrl)
+        {
+            var prompt = """
+            You are a classification AI.
+            Look at the uploaded image and determine what type of document it is.
 
+            Return one of these exact strings (no extra text):
+            - "CitizenID" if it is a Vietnamese Citizen Identity Card (Căn cước công dân Việt Nam)
+            - "DriverLicense" if it is a Vietnamese Driver License (Giấy phép lái xe Việt Nam)
+            - "Unknown" if it is neither or unclear
+            """;
+
+            var text = await CallGeminiAndExtractText(imageUrl, prompt);
+            if (string.IsNullOrWhiteSpace(text)) return "Unknown";
+
+            text = text.Trim().ToLowerInvariant();
+            if (text.Contains("citizen")) return "CitizenID";
+            if (text.Contains("driver")) return "DriverLicense";
+            return "Unknown";
+        }
         public async Task<CreateCitizenIdentityReq?> ExtractCitizenIdAsync(string imageUrl)
         {
             var prompt = """

@@ -18,5 +18,6 @@ namespace Application.Abstractions
         Task<CitizenIdentity?> GetByUserId(Guid userId);
 
         Task<CitizenIdentity?> GetByIdentityNumberAsync(string identityNumber);
+        Task<string> VerifyDocumentTypeAsync(string imageUrl);
     }
 }

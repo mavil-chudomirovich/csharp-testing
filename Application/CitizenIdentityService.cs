@@ -126,5 +126,11 @@ namespace Application
                 parts[i] = char.ToUpper(parts[i][0]) + parts[i].Substring(1);
             return string.Join(' ', parts);
         }
+
+        public async Task<string> VerifyDocumentTypeAsync(string imageUrl)
+        {
+            var type = await _geminiService.DetectDocumentTypeAsync(imageUrl);
+            return type ?? "Unknown";
+        }
     }
 }

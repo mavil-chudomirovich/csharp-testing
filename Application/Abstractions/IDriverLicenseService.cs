@@ -18,5 +18,6 @@ namespace Application.Abstractions
         Task<DriverLicense?> GetAsync(Guid id);
 
         Task<DriverLicense?> GetByLicenseNumberAsync(string licenseNumber);
+        Task<string> VerifyDocumentTypeAsync(string imageUrl);
     }
 }
