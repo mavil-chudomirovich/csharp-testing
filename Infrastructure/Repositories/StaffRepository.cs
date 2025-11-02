@@ -65,5 +65,12 @@ namespace Infrastructure.Repositories
 
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<int> CountAvailableStaffInStationAsync(Guid stationId)
+        {
+            return await _dbContext.Staffs
+                .Where(s => s.StationId == stationId && s.DeletedAt == null)
+                .CountAsync();
+        }
     }
 }

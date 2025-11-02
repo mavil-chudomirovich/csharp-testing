@@ -119,5 +119,29 @@ namespace Infrastructure.Repositories
             }
             return await query.ToListAsync();
         }
+        public async Task<int> CountAvailableVehiclesByModelAsync(Guid stationId, Guid modelId)
+        {
+            return await _dbContext.Vehicles
+                .Where(v =>
+                    v.StationId == stationId &&
+                    v.ModelId == modelId &&
+                    v.Status == (int)VehicleStatus.Available &&
+                    v.DeletedAt == null)
+                .CountAsync();
+        }
+
+        public async Task<List<Vehicle>> GetAvailableVehiclesByIdsAsync(Guid stationId, Guid[] vehicleIds)
+        {
+            if (vehicleIds == null || vehicleIds.Length == 0)
+                return new List<Vehicle>();
+
+            return await _dbContext.Vehicles
+                .Where(v =>
+                    vehicleIds.Contains(v.Id) &&
+                    v.StationId == stationId &&
+                    v.Status == (int)VehicleStatus.Available &&
+                    v.DeletedAt == null)
+                .ToListAsync();
+        }
     }
 }

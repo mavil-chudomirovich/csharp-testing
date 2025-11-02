@@ -22,6 +22,7 @@ namespace Application.Repositories
         Task<PageResult<Vehicle>> GetAllAsync(PaginationParams pagination, string? name, Guid? stationId, int? status, string? licensePlate);
         Task UpdateStationForDispatchAsync(Guid dispatchId, Guid toStationId);
         Task<IEnumerable<Vehicle>> GetAllAsync(Guid? stationId, int? status);
-        //Task GetByIdAsync(Guid? vehicleId);
+        Task<int> CountAvailableVehiclesByModelAsync(Guid stationId, Guid modelId);
+        Task<List<Vehicle>> GetAvailableVehiclesByIdsAsync(Guid stationId, Guid[] vehicleIds);
     }
 }

@@ -68,5 +68,29 @@ namespace Infrastructure.Repositories
                         .ThenInclude(vm => vm.Model)
                 .FirstOrDefaultAsync(x => x.Id == id && x.DeletedAt == null);
         }
+        public async Task ClearDispatchRelationsAsync(Guid dispatchId)
+        {
+            var staffs = await _ctx.DispatchRequestStaffs
+                .Where(x => x.DispatchRequestId == dispatchId && x.DeletedAt == null)
+                .ToListAsync();
+
+            var vehicles = await _ctx.DispatchRequestVehicles
+                .Where(x => x.DispatchRequestId == dispatchId && x.DeletedAt == null)
+                .ToListAsync();
+
+            if (staffs.Any()) _ctx.DispatchRequestStaffs.RemoveRange(staffs);
+            if (vehicles.Any()) _ctx.DispatchRequestVehicles.RemoveRange(vehicles);
+
+            await _ctx.SaveChangesAsync();
+        }
+
+        public async Task AddDispatchRelationsAsync(
+            IEnumerable<DispatchRequestStaff> staffs,
+            IEnumerable<DispatchRequestVehicle> vehicles)
+        {
+            await _ctx.DispatchRequestStaffs.AddRangeAsync(staffs);
+            await _ctx.DispatchRequestVehicles.AddRangeAsync(vehicles);
+            await _ctx.SaveChangesAsync();
+        }
     }
 }

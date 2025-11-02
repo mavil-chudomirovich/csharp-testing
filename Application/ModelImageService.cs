@@ -146,5 +146,22 @@ namespace Application
 
             await _uow.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<VehicleModelMainImageRes>> GetAllVehicleModelMainImagesAsync()
+        {
+            var models = await _uow.VehicleModelRepository.GetAllAsync();
+
+            var result = models
+                .Where(m => !string.IsNullOrEmpty(m.ImageUrl))
+                .Select(m => new VehicleModelMainImageRes
+                {
+                    Id = m.Id,
+                    Name = m.Name,
+                    ImageUrl = m.ImageUrl
+                })
+                .ToList();
+
+            return result;
+        }
     }
 }

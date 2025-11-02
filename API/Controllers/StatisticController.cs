@@ -80,5 +80,33 @@ namespace API.Controllers
             var result = await _statisticService.GetVehicleTotal(stationId);
             return Ok(result);
         }
+        /// <summary>
+        /// Get total number of vehicles by status for current station.
+        /// </summary>
+        [HttpGet("vehicle-models")]
+        public async Task<ActionResult> GetVehicleModelTotal()
+        {
+            var stationId = await GetCurrentStationIdAsync();
+            var result = await _statisticService.GetVehicleModelTotal(stationId);
+            return Ok(result == null ? [] : result.VehicleModelsForStatisticRes);
+        }
+
+        /// <summary>
+        /// Get total revenue for each month in a specific year.
+        /// </summary>
+        /// <param name="year">
+        /// The target year to calculate revenue.  
+        /// If not provided, defaults to the current year.
+        /// </param>
+        /// <returns>List of months with total revenue per month.</returns>
+        [HttpGet("revenue-by-year")]
+        public async Task<IActionResult> GetRevenueByYear([FromQuery] int? year)
+        {
+            var stationId = await GetCurrentStationIdAsync();
+            var targetYear = year ?? DateTime.UtcNow.Year; 
+
+            var result = await _statisticService.GetRevenueByYear(stationId, targetYear);
+            return Ok(result);
+        }
     }
 }

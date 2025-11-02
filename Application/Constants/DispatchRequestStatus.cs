@@ -8,10 +8,11 @@ namespace Application.Constants
 {
     public enum DispatchRequestStatus
     {
-        Pending = 0,
-        Approved = 1,
-        Rejected = 2,
-        Received = 3,
-        Cancel = 4,
+        Pending = 0,  
+        Approved = 1, 
+        ConfirmApproved = 2,  
+        Received = 3,     
+        Rejected = 4,       
+        Cancelled = 5
     }
 }

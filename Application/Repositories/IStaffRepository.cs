@@ -16,5 +16,7 @@ namespace Application.Repositories
         Task<int> CountStaffsInStationAsync(Guid[] staffIds, Guid stationId);
 
         Task UpdateStationForDispatchAsync(Guid dispatchId, Guid stationId);
+        Task<int> CountAvailableStaffInStationAsync(Guid stationId);
+
     }
 }

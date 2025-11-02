@@ -199,17 +199,10 @@ namespace Application
             }
         }
 
-        public async Task<IEnumerable<string>> GetAllModelMainImage()
+        public async Task<IEnumerable<VehicleModelViewRes>> GetAllAsync()
         {
-            var vehicleModels = await _vehicleModelRepository.GetAllAsync(null, null);
-            IEnumerable<string> imageUrls = [];
-            if (vehicleModels != null || vehicleModels.Any())
-            {
-                imageUrls = vehicleModels
-                    .Where(vm => !string.IsNullOrEmpty(vm.ImageUrl))
-                    .Select(vm => vm.ImageUrl!);
-            }
-            return imageUrls;
+            var models = await _uow.VehicleModels.GetAllAsync(null, null);
+            return _mapper.Map<IEnumerable<VehicleModelViewRes>>(models) ?? [];
         }
     }
 }

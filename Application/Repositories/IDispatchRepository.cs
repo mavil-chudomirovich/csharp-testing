@@ -17,5 +17,9 @@ namespace Application.Repositories
             Guid? toStationId,
             int? status
         );
+        Task ClearDispatchRelationsAsync(Guid dispatchId);
+        Task AddDispatchRelationsAsync(
+            IEnumerable<DispatchRequestStaff> staffs,
+            IEnumerable<DispatchRequestVehicle> vehicles);
     }
 }

@@ -1,18 +1,16 @@
 ﻿using API.Filters;
-using Application;
 using Application.Abstractions;
 using Application.AppExceptions;
 using Application.Constants;
 using Application.Dtos.Dispatch.Request;
 using Application.Repositories;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace API.Controllers
 {
     /// <summary>
-    /// Handles all dispatch request operations such as creating, assigning, 
+    /// Handles all dispatch request operations such as creating, assigning,
     /// and managing dispatch requests between staff and users.
     /// </summary>
     [ApiController]
@@ -38,9 +36,8 @@ namespace API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateDispatchReq req)
         {
             var adminId = Guid.Parse(User.FindFirst(JwtRegisteredClaimNames.Sid)!.Value);
-
             var dispatchId = await _dispatchRequestService.CreateAsync(adminId, req);
-            return Ok(new { DispatchId = dispatchId });
+            return Ok(new { dispatchId });
         }
 
         /// <summary>
@@ -55,12 +52,13 @@ namespace API.Controllers
         /// <response code="403">Forbidden — user does not have permission to perform this action.</response>
         /// <response code="404">Dispatch request not found.</response>
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateStatus([FromRoute] Guid id, [FromBody] UpdateDispatchReq req)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateDispatchReq req)
         {
             var userId = Guid.Parse(User.FindFirst(JwtRegisteredClaimNames.Sid)!.Value);
             var staff = await _staffRepository.GetByUserIdAsync(userId)
                 ?? throw new ForbidenException(Message.UserMessage.DoNotHavePermission);
-            await _dispatchRequestService.UpdateStatusAsync(userId, staff.StationId, id, req);
+
+            await _dispatchRequestService.UpdateAsync(userId, staff.StationId, id, req);
             return Ok();
         }
 

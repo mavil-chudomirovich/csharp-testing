@@ -149,15 +149,21 @@ namespace Application.Constants
 
             // Validation khi tạo
             public const string ToStationMustDifferent = "dispatch.to_station_must_different";
+            public const string ToStationRequied = "dispatch.to_station_require";
+            public const string ModelRequied = "dispatch.model_require";
+            public const string NumberOfVehicleShouldGreaterThanZero = "dispatch.number_vehicle_greater_than_zero";
 
             public const string StaffNotInFromStation = "dispatch.staff_not_in_from_station";
+            public const string StaffNotEnoughtInFromStation = "dispatch.staff_not_enought_in_from_station";
             public const string VehicleNotInFromStation = "dispatch.vehicle_not_in_from_station";
+            public const string VehicleOrStaffNotInFromStation = "dispatch.vehicle_or_staff_not_in_from_station";
 
             // Flow cập nhật trạng thái
             public const string OnlyPendingCanApproveReject = "dispatch.only_pending_can_approve_reject";
-
             public const string OnlyApprovedCanReceive = "dispatch.only_approved_can_receive";
             public const string OnlyPendingCanCancel = "dispatch.only_pending_can_cancel";
+            public const string OnlyApproveCanConfirm = "dispatch.only_approved_can_confirm";
+            public const string OnlyConfirmCanReceive = "dispatch.only_confirm_can_receive";
 
             // Quyền
             public const string MustBeToStationAdminForThisAction = "dispatch.must_be_to_station_admin";
@@ -166,6 +172,7 @@ namespace Application.Constants
 
             // Input
             public const string InvalidStatus = "dispatch.invalid_status";
+            public const string IdNull = "dispatch.id_null";
 
             public static string FromStationIsRequire = "dispatch.from_station_is_required";
         }
@@ -327,6 +334,8 @@ namespace Application.Constants
             public const string FailedToCalculateRevenue = "statistic.failed_to_calculate_revenue";
             public const string FailedToCalculateCustomerChange = "statistic.failed_to_calculate_customer_change";
             public const string FailedToCalculateInvoiceChange = "statistic.failed_to_calculate_invoice_change";
+
+            public const string NoVehicleModelData = "";
         }
 
         public static class BrandMessage

@@ -10,10 +10,11 @@ namespace Domain.Commons
     {
         public int Status { get; set; }
         public int NumberOfVehicle { get; set; }
-        public VehicleStatusCountItem(int status, int NumberOfVehicle) 
+        public VehicleStatusCountItem(int Status, int NumberOfVehicle) 
         { 
-            this.Status = status;
+            this.Status = Status;
             this.NumberOfVehicle = NumberOfVehicle;
+
         }
     }
 }
