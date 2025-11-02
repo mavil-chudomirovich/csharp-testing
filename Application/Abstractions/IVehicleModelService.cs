@@ -27,5 +27,6 @@ namespace Application.Abstractions
         Task DeleteMainImageAsync(Guid modelId);
         Task UpdateVehicleModelComponentsAsync(Guid id, UpdateModelComponentsReq req);
         Task<IEnumerable<VehicleModelViewRes>> GetAllAsync();
+        Task<IEnumerable<string>> GetAllModelMainImage();
     }
 }

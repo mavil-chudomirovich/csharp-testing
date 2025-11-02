@@ -204,5 +204,18 @@ namespace Application
             var models = await _uow.VehicleModels.GetAllAsync(null, null);
             return _mapper.Map<IEnumerable<VehicleModelViewRes>>(models) ?? [];
         }
+
+        public async Task<IEnumerable<string>> GetAllModelMainImage()
+        {
+            var vehicleModels = await _vehicleModelRepository.GetAllAsync(null, null);
+            IEnumerable<string> imageUrls = [];
+            if (vehicleModels != null || vehicleModels.Any())
+            {
+                imageUrls = vehicleModels
+                    .Where(vm => !string.IsNullOrEmpty(vm.ImageUrl))
+                    .Select(vm => vm.ImageUrl!);
+            }
+            return imageUrls;
+        }
     }
 }

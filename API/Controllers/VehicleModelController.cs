@@ -240,7 +240,7 @@ namespace API.Controllers
         [HttpGet("main-images")]
         public async Task<IActionResult> GetAllModelMainImage()
         {
-            var res = await _vehicleModelService.GetAllAsync();
+            var res = await _vehicleModelService.GetAllModelMainImage();
             return Ok(res);
         }
     }
