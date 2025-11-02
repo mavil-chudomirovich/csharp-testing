@@ -1,6 +1,7 @@
 ﻿using API.Filters;
 using Application.Abstractions;
 using Application.Constants;
+using Application.Dtos.Common.Request;
 using Application.Dtos.StationFeedback.Request;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
@@ -78,12 +79,16 @@ namespace API.Controllers
         /// <summary>
         /// Retrieves all station feedback records.
         /// </summary>
+        /// <param name="stationId">Optional filter for station ID.</param>
+        /// <param name="pagination">Pagination parameters.</param>
         /// <returns>A list of all station feedbacks.</returns>
         /// <response code="200">Feedbacks retrieved successfully.</response>
         [HttpGet]
-        public async Task<IActionResult> GetAllFeedbacks()
+        public async Task<IActionResult> GetAllFeedbacks(
+            [FromQuery] PaginationParams pagination,
+            [FromQuery] Guid? stationId)
         {
-            var data = await service.GetAllAsync();
+            var data = await service.GetAllAsync(pagination, stationId);
             return Ok(data);
         }
     }

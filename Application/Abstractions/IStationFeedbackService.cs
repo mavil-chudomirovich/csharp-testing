@@ -1,4 +1,6 @@
-﻿using Application.Dtos.StationFeedback.Request;
+﻿using Application.Dtos.Common.Request;
+using Application.Dtos.Common.Response;
+using Application.Dtos.StationFeedback.Request;
 using Application.Dtos.StationFeedback.Response;
 
 namespace Application.Abstractions
@@ -12,6 +14,6 @@ namespace Application.Abstractions
         Task<IEnumerable<StationFeedbackRes>> GetByCustomerIdAsync(Guid customerId);
 
         Task DeleteAsync(Guid id);
-        Task<IEnumerable<StationFeedbackRes>> GetAllAsync();
+        Task<PageResult<StationFeedbackRes>> GetAllAsync(PaginationParams pagination, Guid? stationId);
     }
 }

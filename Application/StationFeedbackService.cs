@@ -1,5 +1,7 @@
 ﻿using Application.Abstractions;
 using Application.Constants;
+using Application.Dtos.Common.Request;
+using Application.Dtos.Common.Response;
 using Application.Dtos.StationFeedback.Request;
 using Application.Dtos.StationFeedback.Response;
 using Application.Repositories;
@@ -52,10 +54,12 @@ public class StationFeedbackService : IStationFeedbackService
         return _mapper.Map<IEnumerable<StationFeedbackRes>>(list);
     }
 
-    public async Task<IEnumerable<StationFeedbackRes>> GetAllAsync()
+    public async Task<PageResult<StationFeedbackRes>> GetAllAsync(PaginationParams pagination, Guid? stationId)
     {
-        var list = await _repo.GetAllAsync([f => f.Customer]);
-        return _mapper.Map<IEnumerable<StationFeedbackRes>>(list);
+        var page = await _repo.GetAllByPaginationAsync(pagination, stationId);
+        var data = _mapper.Map<IEnumerable<StationFeedbackRes>>(page.Items ?? []);
+
+        return new PageResult<StationFeedbackRes>(data, page.PageNumber, page.PageSize, page.Total);
     }
 
 }
