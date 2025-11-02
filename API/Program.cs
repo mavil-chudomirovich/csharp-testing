@@ -110,7 +110,8 @@ namespace API
             builder.Services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = builder.Configuration["REDIS_CONFIGURATION"];
-                options.InstanceName = builder.Configuration["Redis:InstanceName"];
+                options.InstanceName = builder.Configuration["REDIS_INSTANCE_NAME"]
+                                       ?? "GreenWheel:"; // fallback
             });
 
             //thêm httpcontextAccessor để lấy context trong service
