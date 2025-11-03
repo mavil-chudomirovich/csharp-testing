@@ -282,7 +282,7 @@ namespace API.Controllers
         /// <response code="404">Driver license record not found.</response>
         [HttpGet("{id}/driver-license")]
         [RoleAuthorize([RoleName.Admin, RoleName.Staff])]
-        public async Task<IActionResult> GeDriverLicensetByUserIdAsync(Guid id)
+        public async Task<IActionResult> GetDriverLicensetByUserIdAsync(Guid id)
         {
             var result = await _userProfileService.GetMyDriverLicenseAsync(id);
             return Ok(result);

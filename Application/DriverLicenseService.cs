@@ -133,7 +133,6 @@ namespace Application
 
             var normalized = classString.Trim().ToUpper();
 
-            // Thử parse thành enum
             if (Enum.TryParse(typeof(LicenseClass), normalized, ignoreCase: true, out var value)
                 && Enum.IsDefined(typeof(LicenseClass), value))
             {
@@ -141,6 +140,12 @@ namespace Application
             }
 
             throw new BadRequestException($"Invalid license class: {classString}");
+        }
+
+        public async Task<string> VerifyDocumentTypeAsync(string imageUrl)
+        {
+            var type = await _geminiService.DetectDocumentTypeAsync(imageUrl);
+            return type ?? "Unknown";
         }
     }
 }

@@ -99,13 +99,11 @@ namespace Application
             if (file == null || file.Length == 0)
                 throw new ArgumentException(Message.CloudinaryMessage.NotFoundObjectInFile);
 
-            // 1. Upload ảnh mới
             var uploadReq = new UploadImageReq { File = file };
             var uploaded = await _photoService.UploadPhotoAsync(uploadReq, $"users/{userId}");
             if (string.IsNullOrEmpty(uploaded.Url))
                 throw new InvalidOperationException(Message.CloudinaryMessage.UploadFailed);
 
-            // 2. Lấy user và nhớ avatar cũ
             var user = await _mediaUow.Users.GetByIdAsync(userId)
                 ?? throw new KeyNotFoundException(Message.UserMessage.NotFound);
             var oldPublicId = user.AvatarPublicId;
@@ -114,7 +112,6 @@ namespace Application
             if (string.IsNullOrEmpty(result.Url))
                 throw new InvalidOperationException(Message.CloudinaryMessage.UploadFailed);
 
-            // 3. Transaction DB
             await using var trx = await _mediaUow.BeginTransactionAsync();
             try
             {
@@ -129,12 +126,10 @@ namespace Application
             catch
             {
                 await trx.RollbackAsync();
-                // rollback cloud nếu DB lỗi
                 try { await _photoService.DeletePhotoAsync(uploaded.PublicID); } catch { }
                 throw;
             }
 
-            // 4. Sau commit: xóa ảnh cũ (best-effort)
             if (!string.IsNullOrEmpty(oldPublicId))
             {
                 try { await _photoService.DeletePhotoAsync(oldPublicId); } catch { }
@@ -179,7 +174,13 @@ namespace Application
             var backUploaded = await _photoService.UploadPhotoAsync(backUploadReq, "citizen-ids-back");
             if (string.IsNullOrEmpty(frontUploaded.Url) || string.IsNullOrEmpty(backUploaded.Url))
                 throw new InvalidOperationException(Message.CloudinaryMessage.UploadFailed);
-
+            var docType = await _citizenService.VerifyDocumentTypeAsync(frontUploaded.Url);
+            if (docType != "CitizenID")
+            {
+                await _photoService.DeletePhotoAsync(frontUploaded.PublicID);
+                await _photoService.DeletePhotoAsync(backUploaded.PublicID);
+                throw new BadRequestException(Message.UserMessage.InvalidCitizenIdDocumentType);
+            }
             var old = await _mediaUow.CitizenIdentities.GetByUserIdAsync(userId);
 
             await using var trx = await _mediaUow.BeginTransactionAsync();
@@ -192,7 +193,6 @@ namespace Application
                 await _mediaUow.SaveChangesAsync();
                 await trx.CommitAsync();
 
-                // Sau commit: xóa ảnh cũ
                 if (!string.IsNullOrEmpty(old?.FrontImagePublicId))
                 {
                     try 
@@ -230,7 +230,13 @@ namespace Application
             var backUploaded = await _photoService.UploadPhotoAsync(backUploadReq, "driver-license-back");
             if (string.IsNullOrEmpty(frontUploaded.Url) || string.IsNullOrEmpty(backUploaded.Url))
                 throw new InvalidOperationException(Message.CloudinaryMessage.UploadFailed);
-
+            var docType = await _driverService.VerifyDocumentTypeAsync(frontUploaded.Url);
+            if (docType != "DriverLicense")
+            {
+                await _photoService.DeletePhotoAsync(frontUploaded.PublicID);
+                await _photoService.DeletePhotoAsync(backUploaded.PublicID);
+                throw new BadRequestException(Message.UserMessage.InvalidDriverLicenseDocumentType);
+            }
             var old = await _mediaUow.DriverLicenses.GetByUserIdAsync(userId);
 
             await using var trx = await _mediaUow.BeginTransactionAsync();
