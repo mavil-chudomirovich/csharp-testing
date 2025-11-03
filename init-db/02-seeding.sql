@@ -28,9 +28,10 @@ DECLARE @customerRole UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM roles WHERE name=
 
 INSERT INTO users (first_name, last_name, email, password, phone, sex, role_id)
 VALUES
-  (N'Nguyễn', N'AdminA', 'adminA@greenwheel.vn', '$2a$12$CZ2ikjkipa7p8kDYJN6o7.90TIjpIsswYSMr3iGYJBQQyj8/cgU06', '0901111111', 0, @adminRole),
-  (N'Phạm', N'AdminB', 'adminB@greenwheel.vn', '$2a$12$CZ2ikjkipa7p8kDYJN6o7.90TIjpIsswYSMr3iGYJBQQyj8/cgU06', '0902222222', 1, @adminRole),
-  (N'Trần', N'Staff', 'staff@greenwheel.vn', '$2a$12$UnyAq2ckOtLYgpDQbNTTje5IPx9cbdTRPw5MB.sDg12OYjygBWJFa', '0902345678', 1, @staffRole),
+  (N'Nguyễn', N'Admin A', 'adminA@greenwheel.vn', '$2a$12$CZ2ikjkipa7p8kDYJN6o7.90TIjpIsswYSMr3iGYJBQQyj8/cgU06', '0901111111', 0, @adminRole),
+  (N'Phạm', N'Admin B', 'adminB@greenwheel.vn', '$2a$12$CZ2ikjkipa7p8kDYJN6o7.90TIjpIsswYSMr3iGYJBQQyj8/cgU06', '0902222222', 1, @adminRole),
+  (N'Trần', N'Staff A', 'staffA@greenwheel.vn', '$2a$12$UnyAq2ckOtLYgpDQbNTTje5IPx9cbdTRPw5MB.sDg12OYjygBWJFa', '0902345678', 1, @staffRole),
+  (N'Trần', N'Staff B', 'staffB@greenwheel.vn', '$2a$12$UnyAq2ckOtLYgpDQbNTTje5IPx9cbdTRPw5MB.sDg12OYjygBWJFa', '0902345670', 1, @staffRole),
   (N'Lê', N'Customer', 'customer@greenwheel.vn', '$2a$12$EF0KCPRK/mIt16yJtjCL1u/R5K0NXE7Mu9Q0s1WLX.iNOVrNEtXYe', '0909999999', 0, @customerRole);
 GO
 
@@ -39,7 +40,8 @@ GO
 -- ============================================
 DECLARE @adminA UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM users WHERE email='adminA@greenwheel.vn');
 DECLARE @adminB UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM users WHERE email='adminB@greenwheel.vn');
-DECLARE @staffUser UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM users WHERE email='staff@greenwheel.vn');
+DECLARE @staffA UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM users WHERE email='staffA@greenwheel.vn');
+DECLARE @staffB UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM users WHERE email='staffB@greenwheel.vn');
 DECLARE @stationA UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM stations WHERE name LIKE N'%Trạm A%');
 DECLARE @stationB UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM stations WHERE name LIKE N'%Trạm B%');
 
@@ -47,7 +49,8 @@ INSERT INTO staffs (user_id, station_id)
 VALUES
   (@adminA, @stationA),
   (@adminB, @stationB),
-  (@staffUser, @stationA);
+  (@staffA, @stationA),
+  (@staffB, @stationB);
 GO
 
 -- ============================================
@@ -74,10 +77,11 @@ DECLARE @brandVinfast UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM brands WHERE name
 DECLARE @segmentSUV UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM vehicle_segments WHERE name='SUV');
 DECLARE @segmentCompact UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM vehicle_segments WHERE name='Compact');
 
-INSERT INTO vehicle_models (name, description, cost_per_day, deposit_fee, reservation_fee, seating_capacity, number_of_airbags, motor_power, battery_capacity, eco_range_km, sport_range_km, brand_id, segment_id)
+INSERT INTO vehicle_models (name, description, cost_per_day, deposit_fee, reservation_fee, seating_capacity, number_of_airbags, motor_power, battery_capacity, eco_range_km, sport_range_km, brand_id, segment_id,image_url,image_public_id)
 VALUES
-  (N'VinFast VF e34', N'SUV điện hạng C', 12000, 10000, 10000, 5, 6, 110.0, 42.0, 285.0, 250.0, @brandVinfast, @segmentSUV),
-  (N'VinFast VF 5', N'Compact SUV điện hạng A', 11000, 8000, 10000, 5, 4, 70.0, 37.0, 300.0, 260.0, @brandVinfast, @segmentCompact);
+  (N'VinFast VF 5', N'Compact SUV điện hạng A', 11000, 8000, 10000, 5, 4, 70.0, 37.0, 300.0, 260.0, @brandVinfast, @segmentCompact,
+  'http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178633/models/bf85ac59-53bf-4068-b3c3-2ba2bf1d92a2/main/fchalezgggotfpm1biue.jpg',
+  'models/bf85ac59-53bf-4068-b3c3-2ba2bf1d92a2/main/fchalezgggotfpm1biue');
 GO
 
 -- ============================================
@@ -103,16 +107,15 @@ GO
 -- ============================================
 -- VEHICLES
 -- ============================================
-DECLARE @modelE34 UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM vehicle_models WHERE name=N'VinFast VF e34');
 DECLARE @modelVf5 UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM vehicle_models WHERE name=N'VinFast VF 5');
 DECLARE @stationA2 UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM stations WHERE name LIKE N'%Trạm A%');
 DECLARE @stationB2 UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM stations WHERE name LIKE N'%Trạm B%');
 
 INSERT INTO vehicles (license_plate, status, model_id, station_id)
 VALUES
-(N'51A-123.01', 0, @modelE34, @stationA2),
+(N'51A-123.01', 0, @modelVf5, @stationA2),
 (N'51A-123.02', 0, @modelVf5, @stationA2),
-(N'51B-456.01', 0, @modelE34, @stationB2),
+(N'51B-456.01', 0, @modelVf5, @stationB2),
 (N'51B-456.02', 0, @modelVf5, @stationB2);
 GO
 
@@ -162,50 +165,136 @@ USE green_wheel_db;
 GO
 
 /* ===================================================================
-   PROC 1: Tạo invoices Reservation + Handover cho 1 contract
+   PROC 1: Tạo Reservation + Handover Invoice (có deposit + tax 0.1)
 =================================================================== */
 CREATE OR ALTER PROCEDURE dbo.__seed_create_invoices
 (
-  @contract_id UNIQUEIDENTIFIER,
-  @reservation_paid BIT,
-  @handover_paid BIT
+    @contract_id      UNIQUEIDENTIFIER,
+    @reservation_paid BIT,
+    @handover_paid    BIT
 )
 AS
 BEGIN
-    DECLARE @resSubtotal DECIMAL(10,2) = 3000;
-    DECLARE @handSubtotal DECIMAL(10,2) = 5000;
+    /* ============================================================
+       1) Lấy vehicle + model để biết deposit_fee
+    ============================================================ */
+    DECLARE @vehicle_id UNIQUEIDENTIFIER =
+        (SELECT vehicle_id FROM rental_contracts WHERE id = @contract_id);
 
-    DECLARE @resPaidAt DATETIMEOFFSET =
+    DECLARE @model_id UNIQUEIDENTIFIER =
+        (SELECT model_id FROM vehicles WHERE id = @vehicle_id);
+
+    DECLARE @deposit DECIMAL(10,2) =
+        (SELECT deposit_fee FROM vehicle_models WHERE id = @model_id);
+
+
+    /* ============================================================
+       2) Chuẩn bị các giá trị cấu hình cố định
+    ============================================================ */
+    DECLARE @reservation_subtotal DECIMAL(10,2) = 3000.00;
+    DECLARE @handover_subtotal    DECIMAL(10,2) = 5000.00;
+
+    DECLARE @reservation_tax_rate DECIMAL(10,2) = 0.00;
+    DECLARE @handover_tax_rate    DECIMAL(10,2) = 0.10;
+
+
+    /* ============================================================
+       3) RESERVATION INVOICE
+    ============================================================ */
+    DECLARE @reservation_invoice_id UNIQUEIDENTIFIER = NEWID();
+    DECLARE @reservation_paid_at DATETIMEOFFSET =
         CASE WHEN @reservation_paid = 1 THEN SYSDATETIMEOFFSET() ELSE NULL END;
 
-    DECLARE @handPaidAt DATETIMEOFFSET =
-        CASE WHEN @handover_paid = 1 THEN SYSDATETIMEOFFSET() ELSE NULL END;
+    DECLARE @reservation_paid_amount DECIMAL(10,2) =
+        CASE WHEN @reservation_paid = 1
+            THEN @reservation_subtotal * (1 + @reservation_tax_rate)
+            ELSE NULL
+        END;
 
     INSERT INTO invoices
-    (subtotal, tax, paid_amount, payment_method, notes, status, type, paid_at,
-     created_at, updated_at, contract_id)
+    (
+        id, subtotal, tax, paid_amount, payment_method, notes, status, type, paid_at,
+        created_at, updated_at, contract_id
+    )
     VALUES
-    -- Reservation
-    (@resSubtotal, 0,
-     CASE WHEN @reservation_paid=1 THEN @resSubtotal ELSE NULL END,
-     0, N'Reservation invoice',
-     CASE WHEN @reservation_paid=1 THEN 1 ELSE 0 END,
-     0, @resPaidAt,
-     SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET(), @contract_id),
+    (
+        @reservation_invoice_id,
+        @reservation_subtotal,
+        @reservation_tax_rate,
+        @reservation_paid_amount,
+        0,  -- Cash
+        N'Reservation invoice',
+        CASE WHEN @reservation_paid = 1 THEN 1 ELSE 0 END, -- InvoiceStatus
+        0,  -- InvoiceType.Reservation
+        @reservation_paid_at,
+        SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET(),
+        @contract_id
+    );
 
-    -- Handover
-    (@handSubtotal, 0,
-     CASE WHEN @handover_paid=1 THEN @handSubtotal ELSE NULL END,
-     0, N'Handover invoice',
-     CASE WHEN @handover_paid=1 THEN 1 ELSE 0 END,
-     1, @handPaidAt,
-     SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET(), @contract_id);
-END
+
+    /* ============================================================
+       4) HANDOVER INVOICE
+    ============================================================ */
+    DECLARE @handover_invoice_id UNIQUEIDENTIFIER = NEWID();
+    DECLARE @handover_paid_at DATETIMEOFFSET =
+        CASE WHEN @handover_paid = 1 THEN SYSDATETIMEOFFSET() ELSE NULL END;
+
+    DECLARE @handover_paid_amount DECIMAL(10,2) =
+        CASE WHEN @handover_paid = 1
+            THEN @handover_subtotal * (1 + @handover_tax_rate)
+            ELSE NULL
+        END;
+
+    INSERT INTO invoices
+    (
+        id, subtotal, tax, paid_amount, payment_method, notes, status, type, paid_at,
+        created_at, updated_at, contract_id
+    )
+    VALUES
+    (
+        @handover_invoice_id,
+        @handover_subtotal,
+        @handover_tax_rate,
+        @handover_paid_amount,
+        0,  -- Cash
+        N'Handover invoice',
+        CASE WHEN @handover_paid = 1 THEN 1 ELSE 0 END,
+        1,  -- InvoiceType.Handover
+        @handover_paid_at,
+        SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET(),
+        @contract_id
+    );
+
+
+    /* ============================================================
+       5) DEPOSIT (GẮN VỚI HANDOVER INVOICE)
+       deposit.status:
+         0 = Pending
+         1 = Paid
+         2 = Refunded
+         3 = Forfeited
+    ============================================================ */
+    DECLARE @deposit_status INT =
+        CASE WHEN @handover_paid = 1 THEN 1 ELSE 0 END;
+
+    INSERT INTO deposits
+    (
+        id, amount, refunded_at, status,
+        created_at, updated_at, deleted_at, invoice_id
+    )
+    VALUES
+    (
+        NEWID(),
+        @deposit,
+        NULL,
+        @deposit_status,
+        SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET(), NULL,
+        @handover_invoice_id
+    );
+END;
 GO
-
-
 /* ===================================================================
-   PROC 2: Tạo checklist handover đầy đủ component (status Good)
+   PROC 2: Tạo checklist handover (full component)
 =================================================================== */
 CREATE OR ALTER PROCEDURE dbo.__seed_create_handover_checklist
 (
@@ -216,24 +305,22 @@ CREATE OR ALTER PROCEDURE dbo.__seed_create_handover_checklist
 )
 AS
 BEGIN
-    DECLARE @chkId UNIQUEIDENTIFIER = NEWID();
+    DECLARE @chk UNIQUEIDENTIFIER = NEWID();
 
     INSERT INTO vehicle_checklists
-        (id, type, is_signed_by_staff, is_signed_by_customer,
-         created_at, updated_at, staff_id, customer_id, vehicle_id, contract_id)
+    (id,type,is_signed_by_staff,is_signed_by_customer,
+     created_at,updated_at,staff_id,customer_id,vehicle_id,contract_id)
     VALUES
-        (@chkId, 1, 1, 1,
-         SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET(),
-         @staff_id, @customer_id, @vehicle_id, @contract_id);
+    (@chk,1,1,1,SYSDATETIMEOFFSET(),SYSDATETIMEOFFSET(),
+     @staff_id,@customer_id,@vehicle_id,@contract_id);
 
     INSERT INTO vehicle_checklist_items
-        (status, component_id, checklist_id, created_at, updated_at)
+    (status, component_id, checklist_id, created_at, updated_at)
     SELECT
-        0, c.id, @chkId, SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET()
-    FROM vehicle_components c;
-END
+        0, id, @chk, SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET()
+    FROM vehicle_components;
+END;
 GO
-
 /* ============================================================
    1) USERS — 13 tài khoản (role Customer)
 ============================================================ */
@@ -294,12 +381,20 @@ DECLARE @segCompact UNIQUEIDENTIFIER = (SELECT id FROM vehicle_segments WHERE na
 INSERT INTO vehicle_models
 (name,description,cost_per_day,deposit_fee,reservation_fee,
  seating_capacity,number_of_airbags,motor_power,battery_capacity,
- eco_range_km,sport_range_km,brand_id,segment_id)
+ eco_range_km,sport_range_km,brand_id,segment_id,image_url,image_public_id)
 VALUES
-(N'VinFast VF 3',N'Mini EV',8000,5000,3000,4,4,50,20,210,180,@brand,@segCompact),
-(N'VinFast VF 6',N'EV C-Class',14000,12000,4000,5,6,150,59,380,320,@brand,@segSUV),
-(N'VinFast VF 7',N'EV D-Class',17000,14000,5000,5,6,180,75,420,360,@brand,@segSUV),
-(N'VinFast VF 8',N'EV E-Class',20000,16000,6000,5,8,220,87,480,410,@brand,@segSUV);
+(N'VinFast VF 3',N'Mini EV',8000,5000,3000,4,4,50,20,210,180,@brand,@segCompact,
+'http://res.cloudinary.com/dk5pwoag4/image/upload/v1762177952/models/3012ad0b-03ea-4913-8ce8-b340f0b0c6cd/main/lwlrnpldyuvzo5krm0te.jpg',
+'models/3012ad0b-03ea-4913-8ce8-b340f0b0c6cd/main/lwlrnpldyuvzo5krm0te'),
+(N'VinFast VF 6',N'EV C-Class',14000,12000,4000,5,6,150,59,380,320,@brand,@segSUV,
+'http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178284/models/a65f0887-35a4-4058-af15-b7600581c8eb/main/xxg5dlpy9vvji0dwoydg.jpg',
+'models/a65f0887-35a4-4058-af15-b7600581c8eb/main/xxg5dlpy9vvji0dwoydg'),
+(N'VinFast VF 7',N'EV D-Class',17000,14000,5000,5,6,180,75,420,360,@brand,@segSUV,
+'http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178229/models/0d223468-cff9-41ea-8178-915361a6f6d9/main/tf6nvfsnylfb7ypfvjso.jpg',
+'models/0d223468-cff9-41ea-8178-915361a6f6d9/main/tf6nvfsnylfb7ypfvjso'),
+(N'VinFast VF 8',N'EV E-Class',20000,16000,6000,5,8,220,87,480,410,@brand,@segSUV,
+'http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178011/models/a00b3abd-c55d-4fc0-8be5-1ac002894533/main/xjohfofnhldb86xtdnua.jpg',
+'models/a00b3abd-c55d-4fc0-8be5-1ac002894533/main/xjohfofnhldb86xtdnua');
 
 
 DECLARE @mVF3 UNIQUEIDENTIFIER = (SELECT id FROM vehicle_models WHERE name=N'VinFast VF 3');
@@ -308,6 +403,52 @@ DECLARE @mVF6 UNIQUEIDENTIFIER = (SELECT id FROM vehicle_models WHERE name=N'Vin
 DECLARE @mVF7 UNIQUEIDENTIFIER = (SELECT id FROM vehicle_models WHERE name=N'VinFast VF 7');
 DECLARE @mVF8 UNIQUEIDENTIFIER = (SELECT id FROM vehicle_models WHERE name=N'VinFast VF 8');
 
+/*=================================
+Add model image
+===================================*/
+INSERT INTO model_images
+(url, public_id, model_id)
+VALUES
+('http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178014/models/a00b3abd-c55d-4fc0-8be5-1ac002894533/gallery/eqc49vffpwnk6jy1bqet.jpg',
+'models/a00b3abd-c55d-4fc0-8be5-1ac002894533/gallery/eqc49vffpwnk6jy1bqet', @mVF8),
+('http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178016/models/a00b3abd-c55d-4fc0-8be5-1ac002894533/gallery/ilhydecz2mkisgqigqek.jpg',
+'models/a00b3abd-c55d-4fc0-8be5-1ac002894533/gallery/ilhydecz2mkisgqigqek', @mVF8),
+('http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178018/models/a00b3abd-c55d-4fc0-8be5-1ac002894533/gallery/tv7tdyilae5ymi1a71em.jpg',
+'models/a00b3abd-c55d-4fc0-8be5-1ac002894533/gallery/tv7tdyilae5ymi1a71em', @mVF8),
+('http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178012/models/a00b3abd-c55d-4fc0-8be5-1ac002894533/gallery/cnyonqogdifzzsoapdqh.jpg',
+'models/a00b3abd-c55d-4fc0-8be5-1ac002894533/gallery/cnyonqogdifzzsoapdqh', @mVF8),
+
+('http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178643/models/bf85ac59-53bf-4068-b3c3-2ba2bf1d92a2/gallery/dwqz0c8zs3kiqhqsquip.jpg',
+'models/bf85ac59-53bf-4068-b3c3-2ba2bf1d92a2/gallery/dwqz0c8zs3kiqhqsquip', @mVF5),
+('http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178635/models/bf85ac59-53bf-4068-b3c3-2ba2bf1d92a2/gallery/v3h8y8wonmmveenokkog.jpg',
+'models/bf85ac59-53bf-4068-b3c3-2ba2bf1d92a2/gallery/v3h8y8wonmmveenokkog', @mVF5),
+('http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178637/models/bf85ac59-53bf-4068-b3c3-2ba2bf1d92a2/gallery/mrofru0puwkhngjk4fjy.jpg',
+'models/bf85ac59-53bf-4068-b3c3-2ba2bf1d92a2/gallery/mrofru0puwkhngjk4fjy', @mVF5),
+
+('http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178234/models/0d223468-cff9-41ea-8178-915361a6f6d9/gallery/aj0uzlvkbioe27uf7hw0.jpg',
+'models/0d223468-cff9-41ea-8178-915361a6f6d9/gallery/aj0uzlvkbioe27uf7hw0', @mVF7),
+('http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178233/models/0d223468-cff9-41ea-8178-915361a6f6d9/gallery/o1pineohtqwc7idd4bwf.jpg',
+'models/0d223468-cff9-41ea-8178-915361a6f6d9/gallery/o1pineohtqwc7idd4bwf', @mVF7),
+('http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178231/models/0d223468-cff9-41ea-8178-915361a6f6d9/gallery/duiptyjfvqeb1jwf6ztl.jpg',
+'models/0d223468-cff9-41ea-8178-915361a6f6d9/gallery/duiptyjfvqeb1jwf6ztl', @mVF7),
+
+('http://res.cloudinary.com/dk5pwoag4/image/upload/v1762177953/models/3012ad0b-03ea-4913-8ce8-b340f0b0c6cd/gallery/l65cyxycn86x502wbqds.jpg',
+'models/3012ad0b-03ea-4913-8ce8-b340f0b0c6cd/gallery/l65cyxycn86x502wbqds', @mVF3),
+('http://res.cloudinary.com/dk5pwoag4/image/upload/v1762177911/models/3012ad0b-03ea-4913-8ce8-b340f0b0c6cd/gallery/vhnsky5itnbealgd1uxk.jpg',
+'models/3012ad0b-03ea-4913-8ce8-b340f0b0c6cd/gallery/vhnsky5itnbealgd1uxk', @mVF3),
+('http://res.cloudinary.com/dk5pwoag4/image/upload/v1762177957/models/3012ad0b-03ea-4913-8ce8-b340f0b0c6cd/gallery/civitlwrdl6qee6vpupy.jpg',
+'models/3012ad0b-03ea-4913-8ce8-b340f0b0c6cd/gallery/civitlwrdl6qee6vpupy', @mVF3),
+('http://res.cloudinary.com/dk5pwoag4/image/upload/v1762177910/models/3012ad0b-03ea-4913-8ce8-b340f0b0c6cd/gallery/mwdivdhgi588jksg73kq.jpg',
+'models/3012ad0b-03ea-4913-8ce8-b340f0b0c6cd/gallery/mwdivdhgi588jksg73kq', @mVF3),
+('http://res.cloudinary.com/dk5pwoag4/image/upload/v1762177955/models/3012ad0b-03ea-4913-8ce8-b340f0b0c6cd/gallery/kihoczys0riovnm0ihyl.jpg',
+'models/3012ad0b-03ea-4913-8ce8-b340f0b0c6cd/gallery/kihoczys0riovnm0ihyl', @mVF3),
+
+('http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178286/models/a65f0887-35a4-4058-af15-b7600581c8eb/gallery/lihtugg9wa5ijyses9d7.jpg',
+'models/a65f0887-35a4-4058-af15-b7600581c8eb/gallery/lihtugg9wa5ijyses9d7', @mVF6),
+('http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178289/models/a65f0887-35a4-4058-af15-b7600581c8eb/gallery/lpvunjzdpmhh3wakmyay.jpg',
+'models/a65f0887-35a4-4058-af15-b7600581c8eb/gallery/lpvunjzdpmhh3wakmyay', @mVF6),
+('http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178287/models/a65f0887-35a4-4058-af15-b7600581c8eb/gallery/umxw8qb93ubz9tu8179d.jpg',
+'models/a65f0887-35a4-4058-af15-b7600581c8eb/gallery/umxw8qb93ubz9tu8179d', @mVF6);
 
 /* ============================================================
    3) Gán component cho model mới
@@ -366,7 +507,7 @@ DECLARE @vVF7A UNIQUEIDENTIFIER = (SELECT id FROM vehicles WHERE license_plate='
 DECLARE @vVF7B UNIQUEIDENTIFIER = (SELECT id FROM vehicles WHERE license_plate='51C-700.02');
 DECLARE @vVF8 UNIQUEIDENTIFIER  = (SELECT id FROM vehicles WHERE license_plate='51C-800.01');
 
-DECLARE @staff UNIQUEIDENTIFIER = (SELECT TOP 1 user_id FROM staffs);
+DECLARE @staff UNIQUEIDENTIFIER = (SELECT id from users where email = 'staffA@greenwheel.vn');
 
 
 /* ============================================================
@@ -496,7 +637,7 @@ DROP PROCEDURE dbo.__seed_create_handover_checklist;
 GO
 
 Update invoices set tax = 0.1 where type = 1
-
+Update vehicle_models set reservation_fee = 10000
 GO
 /* ============================================================
    EXTRA SEED: Completed contracts for each month Jan–Nov 2025
