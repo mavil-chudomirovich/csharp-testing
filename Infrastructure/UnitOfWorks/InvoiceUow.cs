@@ -17,20 +17,22 @@ namespace Infrastructure.UnitOfWorks
         public IInvoiceItemRepository InvoiceItemRepository { get; set; }
         public IRentalContractRepository RentalContractRepository { get; set; }
         public IDepositRepository DepositRepository { get; set; }
+        public IVehicleRepository VehicleRepository { get; set; }
 
         public InvoiceUow(IGreenWheelDbContext context, 
             IMomoPaymentLinkRepository momoPaymentLink,
             IInvoiceRepository invoiceRepository,
             IRentalContractRepository rentalContractRepository,
             IInvoiceItemRepository invoiceItemRepository,
-            IDepositRepository depositRepository) : base(context)
+            IDepositRepository depositRepository, IVehicleRepository vehicleRepository) : base(context)
             {
                 MomoPaymentLinkRepository = momoPaymentLink;
                 InvoiceRepository = invoiceRepository;
                 RentalContractRepository = rentalContractRepository;
                 InvoiceItemRepository = invoiceItemRepository;
                 DepositRepository = depositRepository;
-            }
+                VehicleRepository = vehicleRepository;
+        }
     }
 }
 

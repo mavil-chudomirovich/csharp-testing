@@ -14,6 +14,7 @@ namespace Application.UnitOfWorks
         IRentalContractRepository RentalContractRepository { get; set; }
         IInvoiceItemRepository InvoiceItemRepository { get; set; }
         IDepositRepository DepositRepository { get; set; }
+        IVehicleRepository VehicleRepository { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     
     }

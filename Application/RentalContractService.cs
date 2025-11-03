@@ -58,16 +58,16 @@ namespace Application
             try
             {
                 //ktra xem có cccd hay chưa
-                //var citizenIdentity = await _uow.CitizenIdentityRepository.GetByUserIdAsync(userID);
-                //if (citizenIdentity == null)
-                //{
-                //    throw new ForbidenException(Message.UserMessage.CitizenIdentityNotFound);
-                //}
-                //var driverLisence = await _uow.DriverLicenseRepository.GetByUserIdAsync(userID);
-                //if (driverLisence == null)
-                //{
-                //    throw new ForbidenException(Message.UserMessage.DriverLicenseNotFound);
-                //}
+                var citizenIdentity = await _uow.CitizenIdentityRepository.GetByUserIdAsync(userID);
+                if (citizenIdentity == null)
+                {
+                    throw new ForbidenException(Message.UserMessage.CitizenIdentityNotFound);
+                }
+                var driverLisence = await _uow.DriverLicenseRepository.GetByUserIdAsync(userID);
+                if (driverLisence == null)
+                {
+                    throw new ForbidenException(Message.UserMessage.DriverLicenseNotFound);
+                }
                 //---------
                 //ktra có đơn đặt xe chưa
                 if (await _uow.RentalContractRepository.HasActiveContractAsync(userID))
@@ -570,7 +570,7 @@ namespace Application
             }
         }
 
-        private async Task CancelContractAndSendEmail(RentalContract contract_, string description)
+        public async Task CancelContractAndSendEmail(RentalContract contract_, string description)
         {
             contract_.Status = (int)RentalContractStatus.Cancelled;
             contract_.Description += "\r\n" + description;

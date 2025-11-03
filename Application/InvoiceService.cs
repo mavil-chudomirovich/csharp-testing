@@ -24,6 +24,7 @@ namespace Application
         private readonly IEmailSerivce _emailService;
         private readonly IPhotoService _photoService;
         private readonly IMediaUow _mediaUow;
+        private readonly IRentalContractService _rentalContractService;
 
         public InvoiceService(
             IInvoiceUow uow, 
@@ -32,7 +33,8 @@ namespace Application
             IOptions<EmailSettings> emailSettings, 
             IEmailSerivce emailSerivce, 
             IPhotoService photoService,
-            IMediaUow mediaUow)
+            IMediaUow mediaUow,
+            IRentalContractService rentalContractService)
         {
             _uow = uow;
             _mapper = mapper;
@@ -40,6 +42,7 @@ namespace Application
             _emailService = emailSerivce;
             _photoService = photoService;
             _mediaUow = mediaUow;
+            _rentalContractService = rentalContractService;
         }
 
         public async Task PayHandoverInvoiceManual(Invoice invoice, decimal amount)
@@ -58,6 +61,31 @@ namespace Application
                 await CancleReservationInvoice(invoice);
                 contract.Status = (int)RentalContractStatus.Active;
                 await _uow.RentalContractRepository.UpdateAsync(contract);
+                var vehicle = await _uow.VehicleRepository.GetByIdAsync((Guid)contract.VehicleId!)
+                            ?? throw new NotFoundException(Message.VehicleMessage.NotFound);
+                if (vehicle.Status == (int)VehicleStatus.Available)
+                {
+                    vehicle.Status = (int)VehicleStatus.Unavaible;
+                    await _uow.VehicleRepository.UpdateAsync(vehicle);
+                }
+                var anotherContract = (await _uow.RentalContractRepository.GetByVehicleIdAsync(vehicle.Id))
+                                                .Where(c => c.Id != contract.Id
+                                                    && (c.Status == (int)RentalContractStatus.PaymentPending
+                                                        || c.Status == (int)RentalContractStatus.RequestPeding)
+                                                );
+                if (anotherContract != null && anotherContract.Any())
+                {
+                    var startBuffer = contract.StartDate.AddDays(-10);
+                    var endBuffer = contract.EndDate.AddDays(10);
+                    foreach (var contract_ in anotherContract)
+                    {
+                        if (startBuffer <= contract_.EndDate && endBuffer >= contract_.StartDate)
+                        {
+                            await _rentalContractService.CancelContractAndSendEmail(contract_,
+                             "\r\nBooking was canceled as another customer successfully paid for the same vehicle earlier.");
+                        }
+                    }
+                }
                 await _uow.SaveChangesAsync();
                 await _uow.CommitAsync();
             }catch(Exception ex)

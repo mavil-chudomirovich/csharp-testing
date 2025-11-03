@@ -35,5 +35,6 @@ namespace Application.Abstractions
         Task ProcessCustomerConfirm(Guid id, int resolutionOption);
         Task LateReturnContractWarningAsync();
         Task ExpiredContractCleanUpAsync();
+        Task CancelContractAndSendEmail(RentalContract contract_, string description);
     }
 }

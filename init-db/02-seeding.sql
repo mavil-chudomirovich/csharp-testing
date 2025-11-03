@@ -589,11 +589,11 @@ INSERT INTO rental_contracts
  vehicle_id,customer_id,handover_staff_id,station_id)
 VALUES
 (@cA1,'PP VF3 U1','',
- '2026-05-21T00:00:00+07:00','2026-05-25T00:00:00+07:00',
+ '2025-11-03T00:00:00+07:00','2025-11-10T00:00:00+07:00',
  1,0,0,@vVF3,@u1,@staff,@sA),
 
 (@cA2,'PP VF3 U2','',
- '2026-05-21T00:00:00+07:00','2026-05-25T00:00:00+07:00',
+ '2025-11-03T00:00:00+07:00','2025-11-10T00:00:00+07:00',
  1,0,0,@vVF3,@u2,@staff,@sA);
 
 EXEC dbo.__seed_create_invoices @cA1,0,0;
@@ -705,3 +705,4 @@ GO
 Update invoices set tax = 0.1 where type = 1
 Update vehicle_models set reservation_fee = 10000
 GO
+
