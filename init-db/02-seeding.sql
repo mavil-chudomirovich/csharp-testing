@@ -157,3 +157,343 @@ INSERT INTO business_variables (id, created_at, updated_at, [key], [value]) VALU
 (NEWID(), SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET(), 4, 10);       -- RentalContractBufferDay
 
 GO
+
+USE green_wheel_db;
+GO
+
+/* ===================================================================
+   PROC 1: Tạo invoices Reservation + Handover cho 1 contract
+=================================================================== */
+CREATE OR ALTER PROCEDURE dbo.__seed_create_invoices
+(
+  @contract_id UNIQUEIDENTIFIER,
+  @reservation_paid BIT,
+  @handover_paid BIT
+)
+AS
+BEGIN
+    DECLARE @resSubtotal DECIMAL(10,2) = 3000;
+    DECLARE @handSubtotal DECIMAL(10,2) = 5000;
+
+    DECLARE @resPaidAt DATETIMEOFFSET =
+        CASE WHEN @reservation_paid = 1 THEN SYSDATETIMEOFFSET() ELSE NULL END;
+
+    DECLARE @handPaidAt DATETIMEOFFSET =
+        CASE WHEN @handover_paid = 1 THEN SYSDATETIMEOFFSET() ELSE NULL END;
+
+    INSERT INTO invoices
+    (subtotal, tax, paid_amount, payment_method, notes, status, type, paid_at,
+     created_at, updated_at, contract_id)
+    VALUES
+    -- Reservation
+    (@resSubtotal, 0,
+     CASE WHEN @reservation_paid=1 THEN @resSubtotal ELSE NULL END,
+     0, N'Reservation invoice',
+     CASE WHEN @reservation_paid=1 THEN 1 ELSE 0 END,
+     0, @resPaidAt,
+     SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET(), @contract_id),
+
+    -- Handover
+    (@handSubtotal, 0,
+     CASE WHEN @handover_paid=1 THEN @handSubtotal ELSE NULL END,
+     0, N'Handover invoice',
+     CASE WHEN @handover_paid=1 THEN 1 ELSE 0 END,
+     1, @handPaidAt,
+     SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET(), @contract_id);
+END
+GO
+
+
+/* ===================================================================
+   PROC 2: Tạo checklist handover đầy đủ component (status Good)
+=================================================================== */
+CREATE OR ALTER PROCEDURE dbo.__seed_create_handover_checklist
+(
+ @staff_id UNIQUEIDENTIFIER,
+ @customer_id UNIQUEIDENTIFIER,
+ @vehicle_id UNIQUEIDENTIFIER,
+ @contract_id UNIQUEIDENTIFIER
+)
+AS
+BEGIN
+    DECLARE @chkId UNIQUEIDENTIFIER = NEWID();
+
+    INSERT INTO vehicle_checklists
+        (id, type, is_signed_by_staff, is_signed_by_customer,
+         created_at, updated_at, staff_id, customer_id, vehicle_id, contract_id)
+    VALUES
+        (@chkId, 1, 1, 1,
+         SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET(),
+         @staff_id, @customer_id, @vehicle_id, @contract_id);
+
+    INSERT INTO vehicle_checklist_items
+        (status, component_id, checklist_id, created_at, updated_at)
+    SELECT
+        0, c.id, @chkId, SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET()
+    FROM vehicle_components c;
+END
+GO
+
+/* ============================================================
+   1) USERS — 13 tài khoản (role Customer)
+============================================================ */
+DECLARE @customerRole UNIQUEIDENTIFIER =
+ (SELECT id FROM roles WHERE name='Customer');
+
+INSERT INTO users (first_name,last_name,email,password,phone,sex,role_id) VALUES
+(N'Lê',N'Hoàng Duy','lehoangduy23092005@gmail.com',
+'$2a$12$EF0KCPRK/mIt16yJtjCL1u/R5K0NXE7Mu9Q0s1WLX.iNOVrNEtXYe','0903000001',0,@customerRole),
+(N'Lê',N'Hoàng Duy','lehoangduy23905@gmail.com',
+'$2a$12$EF0KCPRK/mIt16yJtjCL1u/R5K0NXE7Mu9Q0s1WLX.iNOVrNEtXYe','0903000002',0,@customerRole),
+(N'Lê',N'Hoàng Duy','lehoangduy20102005@gmail.com',
+'$2a$12$EF0KCPRK/mIt16yJtjCL1u/R5K0NXE7Mu9Q0s1WLX.iNOVrNEtXYe','0903000003',0,@customerRole),
+(N'Hoàng',N'Duy Lê','hoangduyle.work@gmail.com',
+'$2a$12$EF0KCPRK/mIt16yJtjCL1u/R5K0NXE7Mu9Q0s1WLX.iNOVrNEtXYe','0903000004',0,@customerRole),
+(N'Huỳnh',N'Ng SE183274','huyngse183274@fpt.edu.vn',
+'$2a$12$EF0KCPRK/mIt16yJtjCL1u/R5K0NXE7Mu9Q0s1WLX.iNOVrNEtXYe','0903000005',0,@customerRole),
+(N'Ngô',N'Gia Huy','ngogiahuy.work@gmail.com',
+'$2a$12$EF0KCPRK/mIt16yJtjCL1u/R5K0NXE7Mu9Q0s1WLX.iNOVrNEtXYe','0903000006',0,@customerRole),
+(N'Dức',N'K05','duck05gaming@gmai.com',
+'$2a$12$EF0KCPRK/mIt16yJtjCL1u/R5K0NXE7Mu9Q0s1WLX.iNOVrNEtXYe','0903000007',0,@customerRole),
+(N'Dức',N'Test','duck.test.dev.05@gmail.com',
+'$2a$12$EF0KCPRK/mIt16yJtjCL1u/R5K0NXE7Mu9Q0s1WLX.iNOVrNEtXYe','0903000008',0,@customerRole),
+(N'Huy',N'Cùng Bão Bình','Huycungbaobinh@gmail.com',
+'$2a$12$EF0KCPRK/mIt16yJtjCL1u/R5K0NXE7Mu9Q0s1WLX.iNOVrNEtXYe','0903000009',0,@customerRole),
+(N'Nguyễn',N'Quang Huy','Nguyenquanghuy14022005@gmail.com',
+'$2a$12$EF0KCPRK/mIt16yJtjCL1u/R5K0NXE7Mu9Q0s1WLX.iNOVrNEtXYe','0903000010',0,@customerRole),
+(N'Quang',N'Huy','Quanghuynguyen14022005@gmail.com',
+'$2a$12$EF0KCPRK/mIt16yJtjCL1u/R5K0NXE7Mu9Q0s1WLX.iNOVrNEtXYe','0903000011',0,@customerRole),
+(N'Huy',N'Quang','Huyquangnguyen14022005@gmail.com',
+'$2a$12$EF0KCPRK/mIt16yJtjCL1u/R5K0NXE7Mu9Q0s1WLX.iNOVrNEtXYe','0903000012',0,@customerRole),
+(N'Huy',N'Tradecoin','Huytradecoin@gmail.com',
+'$2a$12$EF0KCPRK/mIt16yJtjCL1u/R5K0NXE7Mu9Q0s1WLX.iNOVrNEtXYe','0903000013',0,@customerRole);
+
+
+DECLARE @u1 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='lehoangduy23092005@gmail.com');
+DECLARE @u2 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='lehoangduy23905@gmail.com');
+DECLARE @u3 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='lehoangduy20102005@gmail.com');
+DECLARE @u4 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='hoangduyle.work@gmail.com');
+DECLARE @u5 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='huyngse183274@fpt.edu.vn');
+DECLARE @u6 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='ngogiahuy.work@gmail.com');
+DECLARE @u7 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='duck05gaming@gmai.com');
+DECLARE @u8 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='duck.test.dev.05@gmail.com');
+DECLARE @u9 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='Huycungbaobinh@gmail.com');
+DECLARE @u10 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='Nguyenquanghuy14022005@gmail.com');
+DECLARE @u11 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='Quanghuynguyen14022005@gmail.com');
+DECLARE @u12 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='Huyquangnguyen14022005@gmail.com');
+DECLARE @u13 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='Huytradecoin@gmail.com');
+
+
+/* ============================================================
+   2) MODELS VF3–VF8 (brand VinFast)
+============================================================ */
+DECLARE @brand UNIQUEIDENTIFIER = (SELECT id FROM brands WHERE name='VinFast');
+DECLARE @segSUV UNIQUEIDENTIFIER = (SELECT id FROM vehicle_segments WHERE name='SUV');
+DECLARE @segCompact UNIQUEIDENTIFIER = (SELECT id FROM vehicle_segments WHERE name='Compact');
+
+INSERT INTO vehicle_models
+(name,description,cost_per_day,deposit_fee,reservation_fee,
+ seating_capacity,number_of_airbags,motor_power,battery_capacity,
+ eco_range_km,sport_range_km,brand_id,segment_id)
+VALUES
+(N'VinFast VF 3',N'Mini EV',8000,5000,3000,4,4,50,20,210,180,@brand,@segCompact),
+(N'VinFast VF 6',N'EV C-Class',14000,12000,4000,5,6,150,59,380,320,@brand,@segSUV),
+(N'VinFast VF 7',N'EV D-Class',17000,14000,5000,5,6,180,75,420,360,@brand,@segSUV),
+(N'VinFast VF 8',N'EV E-Class',20000,16000,6000,5,8,220,87,480,410,@brand,@segSUV);
+
+
+DECLARE @mVF3 UNIQUEIDENTIFIER = (SELECT id FROM vehicle_models WHERE name=N'VinFast VF 3');
+DECLARE @mVF5 UNIQUEIDENTIFIER = (SELECT id FROM vehicle_models WHERE name=N'VinFast VF 5');
+DECLARE @mVF6 UNIQUEIDENTIFIER = (SELECT id FROM vehicle_models WHERE name=N'VinFast VF 6');
+DECLARE @mVF7 UNIQUEIDENTIFIER = (SELECT id FROM vehicle_models WHERE name=N'VinFast VF 7');
+DECLARE @mVF8 UNIQUEIDENTIFIER = (SELECT id FROM vehicle_models WHERE name=N'VinFast VF 8');
+
+
+/* ============================================================
+   3) Gán component cho model mới
+============================================================ */
+INSERT INTO model_components (model_id, component_id)
+SELECT @mVF3, id FROM vehicle_components
+UNION ALL SELECT @mVF6, id FROM vehicle_components
+UNION ALL SELECT @mVF7, id FROM vehicle_components
+UNION ALL SELECT @mVF8, id FROM vehicle_components;
+
+
+/* ============================================================
+   4) Vehicles  (5 xe mỗi model – VF8 chỉ 1 xe)
+============================================================ */
+DECLARE @sA UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM stations WHERE name LIKE N'%A%');
+DECLARE @sB UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM stations WHERE name LIKE N'%B%');
+
+INSERT INTO vehicles (license_plate,status,model_id,station_id)
+VALUES
+-- VF3
+('51C-100.01',0,@mVF3,@sA),
+('51C-100.02',0,@mVF3,@sA),
+('51C-100.03',0,@mVF3,@sB),
+('51C-100.04',0,@mVF3,@sA),
+('51C-100.05',0,@mVF3,@sB),
+
+-- VF5
+('51C-200.01',0,@mVF5,@sA),
+('51C-200.02',0,@mVF5,@sA),
+('51C-200.03',0,@mVF5,@sB),
+('51C-200.04',0,@mVF5,@sA),
+('51C-200.05',0,@mVF5,@sB),
+
+-- VF6
+('51C-300.01',0,@mVF6,@sA),
+('51C-300.02',0,@mVF6,@sA),
+('51C-300.03',0,@mVF6,@sB),
+('51C-300.04',0,@mVF6,@sA),
+('51C-300.05',0,@mVF6,@sB),
+
+-- VF7
+('51C-700.01',0,@mVF7,@sA),
+('51C-700.02',0,@mVF7,@sA),
+('51C-700.03',0,@mVF7,@sB),
+('51C-700.04',0,@mVF7,@sA),
+('51C-700.05',0,@mVF7,@sB),
+
+-- VF8 (1 xe)
+('51C-800.01',0,@mVF8,@sA);
+
+
+DECLARE @vVF3 UNIQUEIDENTIFIER = (SELECT id FROM vehicles WHERE license_plate='51C-100.01');
+DECLARE @vVF5 UNIQUEIDENTIFIER = (SELECT id FROM vehicles WHERE license_plate='51C-200.01');
+DECLARE @vVF6 UNIQUEIDENTIFIER = (SELECT id FROM vehicles WHERE license_plate='51C-300.01');
+DECLARE @vVF7A UNIQUEIDENTIFIER = (SELECT id FROM vehicles WHERE license_plate='51C-700.01');
+DECLARE @vVF7B UNIQUEIDENTIFIER = (SELECT id FROM vehicles WHERE license_plate='51C-700.02');
+DECLARE @vVF8 UNIQUEIDENTIFIER  = (SELECT id FROM vehicles WHERE license_plate='51C-800.01');
+
+DECLARE @staff UNIQUEIDENTIFIER = (SELECT TOP 1 user_id FROM staffs);
+
+
+/* ============================================================
+   5) CONTRACT SCENARIOS
+============================================================ */
+
+/*  A) 2 hợp đồng cùng xe VF3 — PaymentPending — mail 1 & 2  */
+DECLARE @cA1 UNIQUEIDENTIFIER = NEWID();
+DECLARE @cA2 UNIQUEIDENTIFIER = NEWID();
+
+INSERT INTO rental_contracts
+(id,description,notes,start_date,end_date,status,is_signed_by_staff,is_signed_by_customer,
+ vehicle_id,customer_id,handover_staff_id,station_id)
+VALUES
+(@cA1,'PP VF3 U1','',
+ '2026-05-21T00:00:00+07:00','2026-05-25T00:00:00+07:00',
+ 1,0,0,@vVF3,@u1,@staff,@sA),
+
+(@cA2,'PP VF3 U2','',
+ '2026-05-21T00:00:00+07:00','2026-05-25T00:00:00+07:00',
+ 1,0,0,@vVF3,@u2,@staff,@sA);
+
+EXEC dbo.__seed_create_invoices @cA1,0,0;
+EXEC dbo.__seed_create_invoices @cA2,0,0;
+
+
+/*  B) Cặp hợp đồng VF5 — U3 Active paid & U4 Pending unpaid  */
+DECLARE @cB1 UNIQUEIDENTIFIER = NEWID();
+DECLARE @cB2 UNIQUEIDENTIFIER = NEWID();
+
+INSERT INTO rental_contracts
+(id,description,notes,start_date,end_date,status,is_signed_by_staff,is_signed_by_customer,
+ vehicle_id,customer_id,handover_staff_id,station_id,actual_start_date)
+VALUES
+(@cB1,'Active VF5 U3','',
+ '2025-11-01T00:00:00+07:00','2025-11-04T11:00:00+07:00',
+ 2,1,1,@vVF5,@u3,@staff,@sA,'2025-11-01T00:00:00+07:00'),
+
+(@cB2,'PP VF5 U4','',
+ '2025-11-15T00:00:00+07:00','2025-11-17T00:00:00+07:00',
+ 1,0,0,@vVF5,@u4,@staff,@sA,NULL);
+
+EXEC dbo.__seed_create_invoices @cB1,1,1;
+EXEC dbo.__seed_create_invoices @cB2,0,0;
+EXEC dbo.__seed_create_handover_checklist @staff,@u3,@vVF5,@cB1;
+
+UPDATE vehicles SET status=2 WHERE id=@vVF5;
+
+
+/*  C) 2 hợp đồng cùng VF6 — đều Active paid  */
+DECLARE @cC1 UNIQUEIDENTIFIER = NEWID();
+DECLARE @cC2 UNIQUEIDENTIFIER = NEWID();
+
+INSERT INTO rental_contracts
+(id,description,start_date,end_date,status,is_signed_by_staff,is_signed_by_customer,
+ vehicle_id,customer_id,handover_staff_id,station_id,actual_start_date)
+VALUES
+(@cC1,'Active VF6 U5',
+ '2025-11-01T00:00:00+07:00','2025-11-04T11:00:00+07:00',
+ 2,1,1,@vVF6,@u5,@staff,@sA,'2025-11-01T00:00:00+07:00'),
+
+(@cC2,'Active VF6 U6',
+ '2025-11-15T00:00:00+07:00','2025-11-17T00:00:00+07:00',
+ 2,1,1,@vVF6,@u6,@staff,@sA,'2025-11-15T00:00:00+07:00');
+
+EXEC dbo.__seed_create_invoices @cC1,1,1;
+EXEC dbo.__seed_create_invoices @cC2,1,1;
+EXEC dbo.__seed_create_handover_checklist @staff,@u5,@vVF6,@cC1;
+
+UPDATE vehicles SET status=2 WHERE id=@vVF6;
+
+
+/*  D) VF8 — 2 hợp đồng Active paid — U7 & U8  */
+DECLARE @cD1 UNIQUEIDENTIFIER = NEWID();
+DECLARE @cD2 UNIQUEIDENTIFIER = NEWID();
+
+INSERT INTO rental_contracts
+(id,description,start_date,end_date,status,is_signed_by_staff,is_signed_by_customer,
+ vehicle_id,customer_id,handover_staff_id,station_id,actual_start_date)
+VALUES
+(@cD1,'Active VF8 U7',
+ '2025-11-01T00:00:00+07:00','2025-11-04T11:00:00+07:00',
+ 2,1,1,@vVF8,@u7,@staff,@sA,'2025-11-01T00:00:00+07:00'),
+
+(@cD2,'Active VF8 U8',
+ '2025-11-15T00:00:00+07:00','2025-11-17T00:00:00+07:00',
+ 2,1,1,@vVF8,@u8,@staff,@sA,'2025-11-15T00:00:00+07:00');
+
+EXEC dbo.__seed_create_invoices @cD1,1,1;
+EXEC dbo.__seed_create_invoices @cD2,1,1;
+EXEC dbo.__seed_create_handover_checklist @staff,@u7,@vVF8,@cD1;
+
+UPDATE vehicles SET status=2 WHERE id=@vVF8;
+
+
+/*  E) mail 9 — Active paid — actual null — xe VF7A  */
+DECLARE @cE UNIQUEIDENTIFIER = NEWID();
+
+INSERT INTO rental_contracts
+(id,description,start_date,end_date,status,is_signed_by_staff,is_signed_by_customer,
+ vehicle_id,customer_id,handover_staff_id,station_id)
+VALUES
+(@cE,'Active VF7A U9',
+ '2025-10-29T00:00:00+07:00','2025-11-04T09:00:00+07:00',
+ 2,1,1,@vVF7A,@u9,@staff,@sA);
+
+EXEC dbo.__seed_create_invoices @cE,1,1;
+UPDATE vehicles SET status=2 WHERE id=@vVF7A;
+
+
+/*  F) mail 10 — Active paid — actual_start=start — xe VF7B  */
+DECLARE @cF UNIQUEIDENTIFIER = NEWID();
+
+INSERT INTO rental_contracts
+(id,description,start_date,end_date,status,is_signed_by_staff,is_signed_by_customer,
+ vehicle_id,customer_id,handover_staff_id,station_id,actual_start_date)
+VALUES
+(@cF,'Active VF7B U10',
+ '2025-10-29T00:00:00+07:00','2025-11-04T09:00:00+07:00',
+ 2,1,1,@vVF7B,@u10,@staff,@sA,'2025-10-29T00:00:00+07:00');
+
+EXEC dbo.__seed_create_invoices @cF,1,1;
+UPDATE vehicles SET status=2 WHERE id=@vVF7B;
+
+DROP PROCEDURE dbo.__seed_create_invoices;
+DROP PROCEDURE dbo.__seed_create_handover_checklist;
+GO
+
+Update invoices set tax = 0.1 where type = 1
+

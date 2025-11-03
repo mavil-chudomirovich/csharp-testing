@@ -742,20 +742,33 @@ namespace Application
             var subject = "[GreenWheel] Vehicle Return Overdue Notice – Immediate Attention Required";
             var templatePath = Path.Combine(AppContext.BaseDirectory, "Templates", "LateReturnEmailTemplate.html");
             var body = System.IO.File.ReadAllText(templatePath);
-            foreach ( var contract in targetContracts )
+            await _uow.BeginTransactionAsync();
+            try
             {
-                var customer = contract.Customer;
-                var model = contract.Vehicle!.Model;
-                var vehicle = contract.Vehicle;
-                var station = contract.Station;
+                foreach (var contract in targetContracts)
+                {
+                    var customer = contract.Customer;
+                    var model = contract.Vehicle!.Model;
+                    var vehicle = contract.Vehicle;
+                    var station = contract.Station;
 
-                body = body.Replace("{CustomerName}", $"{customer.LastName} {customer.FirstName}")
-                       .Replace("{BookingId}", contract.Id.ToString())
-                       .Replace("{VehicleModelName}", model.Name)
-                       .Replace("{LicensePlate}", vehicle.LicensePlate)
-                       .Replace("{StationName}", station.Name)
-                       .Replace("{EndDate}", contract.EndDate.ToString("dd/MM/yyyy"));
-                await _emailService.SendEmailAsync(customer.Email!, subject, body);
+                    body = body.Replace("{CustomerName}", $"{customer.LastName} {customer.FirstName}")
+                           .Replace("{BookingId}", contract.Id.ToString())
+                           .Replace("{VehicleModelName}", model.Name)
+                           .Replace("{LicensePlate}", vehicle.LicensePlate)
+                           .Replace("{StationName}", station.Name)
+                           .Replace("{EndDate}", contract.EndDate.ToString("dd/MM/yyyy"));
+                    await _emailService.SendEmailAsync(customer.Email!, subject, body);
+                    vehicle.Status = (int)VehicleStatus.LateReturn;
+                    await _uow.VehicleRepository.UpdateAsync(vehicle);
+                }
+                await _uow.SaveChangesAsync();
+                await _uow.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await _uow.RollbackAsync();
+                throw;
             }
         }
 
