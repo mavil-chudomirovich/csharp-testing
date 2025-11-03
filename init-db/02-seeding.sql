@@ -499,6 +499,72 @@ VALUES
 -- VF8 (1 xe)
 ('51C-800.01',0,@mVF8,@sA);
 
+/* ============================================================
+   EXTRA SEED: Completed contracts for each month Jan–Nov 2025
+============================================================ */
+
+DECLARE @custRole UNIQUEIDENTIFIER = (SELECT id FROM roles WHERE name='Customer');
+DECLARE @staffDefault UNIQUEIDENTIFIER = (SELECT TOP 1 user_id FROM staffs);
+DECLARE @stationA UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM stations ORDER BY name);
+
+-- Lấy danh sách user Customer
+DECLARE @tblUsers TABLE(id UNIQUEIDENTIFIER);
+INSERT INTO @tblUsers
+SELECT id FROM users WHERE role_id=@custRole ORDER BY id;
+
+-- Lấy danh sách xe (ưu tiên xe available)
+DECLARE @tblVehicles TABLE(id UNIQUEIDENTIFIER);
+INSERT INTO @tblVehicles
+SELECT id FROM vehicles ORDER BY id;
+
+DECLARE @i INT = 1;
+DECLARE @uCount INT = (SELECT COUNT(*) FROM @tblUsers);
+DECLARE @vCount INT = (SELECT COUNT(*) FROM @tblVehicles);
+
+DECLARE @month INT = 1;
+
+WHILE @month <= 11
+BEGIN
+    DECLARE @u UNIQUEIDENTIFIER =
+        (SELECT id FROM @tblUsers ORDER BY id OFFSET (@i-1) ROWS FETCH NEXT 1 ROWS ONLY);
+
+    DECLARE @v UNIQUEIDENTIFIER =
+        (SELECT id FROM @tblVehicles ORDER BY id OFFSET (@i-1) ROWS FETCH NEXT 1 ROWS ONLY);
+
+    DECLARE @startDate DATETIMEOFFSET =
+    DATETIMEOFFSETFROMPARTS(2025, @month, 10, 8, 0, 0, 0, 0, 7, 0);
+
+DECLARE @endDate DATETIMEOFFSET =
+    DATEADD(DAY, 3, @startDate);
+
+
+    INSERT INTO rental_contracts
+    (id,description,notes,start_date,end_date,status,
+     is_signed_by_staff,is_signed_by_customer,
+     vehicle_id,customer_id,handover_staff_id,station_id,
+     actual_start_date,actual_end_date)
+    VALUES
+    (NEWID(),
+     CONCAT('Completed Contract Month ', @month),
+     N'Auto generated for statistics',
+     @startDate,
+     @endDate,
+     4,      -- Completed
+     1,1,
+     @v,
+     @u,
+     @staffDefault,
+     @stationA,
+     @startDate,
+     @endDate);
+
+    SET @i = @i + 1;
+    IF @i > @uCount SET @i = 1;
+    IF @i > @vCount SET @i = 1;
+
+    SET @month = @month + 1;
+END
+
 
 DECLARE @vVF3 UNIQUEIDENTIFIER = (SELECT id FROM vehicles WHERE license_plate='51C-100.01');
 DECLARE @vVF5 UNIQUEIDENTIFIER = (SELECT id FROM vehicles WHERE license_plate='51C-200.01');
@@ -639,68 +705,3 @@ GO
 Update invoices set tax = 0.1 where type = 1
 Update vehicle_models set reservation_fee = 10000
 GO
-/* ============================================================
-   EXTRA SEED: Completed contracts for each month Jan–Nov 2025
-============================================================ */
-
-DECLARE @custRole UNIQUEIDENTIFIER = (SELECT id FROM roles WHERE name='Customer');
-DECLARE @staffDefault UNIQUEIDENTIFIER = (SELECT TOP 1 user_id FROM staffs);
-DECLARE @stationA UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM stations ORDER BY name);
-
--- Lấy danh sách user Customer
-DECLARE @tblUsers TABLE(id UNIQUEIDENTIFIER);
-INSERT INTO @tblUsers
-SELECT id FROM users WHERE role_id=@custRole ORDER BY id;
-
--- Lấy danh sách xe (ưu tiên xe available)
-DECLARE @tblVehicles TABLE(id UNIQUEIDENTIFIER);
-INSERT INTO @tblVehicles
-SELECT id FROM vehicles ORDER BY id;
-
-DECLARE @i INT = 1;
-DECLARE @uCount INT = (SELECT COUNT(*) FROM @tblUsers);
-DECLARE @vCount INT = (SELECT COUNT(*) FROM @tblVehicles);
-
-DECLARE @month INT = 1;
-
-WHILE @month <= 11
-BEGIN
-    DECLARE @u UNIQUEIDENTIFIER =
-        (SELECT id FROM @tblUsers ORDER BY id OFFSET (@i-1) ROWS FETCH NEXT 1 ROWS ONLY);
-
-    DECLARE @v UNIQUEIDENTIFIER =
-        (SELECT id FROM @tblVehicles ORDER BY id OFFSET (@i-1) ROWS FETCH NEXT 1 ROWS ONLY);
-
-    DECLARE @startDate DATETIMEOFFSET =
-    DATETIMEOFFSETFROMPARTS(2025, @month, 10, 8, 0, 0, 0, 0, 7, 0);
-
-DECLARE @endDate DATETIMEOFFSET =
-    DATEADD(DAY, 3, @startDate);
-
-
-    INSERT INTO rental_contracts
-    (id,description,notes,start_date,end_date,status,
-     is_signed_by_staff,is_signed_by_customer,
-     vehicle_id,customer_id,handover_staff_id,station_id,
-     actual_start_date,actual_end_date)
-    VALUES
-    (NEWID(),
-     CONCAT('Completed Contract Month ', @month),
-     N'Auto generated for statistics',
-     @startDate,
-     @endDate,
-     4,      -- Completed
-     1,1,
-     @v,
-     @u,
-     @staffDefault,
-     @stationA,
-     @startDate,
-     @endDate);
-
-    SET @i = @i + 1;
-    IF @i > @uCount SET @i = 1;
-    IF @i > @vCount SET @i = 1;
-
-    SET @month = @month + 1;
-END
