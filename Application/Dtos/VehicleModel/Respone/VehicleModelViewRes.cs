@@ -11,6 +11,7 @@ namespace Application.Dtos.VehicleModel.Respone
         public string Description { get; set; } = null!;
         public decimal CostPerDay { get; set; }
         public decimal DepositFee { get; set; }
+        public decimal ReservationFee { get; set; }
         public int SeatingCapacity { get; set; }
         public int NumberOfAirbags { get; set; }
         public decimal MotorPower { get; set; }

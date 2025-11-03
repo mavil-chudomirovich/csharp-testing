@@ -25,6 +25,22 @@ namespace Application
             _mapper = mapper;
         }
 
+        public async Task<PageResult<TicketRes>> GetAllAsync(Guid staffId,
+            TicketFilterParams filter, PaginationParams pagination)
+        {
+            var staff = await _userRepo.GetByIdWithFullInfoAsync(staffId)
+                ?? throw new NotFoundException(Message.UserMessage.NotFound);
+
+            // check if request has role name Admin or not
+            if (staff.Role.Name.Equals(RoleName.Staff) && filter.Type == (int)TicketType.StaffReport)
+                throw new ForbidenException(Message.UserMessage.DoNotHavePermission);
+
+            var page = await _repo.GetAllAsync(filter, pagination);
+            var data = _mapper.Map<IEnumerable<TicketRes>>(page.Items);
+
+            return new PageResult<TicketRes>(data, page.PageNumber, page.PageSize, page.Total);
+        }
+
         // ===============
         // for customer
         // ===============
@@ -64,6 +80,7 @@ namespace Application
         // ===============
 
         #region managerment
+
         public async Task UpdateAsync(Guid id, UpdateTicketReq req, Guid staffId)
         {
             var ticket = await _repo.GetByIdAsync(id)
@@ -78,22 +95,22 @@ namespace Application
             switch (staff.Role.Name)
             {
                 case RoleName.Admin:
-                {
-                    if (ticket.Type == (int)TicketType.CustomerSupport && ticket.Status != (int)TicketStatus.EscalatedToAdmin)
                     {
-                        throw new ForbidenException(Message.UserMessage.DoNotHavePermission);
-                    }
-                    break;
-                }
-                case RoleName.Staff:
-                {
-                    if (ticket.Type == (int)TicketType.StaffReport 
-                        || (ticket.Type == (int)TicketType.CustomerSupport && ticket.Status == (int)TicketStatus.EscalatedToAdmin))
+                        if (ticket.Type == (int)TicketType.CustomerSupport && ticket.Status != (int)TicketStatus.EscalatedToAdmin)
                         {
-                        throw new ForbidenException(Message.UserMessage.DoNotHavePermission);
+                            throw new ForbidenException(Message.UserMessage.DoNotHavePermission);
+                        }
+                        break;
                     }
-                    break;
-                }
+                case RoleName.Staff:
+                    {
+                        if (ticket.Type == (int)TicketType.StaffReport
+                            || (ticket.Type == (int)TicketType.CustomerSupport && ticket.Status == (int)TicketStatus.EscalatedToAdmin))
+                        {
+                            throw new ForbidenException(Message.UserMessage.DoNotHavePermission);
+                        }
+                        break;
+                    }
             }
 
             if (req.Reply is not null)
@@ -120,22 +137,6 @@ namespace Application
             await _repo.UpdateAsync(ticket);
         }
 
-        public async Task<PageResult<TicketRes>> GetAllAsync(Guid staffId,
-            TicketFilterParams filter, PaginationParams pagination)
-        {
-            var staff = await _userRepo.GetByIdWithFullInfoAsync(staffId)
-                ?? throw new NotFoundException(Message.UserMessage.NotFound);
-
-            // check if request has role name Admin or not
-            if (staff.Role.Name.Equals(RoleName.Staff) && filter.Type == (int)TicketType.StaffReport)
-                throw new ForbidenException(Message.UserMessage.DoNotHavePermission);
-
-            var page = await _repo.GetAllAsync(filter, pagination);
-            var data = _mapper.Map<IEnumerable<TicketRes>>(page.Items);
-
-            return new PageResult<TicketRes>(data, page.PageNumber, page.PageSize, page.Total);
-        }
-
         public async Task<PageResult<TicketRes>> GetByCustomerAsync(Guid customerId, int? status, PaginationParams pagination)
         {
             var page = await _repo.GetByCustomerAsync(customerId, status, pagination);
@@ -149,6 +150,7 @@ namespace Application
             var data = _mapper.Map<IEnumerable<TicketRes>>(page.Items);
             return new PageResult<TicketRes>(data, page.PageNumber, page.PageSize, page.Total);
         }
+
         #endregion managerment
     }
 }
