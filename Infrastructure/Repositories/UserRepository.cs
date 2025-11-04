@@ -61,6 +61,17 @@ namespace Infrastructure.Repositories
             return new PageResult<User>(users, pagination.PageNumber, pagination.PageSize, total);
         }
 
+        public async Task<IEnumerable<User?>> GetAllAsync(string role)
+        {
+            var user = await _dbContext.Users
+                .Include(user => user.Role)
+                .Where(u => u.Role.Name == role)
+                .Include(user => user.Staff)
+                    .ThenInclude(staff => staff!.Station)
+                .OrderByDescending(x => x.CreatedAt)
+                .FirstOrDefaultAsync();
+            return new List<User?> { user };
+        }
         public async Task<PageResult<User>> GetAllStaffAsync(PaginationParams pagination, string? name, Guid? stationId)
         {
             var query = _dbContext.Users

@@ -56,9 +56,11 @@ namespace Infrastructure.Repositories
             return await query.FirstOrDefaultAsync(i => i.Id == id);
         }
 
-        public async Task<PageResult<Invoice>> GetAllInvoicesAsync(PaginationParams pagination)
+        public async Task<PageResult<Invoice>> GetAllWithPaginationAsync(PaginationParams pagination)
         {
             var query = _dbContext.Invoices
+                .Include(i => i.Contract)
+                .Include(i => i.InvoiceItems)
                 .AsNoTracking()
                 .OrderByDescending(i => i.CreatedAt);
 
@@ -82,6 +84,16 @@ namespace Infrastructure.Repositories
                                                     .Include(r => r.Contract)
                                                         .ThenInclude(c => c.Station)
                                                     .ToArrayAsync();
+        }
+
+        public async Task<IEnumerable<Invoice>> GetAllAsync()
+        {
+            return await _dbContext.Invoices
+                .Include(i => i.Contract)
+                .Include(i => i.InvoiceItems)
+                .AsNoTracking()
+                .OrderByDescending(i => i.CreatedAt)
+                .ToListAsync();
         }
     }
 }
