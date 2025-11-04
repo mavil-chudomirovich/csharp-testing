@@ -17,6 +17,5 @@ namespace Application.Repositories
 
         Task<PageResult<Invoice>> GetAllInvoicesAsync(PaginationParams pagination);
         Task<IEnumerable<Invoice>?> GetInvoiceByContractIdAndStatus(Guid? contractId, int? status);
-        Task<IEnumerable<Invoice>> GetRefundInvoiceWarningAsync();
     }
 }

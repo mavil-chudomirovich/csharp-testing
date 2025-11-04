@@ -2,11 +2,18 @@
 using Application.AppExceptions;
 using Application.Constants;
 using Application.Dtos.Common.Request;
+using Application.Dtos.RentalContract.Request;
 using Application.Dtos.Statistic.Responses;
 using Application.Dtos.Vehicle.Respone;
 using Application.Helpers;
 using Domain.Commons;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Application
 {
@@ -117,21 +124,19 @@ namespace Application
             decimal totalLastMonth = 0;
 
             var currentMonthInvoices = invoice.Items
-                .Where(x =>
-                    x.CreatedAt.Month == DateTimeOffset.Now.Month &&
-                    x.CreatedAt.Year == DateTimeOffset.Now.Year &&
-                    (x.Contract == null || x.Contract.StationId == stationId)
-                );
+                .Where(x => x.Contract != null &&
+                            x.CreatedAt.Month == DateTimeOffset.UtcNow.Month &&
+                            x.CreatedAt.Year == DateTimeOffset.UtcNow.Year &&
+                            x.Contract.StationId == stationId);
 
             foreach (var item in currentMonthInvoices)
                 totalThisMonth += InvoiceHelper.SafeCalculateTotal(item);
 
             var lastMonthInvoices = invoice.Items
-                .Where(x =>
-                    x.CreatedAt.Month == lastMonth &&
-                    x.CreatedAt.Year == previousYear &&
-                    (x.Contract == null || x.Contract.StationId == stationId)
-                );
+                .Where(x => x.Contract != null &&
+                            x.CreatedAt.Month == lastMonth &&
+                            x.CreatedAt.Year == previousYear &&
+                            x.Contract.StationId == stationId);
 
             foreach (var item in lastMonthInvoices)
                 totalLastMonth += InvoiceHelper.SafeCalculateTotal(item);
@@ -167,16 +172,16 @@ namespace Application
             int previousYear = StatisticHelper.GetLastMonthYear();
 
             var invoiceThisMonth = invoice.Items.Count(x =>
-                x.CreatedAt.Month == DateTimeOffset.Now.Month &&
-                x.CreatedAt.Year == DateTimeOffset.Now.Year &&
-                (x.Contract == null || x.Contract.StationId == stationId)
-            );
+                x.Contract != null &&
+                x.CreatedAt.Month == DateTimeOffset.UtcNow.Month &&
+                x.CreatedAt.Year == DateTimeOffset.UtcNow.Year &&
+                x.Contract.StationId == stationId);
 
             var invoiceLastMonth = invoice.Items.Count(x =>
+                x.Contract != null &&
                 x.CreatedAt.Month == lastMonth &&
                 x.CreatedAt.Year == previousYear &&
-                (x.Contract == null || x.Contract.StationId == stationId)
-            );
+                x.Contract.StationId == stationId);
 
             decimal changeRate = 0;
             if (invoiceLastMonth > 0)
@@ -192,7 +197,7 @@ namespace Application
             };
         }
 
-
+        
 
         public async Task<VehicleModelsStatisticRes?> GetVehicleModelTotal(Guid? stationId)
         {
@@ -270,11 +275,10 @@ namespace Application
                 .Select(month =>
                 {
                     var total = invoices.Items
-                        .Where(x =>
-                            x.CreatedAt.Month == month &&
-                            x.CreatedAt.Year == year &&
-                            (x.Contract == null || x.Contract.StationId == stationId)
-                        )
+                        .Where(x => x.Contract != null &&
+                                    x.Contract.StationId == stationId &&
+                                    x.CreatedAt.Month == month &&
+                                    x.CreatedAt.Year == year)
                         .Sum(x => InvoiceHelper.SafeCalculateTotal(x));
 
                     return new RevenueByMonthRes

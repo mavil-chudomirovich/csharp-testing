@@ -162,8 +162,6 @@ namespace Application.Constants
             public const string StaffNotInFromStation = "dispatch.staff_not_in_from_station";
             public const string StaffNotEnoughtInFromStation = "dispatch.staff_not_enought_in_from_station";
             public const string VehicleNotInFromStation = "dispatch.vehicle_not_in_from_station";
-            public const string StaffLimitInFromStation = "dispatch.staff_limit_in_from_station";
-            public const string VehicleLimitInFromStation = "dispatch.vehicle_limit_in_from_station";
             public const string VehicleOrStaffNotInFromStation = "dispatch.vehicle_or_staff_not_in_from_station";
 
             // Flow cập nhật trạng thái
@@ -203,7 +201,7 @@ namespace Application.Constants
             public const string StationIdRequired = "rental_contract.station_id_required";
             public const string AtLeastOnePartyMustSign = "rental_contract.at_least_one_party_must_sign";
 
-            public static string ContractNotStartYet = "rental_contract.not_start_yet";
+            public static string ContractNotStartYet = "rental_contraact.not_start_yet";
         }
 
         //Station

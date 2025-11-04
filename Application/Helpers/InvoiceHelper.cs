@@ -17,11 +17,11 @@ namespace Application.Helpers
             if (invoice.Type == (int)InvoiceType.Return)
             {
                 var itemLateReturn = invoice.InvoiceItems.Where(it => it.Type == (int)InvoiceItemType.LateReturn).FirstOrDefault();
-                total += _CalculateSubTotalAmount([itemLateReturn!]);
+                total += _CalculateSubTotalAmount([itemLateReturn]);
             }
             if (invoice.Type == (int)InvoiceType.Handover)
             {
-                total += invoice.Deposit != null ? invoice.Deposit.Amount : 0;
+                total += invoice.Deposit.Amount;
                 
             }
 
@@ -30,8 +30,8 @@ namespace Application.Helpers
             if (invoice.Type == (int)InvoiceType.Refund)
             { 
                 var refund = invoice.InvoiceItems.Where(it => it.Type == (int)InvoiceItemType.Refund).FirstOrDefault();  
-                total -= _CalculateSubTotalAmount([refund!]);
-                if (total < 0 && Math.Abs(total) < refund!.Quantity * refund.UnitPrice)
+                total -= _CalculateSubTotalAmount([refund]);
+                if (total < 0 && Math.Abs(total) < refund.Quantity * refund.UnitPrice)
                 {
                     total = 0;
                 }

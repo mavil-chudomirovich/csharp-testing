@@ -16,7 +16,7 @@ namespace Application.Abstractions
     public interface IRentalContractService
     {
         Task CreateRentalContractAsync(Guid UserID, CreateRentalContractReq createRentalContractReq);
-         Task VerifyRentalContract(Guid id, ConfirmReq req, ClaimsPrincipal staffClaims);
+         Task VerifyRentalContract(Guid id, ConfirmReq req);
         Task UpdateStatusAsync(Guid id);
         Task<RentalContractViewRes> GetByIdAsync(Guid id);
 
@@ -30,12 +30,11 @@ namespace Application.Abstractions
         Task<PageResult<RentalContractViewRes>> GetMyContractsByPagination(
             ClaimsPrincipal user, PaginationParams pagination, int? status, Guid? stationId);
 
-        Task CancelRentalContract(Guid id, ClaimsPrincipal userClaims);
+        Task CancelRentalContract(Guid id);
         Task ChangeVehicleAsync(Guid id);
-        Task ProcessCustomerConfirm(Guid id, int resolutionOption, ClaimsPrincipal userClaims);
+        Task ProcessCustomerConfirm(Guid id, int resolutionOption);
         Task LateReturnContractWarningAsync();
         Task ExpiredContractCleanUpAsync();
         Task CancelContractAndSendEmail(RentalContract contract_, string description);
-        Task<bool> VerifyStaffPermission(ClaimsPrincipal staffClaims, Guid contractId);
     }
 }
