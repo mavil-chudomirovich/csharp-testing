@@ -1,12 +1,11 @@
-﻿using Application.Constants;
-using Application.Dtos.Common.Request;
+﻿using Application.Dtos.Common.Request;
 using Application.Dtos.Common.Response;
-using Application.Helpers;
 using Application.Repositories;
 using Domain.Entities;
 using Infrastructure.ApplicationDbContext;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
+using Application.Helpers;
 
 namespace Infrastructure.Repositories
 {
@@ -69,19 +68,6 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
 
             return new PageResult<Invoice>(items, pagination.PageNumber, pagination.PageSize, totalCount);
-        }
-
-        public async Task<IEnumerable<Invoice>> GetRefundInvoiceWarningAsync()
-        {
-            return await _dbContext.Invoices.Where(r => r.Type == (int)InvoiceType.Refund 
-                                                && r.Status == (int)InvoiceStatus.Pending 
-                                                && InvoiceHelper.CalculateTotalAmount(r) > 0 
-                                                && (DateTimeOffset.UtcNow - r.CreatedAt).TotalDays >= 7)
-                                                    .Include(r => r.Contract)
-                                                        .ThenInclude(c => c.Customer)
-                                                    .Include(r => r.Contract)
-                                                        .ThenInclude(c => c.Station)
-                                                    .ToArrayAsync();
         }
     }
 }

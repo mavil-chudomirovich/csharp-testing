@@ -53,8 +53,7 @@ namespace API.Controllers
         [RoleAuthorize(RoleName.Staff)]
         public async Task<IActionResult> UpdateVehicleChecklist([FromBody] UpdateVehicleChecklistReq req, Guid id)
         {
-            var staffClaims = HttpContext.User;
-            await _vehicleChecklistService.UpdateAsync(req, id, staffClaims);
+            await _vehicleChecklistService.UpdateAsync(req, id);
             return Ok();
         }
 
@@ -72,8 +71,7 @@ namespace API.Controllers
         [RoleAuthorize(RoleName.Staff)]
         public async Task<IActionResult> UpdateVehicleChecklistItems(Guid id, UpdateChecklistItemReq req)
         {
-            var staffClaims = HttpContext.User;
-            await _vehicleChecklistService.UpdateItemsAsync(id, req.Status, req.Notes, staffClaims);
+            await _vehicleChecklistService.UpdateItemsAsync(id, req.Status, req.Notes);
             return Ok();
 
         }

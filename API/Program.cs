@@ -219,48 +219,32 @@ namespace API
                     opts.WithIdentity("LateReturnWarningJob"));
 
                 // Trigger chạy ngay
-                //q.AddTrigger(opts => opts
-                //    .ForJob("LateReturnWarningJob")
-                //    .WithIdentity("LateReturnWarningJob-Immediate")
-                //    .StartNow());
+                q.AddTrigger(opts => opts
+                    .ForJob("LateReturnWarningJob")
+                    .WithIdentity("LateReturnWarningJob-Immediate")
+                    .StartNow());
 
                 // Trigger chạy 00:00 mỗi ngày
                 q.AddTrigger(opts => opts
                     .ForJob("LateReturnWarningJob")
                     .WithIdentity("LateReturnWarningJob-Daily")
-                    .WithCronSchedule("0 0 0 * * ?"));
+                    .WithCronSchedule("0 0 10 * * ?"));
 
                 // JOB 2: ExpiredContractCleanupJob
                 q.AddJob<ExpiredRentalContracCleanupJob>(opts =>
                     opts.WithIdentity("ExpiredRentalContracCleanupJob"));
 
                 // Trigger chạy ngay
-                //q.AddTrigger(opts => opts
-                //    .ForJob("ExpiredRentalContracCleanupJob")
-                //    .WithIdentity("ExpiredRentalContracCleanupJob-Immediate")
-                //    .StartNow());
+                q.AddTrigger(opts => opts
+                    .ForJob("ExpiredRentalContracCleanupJob")
+                    .WithIdentity("ExpiredRentalContracCleanupJob-Immediate")
+                    .StartNow());
 
                 // Trigger chạy 00:00 mỗi ngày
                 q.AddTrigger(opts => opts
                     .ForJob("ExpiredRentalContracCleanupJob")
                     .WithIdentity("ExpiredRentalContracCleanupJob-Daily")
-                    .WithCronSchedule("0 0 0 * * ?"));
-
-                // JOB 3: PenatyPaymentWarningJob
-                q.AddJob<PenatyPaymentWarningJob>(opts =>
-                    opts.WithIdentity("PenatyPaymentWarningJob"));
-
-                // Trigger chạy ngay
-                //q.AddTrigger(opts => opts
-                //    .ForJob("PenatyPaymentWarningJob")
-                //    .WithIdentity("PenatyPaymentWarningJob-Immediate")
-                //    .StartNow());
-
-                // Trigger chạy 00:00 mỗi ngày
-                q.AddTrigger(opts => opts
-                    .ForJob("PenatyPaymentWarningJob")
-                    .WithIdentity("PenatyPaymentWarningJob-Daily")
-                    .WithCronSchedule("0 0 0 * * ?"));
+                    .WithCronSchedule("0 0 10 * * ?"));
             });
 
             // chạy background quartz

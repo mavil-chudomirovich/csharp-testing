@@ -48,20 +48,14 @@ namespace Application
 
             DispatchValidationHelper.EnsureDifferentStations(fromStationId, toStationId);
 
-            // Validate staff
             if (req.NumberOfStaff is > 0)
             {
                 var availableStaffCount =
                     await _staffRepository.CountAvailableStaffInStationAsync(fromStationId);
-
                 if (req.NumberOfStaff > availableStaffCount)
                     throw new BadRequestException(Message.DispatchMessage.StaffNotEnoughtInFromStation);
-
-                if (req.NumberOfStaff == availableStaffCount)
-                    throw new BadRequestException(Message.DispatchMessage.StaffLimitInFromStation);
             }
 
-            // Validate vehicles
             if (req.Vehicles is { Length: > 0 })
             {
                 foreach (var v in req.Vehicles)
@@ -71,18 +65,9 @@ namespace Application
 
                     if (availableVehicles < v.NumberOfVehicle)
                         throw new BadRequestException(Message.DispatchMessage.VehicleOrStaffNotInFromStation);
-
-                    if (availableVehicles == v.NumberOfVehicle)
-                        throw new BadRequestException(Message.DispatchMessage.VehicleLimitInFromStation);
                 }
             }
-
-            // Build description DTO
-            var descriptionDto = new DispatchDescriptionDto
-            {
-                NumberOfStaff = req.NumberOfStaff ?? 0,
-                Vehicles = new List<DispatchDescriptionVehicleDto>()
-            };
+            var vehicleLines = new StringBuilder();
 
             if (req.Vehicles is { Length: > 0 })
             {
@@ -90,16 +75,20 @@ namespace Application
                 {
                     var model = await _vehicleModelRepository.GetByIdAsync(v.ModelId)
                         ?? throw new NotFoundException(Message.VehicleModelMessage.NotFound);
+                    var modelName = model.Name;
 
-                    descriptionDto.Vehicles.Add(new DispatchDescriptionVehicleDto
-                    {
-                        ModelId = v.ModelId,
-                        ModelName = model.Name,
-                        Quantity = v.NumberOfVehicle
-                    });
+                    vehicleLines.AppendLine($"      - Model: {modelName} (ID: {v.ModelId}) | Quantity: {v.NumberOfVehicle}");
                 }
             }
+            else
+            {
+                vehicleLines.AppendLine("      (No vehicle requested)");
+            }
 
+            var description = $@"
+Requested Staff: {req.NumberOfStaff}
+Requested Vehicles:
+{vehicleLines}";
             var entity = new DispatchRequest
             {
                 Id = Guid.NewGuid(),
@@ -107,7 +96,7 @@ namespace Application
                 FromStationId = fromStationId,
                 ToStationId = toStationId,
                 Status = (int)DispatchRequestStatus.Pending,
-                Description = JsonSerializer.Serialize(descriptionDto)
+                Description = description.Trim()
             };
 
             await _repository.AddAsync(entity);
