@@ -58,7 +58,8 @@ namespace API.Controllers
         [RoleAuthorize(RoleName.Staff)]
         public async Task<IActionResult> ConfirmRentalContract(Guid id, [FromBody] ConfirmReq req)
         {
-            await _rentalContractService.VerifyRentalContract(id, req);
+            var staffClaims = HttpContext.User;
+            await _rentalContractService.VerifyRentalContract(id, req, staffClaims);
             return Ok();
         }
 
@@ -195,7 +196,8 @@ namespace API.Controllers
         [HttpPut("{id}/cancel")]
         public async Task<IActionResult> CancelRentalContract(Guid id)
         {
-            await _rentalContractService.CancelRentalContract(id);
+            var userClaims = HttpContext.User;
+            await _rentalContractService.CancelRentalContract(id, userClaims);
             return Ok();
         }
 
@@ -229,7 +231,8 @@ namespace API.Controllers
         [RoleAuthorize(RoleName.Customer)]
         public async Task<IActionResult> ProcessCustomerConfirm(Guid id, CustomerResolutionOptionReq req)
         {
-            await _rentalContractService.ProcessCustomerConfirm(id, req.ResolutionOption);
+            var userClaims = HttpContext.User;
+            await _rentalContractService.ProcessCustomerConfirm(id, req.ResolutionOption, userClaims);
             return Ok();
         }
     }

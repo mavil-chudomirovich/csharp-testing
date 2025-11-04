@@ -77,11 +77,12 @@ DECLARE @brandVinfast UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM brands WHERE name
 DECLARE @segmentSUV UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM vehicle_segments WHERE name='SUV');
 DECLARE @segmentCompact UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM vehicle_segments WHERE name='Compact');
 
-INSERT INTO vehicle_models (name, description, cost_per_day, deposit_fee, reservation_fee, seating_capacity, number_of_airbags, motor_power, battery_capacity, eco_range_km, sport_range_km, brand_id, segment_id,image_url,image_public_id)
+INSERT INTO vehicle_models (name, description, cost_per_day, deposit_fee, reservation_fee, seating_capacity, number_of_airbags, motor_power,
+battery_capacity, eco_range_km, sport_range_km, brand_id, segment_id,image_url,image_public_id, reservation_fee)
 VALUES
   (N'VinFast VF 5', N'Compact SUV điện hạng A', 11000, 8000, 10000, 5, 4, 70.0, 37.0, 300.0, 260.0, @brandVinfast, @segmentCompact,
   'http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178633/models/bf85ac59-53bf-4068-b3c3-2ba2bf1d92a2/main/fchalezgggotfpm1biue.jpg',
-  'models/bf85ac59-53bf-4068-b3c3-2ba2bf1d92a2/main/fchalezgggotfpm1biue');
+  'models/bf85ac59-53bf-4068-b3c3-2ba2bf1d92a2/main/fchalezgggotfpm1biue', 10000);
 GO
 
 -- ============================================
@@ -381,20 +382,20 @@ DECLARE @segCompact UNIQUEIDENTIFIER = (SELECT id FROM vehicle_segments WHERE na
 INSERT INTO vehicle_models
 (name,description,cost_per_day,deposit_fee,reservation_fee,
  seating_capacity,number_of_airbags,motor_power,battery_capacity,
- eco_range_km,sport_range_km,brand_id,segment_id,image_url,image_public_id)
+ eco_range_km,sport_range_km,brand_id,segment_id,image_url,image_public_id, reservation_fee)
 VALUES
 (N'VinFast VF 3',N'Mini EV',8000,5000,3000,4,4,50,20,210,180,@brand,@segCompact,
 'http://res.cloudinary.com/dk5pwoag4/image/upload/v1762177952/models/3012ad0b-03ea-4913-8ce8-b340f0b0c6cd/main/lwlrnpldyuvzo5krm0te.jpg',
-'models/3012ad0b-03ea-4913-8ce8-b340f0b0c6cd/main/lwlrnpldyuvzo5krm0te'),
+'models/3012ad0b-03ea-4913-8ce8-b340f0b0c6cd/main/lwlrnpldyuvzo5krm0te', 10000),
 (N'VinFast VF 6',N'EV C-Class',14000,12000,4000,5,6,150,59,380,320,@brand,@segSUV,
 'http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178284/models/a65f0887-35a4-4058-af15-b7600581c8eb/main/xxg5dlpy9vvji0dwoydg.jpg',
-'models/a65f0887-35a4-4058-af15-b7600581c8eb/main/xxg5dlpy9vvji0dwoydg'),
+'models/a65f0887-35a4-4058-af15-b7600581c8eb/main/xxg5dlpy9vvji0dwoydg', 10000),
 (N'VinFast VF 7',N'EV D-Class',17000,14000,5000,5,6,180,75,420,360,@brand,@segSUV,
 'http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178229/models/0d223468-cff9-41ea-8178-915361a6f6d9/main/tf6nvfsnylfb7ypfvjso.jpg',
-'models/0d223468-cff9-41ea-8178-915361a6f6d9/main/tf6nvfsnylfb7ypfvjso'),
+'models/0d223468-cff9-41ea-8178-915361a6f6d9/main/tf6nvfsnylfb7ypfvjso', 10000),
 (N'VinFast VF 8',N'EV E-Class',20000,16000,6000,5,8,220,87,480,410,@brand,@segSUV,
 'http://res.cloudinary.com/dk5pwoag4/image/upload/v1762178011/models/a00b3abd-c55d-4fc0-8be5-1ac002894533/main/xjohfofnhldb86xtdnua.jpg',
-'models/a00b3abd-c55d-4fc0-8be5-1ac002894533/main/xjohfofnhldb86xtdnua');
+'models/a00b3abd-c55d-4fc0-8be5-1ac002894533/main/xjohfofnhldb86xtdnua', 10000);
 
 
 DECLARE @mVF3 UNIQUEIDENTIFIER = (SELECT id FROM vehicle_models WHERE name=N'VinFast VF 3');

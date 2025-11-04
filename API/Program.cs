@@ -211,47 +211,65 @@ namespace API
             builder.Services.AddScoped<GlobalErrorHandlerMiddleware>();
             //sử dụng cache
             builder.Services.AddMemoryCache();
+            //========================================================================
             //background job
-            builder.Services.AddQuartz(q =>
-            {
-                // JOB 1: LateReturnWarningJob
-                q.AddJob<LateReturnWarningJob>(opts =>
-                    opts.WithIdentity("LateReturnWarningJob"));
+            //builder.Services.AddQuartz(q =>
+            //{
+            //    // JOB 1: LateReturnWarningJob
+            //    q.AddJob<LateReturnWarningJob>(opts =>
+            //        opts.WithIdentity("LateReturnWarningJob"));
 
-                // Trigger chạy ngay
-                q.AddTrigger(opts => opts
-                    .ForJob("LateReturnWarningJob")
-                    .WithIdentity("LateReturnWarningJob-Immediate")
-                    .StartNow());
+            //    // Trigger chạy ngay
+            //    //q.AddTrigger(opts => opts
+            //    //    .ForJob("LateReturnWarningJob")
+            //    //    .WithIdentity("LateReturnWarningJob-Immediate")
+            //    //    .StartNow());
 
-                // Trigger chạy 00:00 mỗi ngày
-                q.AddTrigger(opts => opts
-                    .ForJob("LateReturnWarningJob")
-                    .WithIdentity("LateReturnWarningJob-Daily")
-                    .WithCronSchedule("0 0 10 * * ?"));
+            //    // Trigger chạy 00:00 mỗi ngày
+            //    q.AddTrigger(opts => opts
+            //        .ForJob("LateReturnWarningJob")
+            //        .WithIdentity("LateReturnWarningJob-Daily")
+            //        .WithCronSchedule("0 0 0 * * ?"));
 
-                // JOB 2: ExpiredContractCleanupJob
-                q.AddJob<ExpiredRentalContracCleanupJob>(opts =>
-                    opts.WithIdentity("ExpiredRentalContracCleanupJob"));
+            //    // JOB 2: ExpiredContractCleanupJob
+            //    q.AddJob<ExpiredRentalContracCleanupJob>(opts =>
+            //        opts.WithIdentity("ExpiredRentalContracCleanupJob"));
 
-                // Trigger chạy ngay
-                q.AddTrigger(opts => opts
-                    .ForJob("ExpiredRentalContracCleanupJob")
-                    .WithIdentity("ExpiredRentalContracCleanupJob-Immediate")
-                    .StartNow());
+            //    // Trigger chạy ngay
+            //    //q.AddTrigger(opts => opts
+            //    //    .ForJob("ExpiredRentalContracCleanupJob")
+            //    //    .WithIdentity("ExpiredRentalContracCleanupJob-Immediate")
+            //    //    .StartNow());
 
-                // Trigger chạy 00:00 mỗi ngày
-                q.AddTrigger(opts => opts
-                    .ForJob("ExpiredRentalContracCleanupJob")
-                    .WithIdentity("ExpiredRentalContracCleanupJob-Daily")
-                    .WithCronSchedule("0 0 10 * * ?"));
-            });
+            //    // Trigger chạy 00:00 mỗi ngày
+            //    q.AddTrigger(opts => opts
+            //        .ForJob("ExpiredRentalContracCleanupJob")
+            //        .WithIdentity("ExpiredRentalContracCleanupJob-Daily")
+            //        .WithCronSchedule("0 0 0 * * ?"));
 
-            // chạy background quartz
-            builder.Services.AddQuartzHostedService(opt =>
-            {
-                opt.WaitForJobsToComplete = true;
-            });
+            //    // JOB 3: PenatyPaymentWarningJob
+            //    q.AddJob<PenatyPaymentWarningJob>(opts =>
+            //        opts.WithIdentity("PenatyPaymentWarningJob"));
+
+            //    // Trigger chạy ngay
+            //    //q.AddTrigger(opts => opts
+            //    //    .ForJob("PenatyPaymentWarningJob")
+            //    //    .WithIdentity("PenatyPaymentWarningJob-Immediate")
+            //    //    .StartNow());
+
+            //    // Trigger chạy 00:00 mỗi ngày
+            //    q.AddTrigger(opts => opts
+            //        .ForJob("PenatyPaymentWarningJob")
+            //        .WithIdentity("PenatyPaymentWarningJob-Daily")
+            //        .WithCronSchedule("0 0 0 * * ?"));
+            //});
+
+            //// chạy background quartz
+            //builder.Services.AddQuartzHostedService(opt =>
+            //{
+            //    opt.WaitForJobsToComplete = true;
+            //});
+            //========================================================================
 
             //thêm filter cho validation
             builder.Services.AddControllers(options =>
