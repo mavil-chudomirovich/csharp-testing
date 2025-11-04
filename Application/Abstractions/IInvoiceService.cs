@@ -39,5 +39,6 @@ namespace Application.Abstractions
         Task UpdateNoteAsync(Guid id, string notes);
         Task<string> UploadImageAsync(Guid invoiceId, IFormFile file);
         Task DeleteImageAsync(Guid modelId);
+        Task WarningRefundInvoiceAsync();
     }
 }

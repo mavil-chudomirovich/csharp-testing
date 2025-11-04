@@ -53,7 +53,8 @@ namespace API.Controllers
         [RoleAuthorize(RoleName.Staff)]
         public async Task<IActionResult> UpdateVehicleChecklist([FromBody] UpdateVehicleChecklistReq req, Guid id)
         {
-            await _vehicleChecklistService.UpdateAsync(req, id);
+            var staffClaims = HttpContext.User;
+            await _vehicleChecklistService.UpdateAsync(req, id, staffClaims);
             return Ok();
         }
 

@@ -13,17 +13,11 @@ namespace Application.Validators.Invoice
         {
             RuleFor(x => x.ContractId)
                 .NotEqual(Guid.Empty)
-                .WithMessage(InvoiceMessage.NotFound);
+                .WithMessage(RentalContractMessage.NotFound);
 
             RuleFor(x => x.Type)
                 .InclusiveBetween(0, 5)
                 .WithMessage(InvoiceMessage.InvalidInvoiceType);
-
-            RuleFor(x => x.Items)
-                .NotNull()
-                .WithMessage(InvoiceMessage.NotFound)
-                .Must(items => items.Any())
-                .WithMessage(InvoiceMessage.NotFound);
         }
     }
 }

@@ -201,7 +201,7 @@ namespace Application.Constants
             public const string StationIdRequired = "rental_contract.station_id_required";
             public const string AtLeastOnePartyMustSign = "rental_contract.at_least_one_party_must_sign";
 
-            public static string ContractNotStartYet = "rental_contraact.not_start_yet";
+            public static string ContractNotStartYet = "rental_contract.not_start_yet";
         }
 
         //Station
