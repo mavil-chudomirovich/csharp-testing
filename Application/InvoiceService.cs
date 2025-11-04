@@ -390,48 +390,13 @@ namespace Application
                         invoice.Notes.Concat(". Deposit is non-refundable due to business policy violation");
                         deposit.Status = (int)DepositStatus.Forfeited;
                     }
-                    var customer = contract.Customer;
-                    var frontendOrigin = Environment.GetEnvironmentVariable("FRONTEND_PUBLIC_ORIGIN")
-                            ?? "https://greenwheel.site/";
-                    var subject = "";
-                    var body = "";
-                    if (InvoiceHelper.CalculateTotalAmount(invoice) == 0)
-                    {
-                        invoice.Status = (int)InvoiceStatus.Paid;
-                        subject = "[GreenWheel] No Refund Issued – Deposit Fully Applied to Penalties";
-                        var templatePath = Path.Combine(AppContext.BaseDirectory, "Templates", "NoneRefundEmailTemplate.html");
-                        body = System.IO.File.ReadAllText(templatePath);
-                        body = body.Replace("{CustomerName}", $"{customer.LastName} {customer.FirstName}")
-                               .Replace("{ContractCode}", contract.Id.ToString());
-                    }
-                    else if(InvoiceHelper.CalculateTotalAmount(invoice) < 0)
-                    {
-                        subject = "[GreenWheel] Your Refund Ready For Collection";
-                        var templatePath = Path.Combine(AppContext.BaseDirectory, "Templates", "RefundEmailTemplate.html");
-                        body = System.IO.File.ReadAllText(templatePath);
-                        body = body.Replace("{CustomerName}", $"{customer.LastName} {customer.FirstName}")
-                               .Replace("{ContractCode}", contract.Id.ToString());
-                    }
-                    else
-                    {
-                        subject = "[GreenWheel] Payment For Pentaty Required";
-                        var templatePath = Path.Combine(AppContext.BaseDirectory, "Templates", "PaymentPenatyEmailTemplate.html");
-                        body = System.IO.File.ReadAllText(templatePath);
-                        body = body.Replace("{CustomerName}", $"{customer.LastName} {customer.FirstName}")
-                               .Replace("{ContractCode}", contract.Id.ToString()
-                               .Replace("{StationName}", contract.Station.Name));
-                    }
-                    if (customer.Email != null)
-                    {
 
-                        await _emailService.SendEmailAsync(customer.Email!, subject, body);
-                    }
                     await _uow.DepositRepository.UpdateAsync(deposit);
                     await _uow.RentalContractRepository.UpdateAsync(contract);
                 }
-                invoice.Subtotal = InvoiceHelper.CalculateSubTotalAmount(items!);
+                invoice.Subtotal = InvoiceHelper.CalculateSubTotalAmount(items);
                 await _uow.InvoiceRepository.AddAsync(invoice);
-                await _uow.InvoiceItemRepository.AddRangeAsync(items!);
+                await _uow.InvoiceItemRepository.AddRangeAsync(items);
                 await _uow.SaveChangesAsync();
                 await _uow.CommitAsync();
             }
