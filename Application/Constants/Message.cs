@@ -162,6 +162,8 @@ namespace Application.Constants
             public const string StaffNotInFromStation = "dispatch.staff_not_in_from_station";
             public const string StaffNotEnoughtInFromStation = "dispatch.staff_not_enought_in_from_station";
             public const string VehicleNotInFromStation = "dispatch.vehicle_not_in_from_station";
+            public const string StaffLimitInFromStation = "dispatch.staff_limit_in_from_station";
+            public const string VehicleLimitInFromStation = "dispatch.vehicle_limit_in_from_station";
             public const string VehicleOrStaffNotInFromStation = "dispatch.vehicle_or_staff_not_in_from_station";
 
             // Flow cập nhật trạng thái

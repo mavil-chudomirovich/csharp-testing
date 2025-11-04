@@ -54,6 +54,8 @@ namespace Application
                     await _staffRepository.CountAvailableStaffInStationAsync(fromStationId);
                 if (req.NumberOfStaff > availableStaffCount)
                     throw new BadRequestException(Message.DispatchMessage.StaffNotEnoughtInFromStation);
+                if (req.NumberOfStaff == availableStaffCount)
+                    throw new BadRequestException(Message.DispatchMessage.StaffLimitInFromStation);
             }
 
             if (req.Vehicles is { Length: > 0 })
@@ -65,6 +67,8 @@ namespace Application
 
                     if (availableVehicles < v.NumberOfVehicle)
                         throw new BadRequestException(Message.DispatchMessage.VehicleOrStaffNotInFromStation);
+                    if (availableVehicles == v.NumberOfVehicle)
+                        throw new BadRequestException(Message.DispatchMessage.VehicleLimitInFromStation);
                 }
             }
             var vehicleLines = new StringBuilder();

@@ -21,7 +21,7 @@ namespace Application.Helpers
             }
             if (invoice.Type == (int)InvoiceType.Handover)
             {
-                total += invoice.Deposit.Amount;
+                total += invoice.Deposit != null ? invoice.Deposit.Amount : 0;
                 
             }
 
