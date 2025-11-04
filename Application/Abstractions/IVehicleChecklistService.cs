@@ -17,8 +17,8 @@ namespace Application.Abstractions
         Task<Guid> Create(ClaimsPrincipal userclaims, CreateVehicleChecklistReq req);
         Task<VehicleChecklistViewRes> GetByIdAsync(Guid id, ClaimsPrincipal userClaims);
         Task<PageResult<VehicleChecklistViewRes>> GetAllPagination(Guid? contractId, int? type, ClaimsPrincipal userClaims, PaginationParams pagination);
-        Task UpdateAsync(UpdateVehicleChecklistReq req, Guid id);
-        Task UpdateItemsAsync(Guid id, int status, string? notes);
+        Task UpdateAsync(UpdateVehicleChecklistReq req, Guid id, ClaimsPrincipal staffClaims);
+        Task UpdateItemsAsync(Guid id, int status, string? notes, ClaimsPrincipal staffClaims);
         Task SignByCustomerAsync(Guid id, ClaimsPrincipal user);
     }
 }

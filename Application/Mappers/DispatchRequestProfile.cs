@@ -1,4 +1,5 @@
-﻿using Application.Constants;
+﻿using System.Text.Json;
+using Application.Constants;
 using Application.Dtos.Dispatch.Request;
 using Application.Dtos.Dispatch.Response;
 using Application.Dtos.Staff.Response;
@@ -27,13 +28,20 @@ namespace Application.Mappers
                 .ForMember(dest => dest.ApprovedAdminName,
                     opt => opt.MapFrom(src => src.ApprovedAdmin != null
                         ? src.ApprovedAdmin.User.FirstName + " " + src.ApprovedAdmin.User.LastName
-                        : null));
-
+                        : null))
+                .ForMember(dest => dest.Description,
+                    opt => opt.MapFrom(src => DeserializeDescription(src.Description)));
 
             // Staffs + Vehicles
             CreateMap<DispatchRequestStaff, DispatchRequestStaffRes>();
             CreateMap<DispatchRequestVehicle, DispatchRequestVehicleRes>();
+        }
 
+        private static DispatchDescriptionDto? DeserializeDescription(string? description)
+        {
+            if (string.IsNullOrEmpty(description))
+                return null;
+            return JsonSerializer.Deserialize<DispatchDescriptionDto>(description);
         }
     }
 }

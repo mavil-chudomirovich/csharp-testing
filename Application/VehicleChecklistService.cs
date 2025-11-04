@@ -25,13 +25,15 @@ namespace Application
         private readonly IMapper _mapper;
         private readonly IMemoryCache _cache;
         private readonly IUserRepository _userRepository;
+        private readonly IRentalContractService _rentalContractService;
 
-        public VehicleChecklistService(IVehicleChecklistUow uow, IMapper mapper, IMemoryCache cache, IUserRepository userRepository)
+        public VehicleChecklistService(IVehicleChecklistUow uow, IMapper mapper, IMemoryCache cache, IUserRepository userRepository, IRentalContractService rentalContractService)
         {
             _uow = uow;
             _mapper = mapper;
             _cache = cache;
             _userRepository = userRepository;
+            _rentalContractService = rentalContractService;
         }
 
         
@@ -45,6 +47,10 @@ namespace Application
             }
             else
             {
+                if(!(await _rentalContractService.VerifyStaffPermission(userclaims, (Guid)req.ContractId!)))
+                {
+                    throw new ForbidenException(Message.UserMessage.DoNotHavePermission);
+                }
                 return await CreateVehicleChecklistOutSideContract(Guid.Parse(staffId), (Guid)req.VehicleId!, req.Type);
             }
         }
@@ -143,7 +149,7 @@ namespace Application
 
         
 
-        public async Task UpdateAsync(UpdateVehicleChecklistReq req, Guid id)
+        public async Task UpdateAsync(UpdateVehicleChecklistReq req, Guid id, ClaimsPrincipal staffClaims)
         {
             await _uow.BeginTransactionAsync();
             try
@@ -159,6 +165,8 @@ namespace Application
                 }
                 else
                 {
+                    if(!(await _rentalContractService.VerifyStaffPermission(staffClaims, (Guid)checklist.ContractId!)))
+                        throw new ForbidenException(Message.UserMessage.DoNotHavePermission);
                     if (checklist.Type == (int)VehicleChecklistType.Handover)
                     {
                         UpdateHandoverchecklistOrChecklistOutSideAsync(checklist, req.ChecklistItems);
@@ -262,7 +270,7 @@ namespace Application
             
         }
 
-        public async Task UpdateItemsAsync(Guid id, int status, string? notes)
+        public async Task UpdateItemsAsync(Guid id, int status, string? notes, ClaimsPrincipal staffClaims)
         {
             var item = await _uow.VehicleChecklistItemRepository.GetByIdAsync(id)
                 ?? throw new NotFoundException(Message.VehicleChecklistItemMessage.NotFound);
@@ -270,6 +278,8 @@ namespace Application
                 ?? throw new NotFoundException(Message.VehicleChecklistMessage.NotFound);
             if (checklist.IsSignedByCustomer && checklist.IsSignedByStaff)
                 throw new BusinessException(Message.VehicleChecklistMessage.ThisChecklistAlreadyProcess);
+            if (!(await _rentalContractService.VerifyStaffPermission(staffClaims, (Guid)checklist.ContractId!)))
+                throw new ForbidenException(Message.UserMessage.DoNotHavePermission);
             item.Status = status;
             if (!string.IsNullOrEmpty(notes)) item.Notes = notes;
             await _uow.VehicleChecklistItemRepository.UpdateAsync(item);
