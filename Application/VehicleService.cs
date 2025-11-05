@@ -40,9 +40,9 @@ namespace Application
             return await _vehicleRepository.AddAsync(vehicle);
         }
 
-        public async Task<bool> DeleteVehicle(Guid id)
+        public async Task DeleteVehicle(Guid id)
         {
-            return await _vehicleRepository.DeleteAsync(id);
+            await _vehicleRepository.DeleteAsync(id);
         }
 
         public async Task<PageResult<VehicleViewRes>> GetAllAsync(PaginationParams pagination, string? name, Guid? stationId, int? status, string? licensePlate)

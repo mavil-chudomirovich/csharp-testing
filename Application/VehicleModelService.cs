@@ -73,9 +73,9 @@ namespace Application
             }
         }
 
-        public async Task<bool> DeleteVehicleModleAsync(Guid id)
+        public async Task DeleteVehicleModleAsync(Guid id)
         {
-            return await _vehicleModelRepository.DeleteAsync(id);
+            await _vehicleModelRepository.DeleteAsync(id);
         }
 
         public async Task<IEnumerable<VehicleModelViewRes>> SearchVehicleModel(VehicleFilterReq vehicleFilterReq)

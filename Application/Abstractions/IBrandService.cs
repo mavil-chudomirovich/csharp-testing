@@ -18,6 +18,6 @@ namespace Application.Abstractions
         Task<BrandViewRes> GetByIdAsync(Guid id);
         Task<BrandViewRes> CreateAsync(BrandReq dto);
         Task<BrandViewRes> UpdateAsync(Guid id, UpdateBrandReq dto);
-        Task<bool> DeleteAsync(Guid id);
+        Task DeleteAsync(Guid id);
     }
 }

@@ -28,9 +28,9 @@ namespace Application
 
         }
 
-        public Task<bool> DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
-            return _repo.DeleteAsync(id);
+            await _repo.DeleteAsync(id);
         }
 
         public async Task<IEnumerable<BrandViewRes>> GetAllAsync()

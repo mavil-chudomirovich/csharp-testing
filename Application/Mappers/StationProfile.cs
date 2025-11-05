@@ -1,4 +1,5 @@
-﻿using Application.Dtos.Station.Respone;
+﻿using Application.Dtos.Station.Request;
+using Application.Dtos.Station.Respone;
 using AutoMapper;
 using Domain.Entities;
 using System;
@@ -15,6 +16,7 @@ namespace Application.Mappers
         {
             CreateMap<Station, StationViewRes>();
             CreateMap<Station, StationSimpleRes>();
+            CreateMap<StationCreateReq, Station>();
         }
     }
 }

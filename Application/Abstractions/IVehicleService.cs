@@ -12,7 +12,7 @@ namespace Application.Abstractions
 
         Task<int> UpdateVehicleAsync(Guid Id, UpdateVehicleReq updateVehicleReq);
 
-        Task<bool> DeleteVehicle(Guid id);
+        Task DeleteVehicle(Guid id);
 
         Task<PageResult<VehicleViewRes>> GetAllAsync(PaginationParams pagination, string? name, Guid? stationId, int? status, string? licensePlate);
 

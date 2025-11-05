@@ -7,7 +7,7 @@ namespace Application.Repositories
     {
         Task<Guid> AddAsync(T entity);
 
-        Task<bool> DeleteAsync(Guid id);
+        Task DeleteAsync(Guid id);
 
         Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, object>>[]? includes = null);
 

@@ -18,7 +18,7 @@ namespace Application.Abstractions
 
         Task<int> UpdateVehicleModelAsync(Guid Id, UpdateVehicleModelReq updateVehicleModelReq);
 
-        Task<bool> DeleteVehicleModleAsync(Guid id);
+        Task DeleteVehicleModleAsync(Guid id);
 
         Task<VehicleModelViewRes> GetByIdAsync(Guid id, Guid stationId, DateTimeOffset startDate, DateTimeOffset endDate);
 

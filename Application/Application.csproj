@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <Folder Include="Dtos\StationFeedback\Response\" />
-    <Folder Include="Dtos\Station\Request\" />
     <Folder Include="Dtos\Statistic\Requests\" />
     <Content Include="Templates\**\*.*" CopyToOutputDirectory="Always" />
   </ItemGroup>
@@ -40,6 +39,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="Dtos\Station\Request\StationCreateReq.cs" />
+    <Compile Include="Dtos\Station\Request\StationUpdateReq.cs" />
     <Compile Include="Dtos\VehicleSegment\Request\CreateSegmentReq.cs" />
     <Compile Include="Dtos\VehicleSegment\Request\UpdateSegmentReq.cs" />
   </ItemGroup>

@@ -25,23 +25,20 @@ namespace Infrastructure.Repositories
             return entity.Id;
         }
 
-        public virtual async Task<bool> DeleteAsync(Guid id)
+        public virtual async Task DeleteAsync(Guid id)
         {
             var entityFromDb = await GetByIdAsync(id)
         ?? throw new NotFoundException($"{typeof(T).Name} is not found");
 
             if (entityFromDb is SorfDeletedEntity softEntity && softEntity.DeletedAt == null)
             {
-                // Gán DeletedAt thông qua softEntity (compiler hiểu type rồi)
                 softEntity.DeletedAt = DateTime.UtcNow;
-                //chỉ cần chỉnh hoai, savechange tự update
             }
             else
             {
                 _dbSet.Remove(entityFromDb);
             }
             await _dbContext.SaveChangesAsync();
-            return entityFromDb != null;
         }
 
         public virtual async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, object>>[]? includes = null)

@@ -293,5 +293,33 @@ namespace Application
 
             return monthlyData;
         }
+        public async Task<IEnumerable<InvoiceByMonthRes>> GetInvoiceByYear(Guid? stationId, int year)
+        {
+            var invoices = await _invoiceRepository.GetAllAsync();
+            if (invoices == null || !invoices.Any())
+                return Enumerable.Range(1, 12).Select(m => new InvoiceByMonthRes
+                {
+                    MonthName = new DateTime(year, m, 1).ToString("MMMM"),
+                    TotalInvoice = 0
+                });
+
+                var monthlyData = Enumerable.Range(1, 12)
+                .Select(month =>
+                {
+                    var total = invoices
+                    .Count(x =>
+                         x.CreatedAt.Month == month &&
+                         x.CreatedAt.Year == year &&
+                         (x.Contract != null && x.Contract.StationId == stationId));
+
+                    return new InvoiceByMonthRes
+                    {
+                        MonthName = new DateTime(year, month, 1).ToString("MMMM"),
+                        TotalInvoice = total
+                    };
+                });
+
+            return monthlyData;
+        }
     }
 }
