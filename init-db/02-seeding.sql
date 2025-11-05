@@ -628,6 +628,28 @@ VALUES
 
     SET @month = @month + 1;
 END;
+Update invoices set subtotal = 100000 where id in (SELECT * FROM invoices where contract_id in (SELECT id FROM rental_contracts where status = 4)
+													AND MONTH(created_at) = 1)
+Update invoices set subtotal = 130000 where id in (SELECT * FROM invoices where contract_id in (SELECT id FROM rental_contracts where status = 4)
+													AND MONTH(created_at) = 2)
+Update invoices set subtotal = 80000 where id in (SELECT * FROM invoices where contract_id in (SELECT id FROM rental_contracts where status = 4)
+													AND MONTH(created_at) = 3)
+Update invoices set subtotal = 180000 where id in (SELECT * FROM invoices where contract_id in (SELECT id FROM rental_contracts where status = 4)
+													AND MONTH(created_at) = 4)													
+Update invoices set subtotal = 140000 where id in (SELECT * FROM invoices where contract_id in (SELECT id FROM rental_contracts where status = 4)
+													AND MONTH(created_at) = 5)													
+Update invoices set subtotal = 60000 where id in (SELECT * FROM invoices where contract_id in (SELECT id FROM rental_contracts where status = 4)
+													AND MONTH(created_at) = 6)													
+Update invoices set subtotal = 200000 where id in (SELECT * FROM invoices where contract_id in (SELECT id FROM rental_contracts where status = 4)
+													AND MONTH(created_at) = 7)												
+Update invoices set subtotal = 120000 where id in (SELECT * FROM invoices where contract_id in (SELECT id FROM rental_contracts where status = 4)
+													AND MONTH(created_at) = 8)
+Update invoices set subtotal = 100000 where id in (SELECT * FROM invoices where contract_id in (SELECT id FROM rental_contracts where status = 4)
+													AND MONTH(created_at) = 9)
+Update invoices set subtotal = 170000 where id in (SELECT * FROM invoices where contract_id in (SELECT id FROM rental_contracts where status = 4)
+													AND MONTH(created_at) = 10)
+Update invoices set subtotal = 130000 where id in (SELECT * FROM invoices where contract_id in (SELECT id FROM rental_contracts where status = 4)
+													AND MONTH(created_at) = 11)
 GO
 
 /* ============================================================
