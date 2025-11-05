@@ -289,13 +289,14 @@ namespace Application
 
         public async Task<PageResult<Invoice>?> GetAllInvoicesAsync(PaginationParams pagination)
         {
-            var invoices = await _uow.InvoiceRepository.GetAllInvoicesAsync(pagination);
+            var invoices = await _uow.InvoiceRepository.GetAllWithPaginationAsync(pagination);
 
             if (invoices == null || !invoices.Items.Any())
                 return default;
 
             return invoices;
         }
+
 
         public async Task<InvoiceViewRes> GetInvoiceById(Guid id, bool includeItems = false, bool includeDeposit = false)
         {

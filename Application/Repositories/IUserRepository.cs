@@ -24,6 +24,6 @@ namespace Application.Repositories
 
         Task<PageResult<User>> GetAllStaffAsync(PaginationParams pagination, string? name, Guid? stationId);
 
-        
+        Task<IEnumerable<User?>> GetAllAsync(string role);
     }
 }

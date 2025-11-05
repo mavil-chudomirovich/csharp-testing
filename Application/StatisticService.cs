@@ -5,6 +5,7 @@ using Application.Dtos.Common.Request;
 using Application.Dtos.Statistic.Responses;
 using Application.Dtos.Vehicle.Respone;
 using Application.Helpers;
+using Application.Repositories;
 using Domain.Commons;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,23 +17,29 @@ namespace Application
         private readonly IVehicleService _vehicleService;
         private readonly IInvoiceService _invoiceService;
         private readonly IVehicleModelService _vehicleModelService;
+        private readonly IInvoiceRepository _invoiceRepository;
+        private readonly IUserRepository _userRepository;
 
         public StatisticService(
             IUserService userService,
             IVehicleService vehicleService,
             IInvoiceService invoiceService,
-            IVehicleModelService vehicleModelService)
+            IVehicleModelService vehicleModelService,
+            IInvoiceRepository invoiceRepository,
+            IUserRepository userRepository)
         {
             _userService = userService;
             _vehicleService = vehicleService;
             _invoiceService = invoiceService;
             _vehicleModelService = vehicleModelService;
+            _invoiceRepository = invoiceRepository;
+            _userRepository = userRepository;
         }
 
-        public async Task<CustomerAnonymusRes?> GetAnonymusCustomer([FromQuery] PaginationParams pagination)
+        public async Task<CustomerAnonymusRes?> GetAnonymusCustomer()
         {
-            var customer = await _userService.GetAllWithPaginationAsync(null, null, null, "Customer", pagination);
-            if (customer == null || !customer.Items.Any())
+            var customer = await _userRepository.GetAllAsync(RoleName.Customer);
+            if (customer == null || !customer.Any())
                 return new CustomerAnonymusRes
                 {
                     CustomerAnonymusInThisMonth = 0,
@@ -43,9 +50,9 @@ namespace Application
             int lastMonth = StatisticHelper.GetLastMonth();
             int previousYear = StatisticHelper.GetLastMonthYear();
 
-            var customerThisMonth = customer.Items.Count(x => x.CreatedAt.Month == DateTimeOffset.UtcNow.Month && x.CreatedAt.Year == DateTimeOffset.UtcNow.Year && x.Email == null);
+            var customerThisMonth = customer.Count(x => x.CreatedAt.Month == DateTimeOffset.UtcNow.Month && x.CreatedAt.Year == DateTimeOffset.UtcNow.Year && x.Email == null);
 
-            var customerLastMonth = customer.Items.Count(x => x.CreatedAt.Month == lastMonth && x.CreatedAt.Year == previousYear && x.Email == null);
+            var customerLastMonth = customer.Count(x => x.CreatedAt.Month == lastMonth && x.CreatedAt.Year == previousYear && x.Email == null);
 
 
             decimal changeRate = 0;
@@ -62,10 +69,10 @@ namespace Application
             };
         }
 
-        public async Task<CustomerRes?> GetCustomer([FromQuery] PaginationParams pagination)
+        public async Task<CustomerRes?> GetCustomer()
         {
-            var customer = await _userService.GetAllWithPaginationAsync(null, null, null, "Customer", pagination);
-            if (customer == null || !customer.Items.Any())
+            var customer = await _userRepository.GetAllAsync(RoleName.Customer);
+            if (customer == null || !customer.Any())
                 return new CustomerRes
                 {
                     CustomerInThisMonth = 0,
@@ -76,11 +83,11 @@ namespace Application
             int lastMonth = StatisticHelper.GetLastMonth();
             int previousYear = StatisticHelper.GetLastMonthYear();
 
-            var customerThisMonth = customer.Items.Count(x =>
+            var customerThisMonth = customer.Count(x =>
                 x.CreatedAt.Month == DateTimeOffset.UtcNow.Month &&
                 x.CreatedAt.Year == DateTimeOffset.UtcNow.Year);
 
-            var customerLastMonth = customer.Items.Count(x =>
+            var customerLastMonth = customer.Count(x =>
                 x.CreatedAt.Month == lastMonth &&
                 x.CreatedAt.Year == previousYear);
 
@@ -98,10 +105,10 @@ namespace Application
             };
         }
 
-        public async Task<TotalRevenueRes?> GetTotalRevenue(Guid? stationId, [FromQuery] PaginationParams pagination)
+        public async Task<TotalRevenueRes?> GetTotalRevenue(Guid? stationId)
         {
-            var invoice = await _invoiceService.GetAllInvoicesAsync(pagination);
-            if (invoice == null || !invoice.Items.Any())
+            var invoice = await _invoiceRepository.GetAllAsync();
+            if (invoice == null || !invoice.Any())
             {
                 return new TotalRevenueRes
                 {
@@ -116,7 +123,7 @@ namespace Application
             decimal totalThisMonth = 0;
             decimal totalLastMonth = 0;
 
-            var currentMonthInvoices = invoice.Items
+            var currentMonthInvoices = invoice
                 .Where(x =>
                     x.CreatedAt.Month == DateTimeOffset.Now.Month &&
                     x.CreatedAt.Year == DateTimeOffset.Now.Year &&
@@ -126,7 +133,7 @@ namespace Application
             foreach (var item in currentMonthInvoices)
                 totalThisMonth += InvoiceHelper.SafeCalculateTotal(item);
 
-            var lastMonthInvoices = invoice.Items
+            var lastMonthInvoices = invoice
                 .Where(x =>
                     x.CreatedAt.Month == lastMonth &&
                     x.CreatedAt.Year == previousYear &&
@@ -150,10 +157,10 @@ namespace Application
             };
         }
 
-        public async Task<TotalStatisticRes?> GetTotalStatistic(Guid? stationId, [FromQuery] PaginationParams pagination)
+        public async Task<TotalStatisticRes?> GetTotalStatistic(Guid? stationId)
         {
-            var invoice = await _invoiceService.GetAllInvoicesAsync(pagination);
-            if (invoice == null || !invoice.Items.Any())
+            var invoice = await _invoiceRepository.GetAllAsync();
+            if (invoice == null || !invoice.Any())
             {
                 return new TotalStatisticRes
                 {
@@ -166,13 +173,13 @@ namespace Application
             int lastMonth = StatisticHelper.GetLastMonth();
             int previousYear = StatisticHelper.GetLastMonthYear();
 
-            var invoiceThisMonth = invoice.Items.Count(x =>
+            var invoiceThisMonth = invoice.Count(x =>
                 x.CreatedAt.Month == DateTimeOffset.Now.Month &&
                 x.CreatedAt.Year == DateTimeOffset.Now.Year &&
                 (x.Contract == null || x.Contract.StationId == stationId)
             );
 
-            var invoiceLastMonth = invoice.Items.Count(x =>
+            var invoiceLastMonth = invoice.Count(x =>
                 x.CreatedAt.Month == lastMonth &&
                 x.CreatedAt.Year == previousYear &&
                 (x.Contract == null || x.Contract.StationId == stationId)
@@ -258,22 +265,22 @@ namespace Application
 
         public async Task<IEnumerable<RevenueByMonthRes>> GetRevenueByYear(Guid? stationId, int year)
         {
-            var invoices = await _invoiceService.GetAllInvoicesAsync(new PaginationParams());
-            if (invoices == null || !invoices.Items.Any())
+            var invoices = await _invoiceRepository.GetAllAsync();
+            if (invoices == null || !invoices.Any())
                 return Enumerable.Range(1, 12).Select(m => new RevenueByMonthRes
                 {
                     MonthName = new DateTime(year, m, 1).ToString("MMMM"),
                     TotalRevenue = 0
                 });
 
-            var monthlyData = Enumerable.Range(1, 12)
+                var monthlyData = Enumerable.Range(1, 12)
                 .Select(month =>
                 {
-                    var total = invoices.Items
+                    var total = invoices
                         .Where(x =>
                             x.CreatedAt.Month == month &&
                             x.CreatedAt.Year == year &&
-                            (x.Contract == null || x.Contract.StationId == stationId)
+                            (x.Contract != null && x.Contract.StationId == stationId)
                         )
                         .Sum(x => InvoiceHelper.SafeCalculateTotal(x));
 

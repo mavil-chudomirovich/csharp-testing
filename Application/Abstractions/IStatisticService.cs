@@ -11,10 +11,10 @@ namespace Application.Abstractions
 {
     public interface IStatisticService 
     {
-        Task<CustomerRes?> GetCustomer([FromQuery] PaginationParams pagination);
-        Task<CustomerAnonymusRes?> GetAnonymusCustomer([FromQuery] PaginationParams pagination);
-        Task<TotalRevenueRes?> GetTotalRevenue(Guid? stationId, [FromQuery] PaginationParams pagination);
-        Task<TotalStatisticRes?> GetTotalStatistic(Guid? stationId, [FromQuery] PaginationParams pagination);
+        Task<CustomerRes?> GetCustomer();
+        Task<CustomerAnonymusRes?> GetAnonymusCustomer();
+        Task<TotalRevenueRes?> GetTotalRevenue(Guid? stationId);
+        Task<TotalStatisticRes?> GetTotalStatistic(Guid? stationId);
         Task<VehicleTotalRes?> GetVehicleTotal(Guid? stationId);
         Task<VehicleModelsStatisticRes?> GetVehicleModelTotal(Guid? stationId);
         Task<IEnumerable<RevenueByMonthRes>> GetRevenueByYear(Guid? stationId, int year);

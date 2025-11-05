@@ -32,9 +32,9 @@ namespace API.Controllers
         /// Get statistics for registered customers this and last month.
         /// </summary>
         [HttpGet("customers")]
-        public async Task<ActionResult<CustomerRes>> GetCustomers([FromQuery] PaginationParams pagination)
+        public async Task<ActionResult<CustomerRes>> GetCustomers()
         {
-            var result = await _statisticService.GetCustomer(pagination);
+            var result = await _statisticService.GetCustomer();
             return Ok(result);
         }
 
@@ -42,9 +42,9 @@ namespace API.Controllers
         /// Get statistics for anonymous customers (no email).
         /// </summary>
         [HttpGet("customers/anonymous")]
-        public async Task<ActionResult<CustomerAnonymusRes>> GetAnonymousCustomers([FromQuery] PaginationParams pagination)
+        public async Task<ActionResult<CustomerAnonymusRes>> GetAnonymousCustomers()
         {
-            var result = await _statisticService.GetAnonymusCustomer(pagination);
+            var result = await _statisticService.GetAnonymusCustomer();
             return Ok(result);
         }
 
@@ -52,10 +52,10 @@ namespace API.Controllers
         /// Get revenue summary for this and last month.
         /// </summary>
         [HttpGet("revenue")]
-        public async Task<ActionResult<TotalRevenueRes>> GetTotalRevenue([FromQuery] PaginationParams pagination)
+        public async Task<ActionResult<TotalRevenueRes>> GetTotalRevenue()
         {
             var stationId = await GetCurrentStationIdAsync();
-            var result = await _statisticService.GetTotalRevenue(stationId, pagination);
+            var result = await _statisticService.GetTotalRevenue(stationId);
             return Ok(result);
         }
 
@@ -66,7 +66,7 @@ namespace API.Controllers
         public async Task<ActionResult<TotalStatisticRes>> GetTotalStatistic([FromQuery] PaginationParams pagination)
         {
             var stationId = await GetCurrentStationIdAsync();
-            var result = await _statisticService.GetTotalStatistic(stationId, pagination);
+            var result = await _statisticService.GetTotalStatistic(stationId);
             return Ok(result);
         }
 
