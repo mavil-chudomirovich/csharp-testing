@@ -14,7 +14,7 @@ namespace Application.Validators.Dispatch
         public UpdateDispatchReqValidator()
         {
             RuleFor(x => x.Status)
-                .InclusiveBetween(0, 5) 
+                .InclusiveBetween(2, 5)
                 .WithMessage(DispatchMessage.InvalidStatus);
         }
     }

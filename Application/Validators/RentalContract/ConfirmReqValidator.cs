@@ -13,10 +13,10 @@ namespace Application.Validators.RentalContract
     {
         public ConfirmReqValidator()
         {
-            RuleFor(x => x.VehicleStatus)
-                .NotNull().WithMessage(Message.RentalContractMessage.InvalidVehicleStatus)
-                .InclusiveBetween(0, 2).WithMessage(Message.RentalContractMessage.InvalidVehicleStatus)
-                .When(x => !x.HasVehicle);
+            //RuleFor(x => x.VehicleStatus)
+            //    .NotNull().WithMessage(Message.RentalContractMessage.InvalidVehicleStatus)
+            //    .InclusiveBetween(0, 2).WithMessage(Message.RentalContractMessage.InvalidVehicleStatus)
+            //    .When(x => !x.HasVehicle);
         }
     }
 }

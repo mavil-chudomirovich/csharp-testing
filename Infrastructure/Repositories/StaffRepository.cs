@@ -1,4 +1,5 @@
 ﻿using Application.Repositories;
+using Domain.Commons;
 using Domain.Entities;
 using Infrastructure.ApplicationDbContext;
 using Microsoft.EntityFrameworkCore;
@@ -71,6 +72,15 @@ namespace Infrastructure.Repositories
             return await _dbContext.Staffs
                 .Where(s => s.StationId == stationId && s.DeletedAt == null)
                 .CountAsync();
+        }
+
+        public virtual async Task<Staff[]> GetByIdsAsync(Guid[] ids)
+        {
+            var query = _dbContext.Staffs.AsQueryable()
+                .Where(e => ids.Contains(e.UserId))
+                .Where(x => x.DeletedAt == null);
+
+            return await query.ToArrayAsync();
         }
     }
 }

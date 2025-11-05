@@ -26,7 +26,7 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync(x => x.LicensePlate == licensePlate);
         }
 
-       public async Task<PageResult<Vehicle>> GetAllAsync(PaginationParams pagination, string? name, Guid? stationId, int? status, string? licensePlate)
+        public async Task<PageResult<Vehicle>> GetAllAsync(PaginationParams pagination, string? name, Guid? stationId, int? status, string? licensePlate)
         {
             var vehicles = _dbContext.Vehicles
                             .Include(v => v.Model)
@@ -45,7 +45,7 @@ namespace Infrastructure.Repositories
             return new PageResult<Vehicle>(listItem, pagination.PageNumber, pagination.PageSize, totalCount);
         }
 
-        public async Task<IEnumerable<Vehicle>?> GetVehicles (Guid stationId, Guid modelId)
+        public async Task<IEnumerable<Vehicle>?> GetVehicles(Guid stationId, Guid modelId)
         {
             // Query lọc trực tiếp từ DB (không ToList trước)
             var vehicles = await _dbContext.Vehicles
@@ -109,16 +109,17 @@ namespace Infrastructure.Repositories
         {
             var query = _dbContext.Vehicles
                 .AsQueryable();
-            if(stationId != null)
+            if (stationId != null)
             {
                 query = query.Where(v => v.StationId == stationId);
             }
-            if(status != null)
+            if (status != null)
             {
                 query = query.Where(v => v.Status == status);
             }
             return await query.ToListAsync();
         }
+
         public async Task<int> CountAvailableVehiclesByModelAsync(Guid stationId, Guid modelId)
         {
             return await _dbContext.Vehicles

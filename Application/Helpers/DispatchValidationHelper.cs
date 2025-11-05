@@ -13,24 +13,23 @@ namespace Application.Helpers
     public static class DispatchValidationHelper
     {
         public static async Task ValidateStaffsInStationAsync(
-            IStaffRepository staffRepository, 
-            Guid[]? staffIds, 
+            IStaffRepository staffRepository,
+            Guid[]? staffIds,
             Guid expectedStationId)
         {
             if (staffIds == null || staffIds.Length == 0) return;
             staffIds = staffIds.Where(x => x != Guid.Empty).ToArray();
             var countValid = await staffRepository.CountStaffsInStationAsync(staffIds, expectedStationId);
-            if (countValid != staffIds.Length)
-                throw new BadRequestException(Message.DispatchMessage.StaffNotInFromStation);
+            if (staffIds.Length >= countValid)
+                throw new BadRequestException(Message.DispatchMessage.StaffLimitInFromStation);
         }
 
-
-        public static async Task ValidateVehiclesInStationAsync(IVehicleRepository vehicleRepository, Guid[]? vehicleId, Guid fromStationId)
+        public static async Task ValidateVehiclesInStationAsync(IVehicleRepository vehicleRepository, Guid[]? vehicleIds, Guid fromStationId)
         {
-            if (vehicleId == null || vehicleId.Length == 0) return;
-            vehicleId = vehicleId.Where(x => x != Guid.Empty).ToArray();
-            var countValid = await vehicleRepository.CountVehiclesInStationAsync(vehicleId, fromStationId);
-            if (countValid != vehicleId.Length)
+            if (vehicleIds == null || vehicleIds.Length == 0) return;
+            vehicleIds = vehicleIds.Where(x => x != Guid.Empty).ToArray();
+            var countValid = await vehicleRepository.CountVehiclesInStationAsync(vehicleIds, fromStationId);
+            if (countValid != vehicleIds.Length)
                 throw new BadRequestException(Message.DispatchMessage.VehicleNotInFromStation);
         }
 
@@ -54,7 +53,6 @@ namespace Application.Helpers
                 throw new BadRequestException(invalidStatusMessage);
         }
 
-
         public static async Task ValidateStaffQuantityAsync(
             IStaffRepository staffRepository,
             Guid stationId,
@@ -66,6 +64,7 @@ namespace Application.Helpers
             if (available < numberRequired.Value)
                 throw new BadRequestException(Message.DispatchMessage.StaffNotInFromStation);
         }
+
         public static async Task ValidateVehicleQuantityByModelAsync(
             IVehicleRepository vehicleRepository,
             Guid stationId,
@@ -76,11 +75,12 @@ namespace Application.Helpers
             foreach (var v in vehicles)
             {
                 var available = await vehicleRepository.CountAvailableVehiclesByModelAsync(stationId, v.ModelId);
-                if (available < v.NumberOfVehicle)
+                if (available < v.Quantity)
                     throw new BadRequestException(
                         $"{Message.DispatchMessage.VehicleNotInFromStation} - model {v.ModelId} has only {available} available.");
             }
         }
+
         public static string AppendDescription(string? oldDesc, string? newDesc)
         {
             if (string.IsNullOrWhiteSpace(newDesc)) return oldDesc ?? "";
