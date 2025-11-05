@@ -15,9 +15,9 @@ namespace Application.Validators.User
         public CreateUserReqValidator()
         {
             RuleFor(x => x.DateOfBirth)
-                .NotEmpty().WithMessage(Message.UserMessage.DateOfBirthIsRequired)
-                .Must(dob =>
-                {
+            .NotEmpty().WithMessage(Message.UserMessage.DateOfBirthIsRequired)
+            .Must((req, dob) =>
+            {  
                     var today = DateTime.Now;
                     var age = today.Year - dob.Year;
                     if (today.Month < dob.Month ||
@@ -25,7 +25,7 @@ namespace Application.Validators.User
                     {
                         age--;
                     }
-                    return age >= 21;
+                        return age >= (req.RoleName == RoleName.Customer ? 21 : 18);
                 }).WithMessage(Message.UserMessage.InvalidUserAge);
 
             RuleFor(x => x.Phone)

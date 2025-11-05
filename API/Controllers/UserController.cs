@@ -114,7 +114,7 @@ namespace API.Controllers
         /// <response code="400">Invalid user data.</response>
         /// <response code="409">User with the same email already exists.</response>
         [HttpPost]
-        [RoleAuthorize([RoleName.Admin, RoleName.Staff])]
+        [RoleAuthorize([RoleName.Admin, RoleName.Staff, RoleName.SuperAdmin])]
         public async Task<IActionResult> Create([FromBody] CreateUserReq req)
         {
             var userId = await _userService.CreateAsync(req);
