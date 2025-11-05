@@ -108,7 +108,7 @@ namespace API.Controllers
         /// <response code="200">Success.</response>
         /// <response code="404">Rental contract not found.</response>
         /// <response code="422">Business error (invalid handover conditions).</response>
-        [RoleAuthorize(RoleName.Staff)]
+        [RoleAuthorize(RoleName.Staff, RoleName.Customer)]
         [HttpPut("{id}/handover")]
         public async Task<IActionResult> HandoverRentalContract(Guid id, HandoverContractReq req)
         {
