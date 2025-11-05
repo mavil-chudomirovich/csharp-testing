@@ -45,8 +45,8 @@ namespace API.Controllers
         /// <summary>
         /// Get revenue summary for this and last month.
         /// </summary>
-        [HttpGet("revenue/{stationId}")]
-        public async Task<ActionResult<TotalRevenueRes>> GetTotalRevenue(Guid? stationId)
+        [HttpGet("revenue")]
+        public async Task<ActionResult<TotalRevenueRes>> GetTotalRevenue([FromQuery] Guid? stationId)
         {
             var result = await _statisticService.GetTotalRevenue(stationId);
             return Ok(result);
@@ -55,8 +55,8 @@ namespace API.Controllers
         /// <summary>
         /// Get total invoices created for this and last month.
         /// </summary>
-        [HttpGet("invoices/{stationId}")]
-        public async Task<ActionResult<TotalStatisticRes>> GetTotalStatistic(Guid? stationId)
+        [HttpGet("invoices")]
+        public async Task<ActionResult<TotalStatisticRes>> GetTotalStatistic([FromQuery] Guid? stationId)
         {
             var result = await _statisticService.GetTotalStatistic(stationId);
             return Ok(result);
@@ -65,8 +65,8 @@ namespace API.Controllers
         /// <summary>
         /// Get total number of vehicles by status for current station.
         /// </summary>
-        [HttpGet("vehicles/{stationId}")]
-        public async Task<ActionResult<VehicleTotalRes>> GetVehicleTotal(Guid? stationId)
+        [HttpGet("vehicles")]
+        public async Task<ActionResult<VehicleTotalRes>> GetVehicleTotal([FromQuery] Guid? stationId)
         {
             var result = await _statisticService.GetVehicleTotal(stationId);
             return Ok(result);
@@ -74,8 +74,8 @@ namespace API.Controllers
         /// <summary>
         /// Get total number of vehicles by status for current station.
         /// </summary>
-        [HttpGet("vehicle-models/{stationId}")]
-        public async Task<ActionResult> GetVehicleModelTotal(Guid? stationId)
+        [HttpGet("vehicle-models")]
+        public async Task<ActionResult> GetVehicleModelTotal([FromQuery] Guid? stationId)
         {
             var result = await _statisticService.GetVehicleModelTotal(stationId);
             return Ok(result == null ? [] : result.VehicleModelsForStatisticRes);
@@ -90,8 +90,8 @@ namespace API.Controllers
         /// </param>
         /// <param name="stationId"></param>
         /// <returns>List of months with total revenue per month.</returns>
-        [HttpGet("revenue-by-year/{stationId}")]
-        public async Task<IActionResult> GetRevenueByYear([FromQuery] int? year, Guid? stationId)
+        [HttpGet("revenue-by-year")]
+        public async Task<IActionResult> GetRevenueByYear([FromQuery] int? year, [FromQuery] Guid? stationId)
         {
             var targetYear = year ?? DateTime.UtcNow.Year; 
 
@@ -108,8 +108,8 @@ namespace API.Controllers
         /// </param>
         /// <param name="stationId"></param>
         /// <returns>List of months with total revenue per month.</returns>
-        [HttpGet("invoice-by-year/{stationId}")]
-        public async Task<IActionResult> GetInvoiceByYear([FromQuery] int? year, Guid? stationId)
+        [HttpGet("invoice-by-year")]
+        public async Task<IActionResult> GetInvoiceByYear([FromQuery] int? year, [FromQuery] Guid? stationId)
         {
             var targetYear = year ?? DateTime.UtcNow.Year; 
 

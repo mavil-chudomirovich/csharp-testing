@@ -127,7 +127,7 @@ namespace Application
                 .Where(x =>
                     x.CreatedAt.Month == DateTimeOffset.Now.Month &&
                     x.CreatedAt.Year == DateTimeOffset.Now.Year &&
-                    (x.Contract == null || x.Contract.StationId == stationId)
+                    stationId == null || (x.Contract != null && x.Contract.StationId == stationId)
                 );
 
             foreach (var item in currentMonthInvoices)
@@ -137,7 +137,7 @@ namespace Application
                 .Where(x =>
                     x.CreatedAt.Month == lastMonth &&
                     x.CreatedAt.Year == previousYear &&
-                    (x.Contract == null || x.Contract.StationId == stationId)
+                    stationId == null || (x.Contract != null && x.Contract.StationId == stationId)
                 );
 
             foreach (var item in lastMonthInvoices)
@@ -176,13 +176,13 @@ namespace Application
             var invoiceThisMonth = invoice.Count(x =>
                 x.CreatedAt.Month == DateTimeOffset.Now.Month &&
                 x.CreatedAt.Year == DateTimeOffset.Now.Year &&
-                (x.Contract == null || x.Contract.StationId == stationId)
+                stationId == null || (x.Contract != null && x.Contract.StationId == stationId)
             );
 
             var invoiceLastMonth = invoice.Count(x =>
                 x.CreatedAt.Month == lastMonth &&
                 x.CreatedAt.Year == previousYear &&
-                (x.Contract == null || x.Contract.StationId == stationId)
+                stationId == null || (x.Contract != null && x.Contract.StationId == stationId)
             );
 
             decimal changeRate = 0;
@@ -280,7 +280,7 @@ namespace Application
                         .Where(x =>
                             x.CreatedAt.Month == month &&
                             x.CreatedAt.Year == year &&
-                            (x.Contract != null && x.Contract.StationId == stationId)
+                            (x.Contract != null && (stationId == null || x.Contract.StationId == stationId))
                         )
                         .Sum(x => InvoiceHelper.SafeCalculateTotal(x));
 
@@ -310,7 +310,7 @@ namespace Application
                     .Count(x =>
                          x.CreatedAt.Month == month &&
                          x.CreatedAt.Year == year &&
-                         (x.Contract != null && x.Contract.StationId == stationId));
+                         (x.Contract != null && (stationId == null || x.Contract.StationId == stationId)));
 
                     return new InvoiceByMonthRes
                     {
