@@ -43,7 +43,7 @@ namespace API.Controllers
         /// <response code="200">Success.</response>
         /// <response code="404">No users found matching the given filters.</response>
         [HttpGet]
-        [RoleAuthorize(RoleName.Admin, RoleName.Staff)]
+        [RoleAuthorize(RoleName.SuperAdmin, RoleName.Admin, RoleName.Staff)]
         public async Task<IActionResult> GetAll(
             [FromQuery] PaginationParams pagination,
             [FromQuery] string? phone,
@@ -68,7 +68,7 @@ namespace API.Controllers
         /// <response code="200">Success.</response>
         /// <response code="404">No staff members found matching the given filters.</response>
         [HttpGet("staffs")]
-        [RoleAuthorize(RoleName.Admin)]
+        [RoleAuthorize(RoleName.SuperAdmin, RoleName.Admin)]
         public async Task<IActionResult> GetAllStaff(
             [FromQuery] PaginationParams pagination,
             [FromQuery] string? name,
@@ -89,7 +89,7 @@ namespace API.Controllers
         /// <response code="403">Access denied. Insufficient role permissions.</response>
         /// <response code="404">User not found.</response>
         [HttpGet("{id}")]
-        [RoleAuthorize(RoleName.Staff, RoleName.Admin)]
+        [RoleAuthorize(RoleName.SuperAdmin, RoleName.Admin, RoleName.Staff)]
         public async Task<IActionResult> GetById(Guid id)
         {
             var userId = Guid.Parse(HttpContext.User.FindFirst(JwtRegisteredClaimNames.Sid)!.Value.ToString());
@@ -105,6 +105,10 @@ namespace API.Controllers
             {
                 return userFromDb.Role!.Name == RoleName.Customer || userFromDb.Role.Name == RoleName.Staff ? Ok(userFromDb) : throw new ForbidenException(Message.UserMessage.DoNotHavePermission); ;
             }
+            if (user.Role.Name == RoleName.SuperAdmin)
+            {
+                return Ok(userFromDb);
+            }
             throw new ForbidenException(Message.UserMessage.DoNotHavePermission);
         }
 
@@ -117,7 +121,7 @@ namespace API.Controllers
         /// <response code="400">Invalid user data.</response>
         /// <response code="409">User with the same email already exists.</response>
         [HttpPost]
-        [RoleAuthorize([RoleName.Admin, RoleName.Staff, RoleName.SuperAdmin])]
+        [RoleAuthorize([RoleName.SuperAdmin, RoleName.Admin, RoleName.Staff])]
         public async Task<IActionResult> Create([FromBody] CreateUserReq req)
         {
             var userId = await _userService.CreateAsync(req);
@@ -134,7 +138,7 @@ namespace API.Controllers
         /// <response code="400">Invalid user data.</response>
         /// <response code="404">User not found.</response>
         [HttpPatch("{id}")]
-        [RoleAuthorize([RoleName.Admin, RoleName.Staff])]
+        [RoleAuthorize([RoleName.SuperAdmin, RoleName.Admin, RoleName.Staff])]
         public async Task<IActionResult> UpdateById(Guid id, [FromBody] UserUpdateReq req)
         {
             await _userProfileService.UpdateAsync(id, req);
@@ -152,7 +156,7 @@ namespace API.Controllers
         /// <response code="404">User not found.</response>
         //upload citizenId for Anonymous
         [HttpPut("{id}/citizen-identity")]
-        [RoleAuthorize([RoleName.Admin, RoleName.Staff])]
+        [RoleAuthorize([RoleName.SuperAdmin, RoleName.Admin, RoleName.Staff])]
         [ApiExplorerSettings(IgnoreApi = true)]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadCitizenIdById(Guid id, [FromForm] UploadImagesReq req)
@@ -171,7 +175,7 @@ namespace API.Controllers
         /// <response code="400">Invalid file format or upload error.</response>
         /// <response code="404">User not found.</response>
         [HttpPut("{id}/driver-license")]
-        [RoleAuthorize([RoleName.Admin, RoleName.Staff])]
+        [RoleAuthorize([RoleName.SuperAdmin, RoleName.Admin, RoleName.Staff])]
         [ApiExplorerSettings(IgnoreApi = true)]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadDriverLicenseById(Guid id, [FromForm] UploadImagesReq req)
@@ -191,7 +195,7 @@ namespace API.Controllers
         /// <response code="404">User or citizen identity record not found.</response>
 
         [HttpPatch("{id}/citizen-identity")]
-        [RoleAuthorize([RoleName.Admin, RoleName.Staff])]
+        [RoleAuthorize([RoleName.SuperAdmin, RoleName.Admin, RoleName.Staff])]
         public async Task<IActionResult> UpdateCitizenIdentityById(Guid id, [FromBody] UpdateCitizenIdentityReq req)
         {
             var result = await _userProfileService.UpdateCitizenIdentityAsync(id, req);
@@ -208,7 +212,7 @@ namespace API.Controllers
         /// <response code="400">Invalid driver license data.</response>
         /// <response code="404">User or driver license record not found.</response>
         [HttpPatch("{id}/driver-license")]
-        [RoleAuthorize([RoleName.Admin, RoleName.Staff])]
+        [RoleAuthorize([RoleName.SuperAdmin, RoleName.Admin, RoleName.Staff])]
         public async Task<IActionResult> UpdateDriverLicenseById(Guid id, [FromBody] UpdateDriverLicenseReq req)
         {
             var result = await _userProfileService.UpdateDriverLicenseAsync(id, req);
@@ -223,7 +227,7 @@ namespace API.Controllers
         /// <response code="200">Success.</response>
         /// <response code="404">User or citizen identity record not found.</response>
         [HttpDelete("{id}/citizen-identity")]
-        [RoleAuthorize([RoleName.Admin, RoleName.Staff])]
+        [RoleAuthorize([RoleName.SuperAdmin, RoleName.Admin, RoleName.Staff])]
         public async Task<IActionResult> DeleteCitizenIdentityById(Guid id)
         {
             await _userProfileService.DeleteCitizenIdentityAsync(id);
@@ -238,7 +242,7 @@ namespace API.Controllers
         /// <response code="200">Success.</response>
         /// <response code="404">User or driver license record not found.</response>
         [HttpDelete("{id}/driver-license")]
-        [RoleAuthorize([RoleName.Admin, RoleName.Staff])]
+        [RoleAuthorize([RoleName.SuperAdmin, RoleName.Admin, RoleName.Staff])]
         public async Task<IActionResult> DeleteDriverLicenseById(Guid id)
         {
             await _userProfileService.DeleteDriverLicenseAsync(id);
@@ -254,7 +258,7 @@ namespace API.Controllers
         /// <response code="404">User not found.</response>
         /// <response code="403">Forbidden — only admins can perform this action.</response>
         [HttpDelete("{id}")]
-        [RoleAuthorize(RoleName.Admin)]
+        [RoleAuthorize([RoleName.SuperAdmin, RoleName.Admin, RoleName.Staff])]
         public async Task<IActionResult> DeleteUserById(Guid id)
         {
             await _userService.DeleteCustomer(id);
@@ -269,7 +273,7 @@ namespace API.Controllers
         /// <response code="401">Unauthorized — user is not authenticated.</response>
         /// <response code="404">Driver license record not found.</response>
         [HttpGet("{id}/citizen-identity")]
-        [RoleAuthorize([RoleName.Admin, RoleName.Staff])]
+        [RoleAuthorize([RoleName.SuperAdmin, RoleName.Admin, RoleName.Staff])]
         public async Task<IActionResult> GetCitizenIdentityByUserIdAsync(Guid id)
         {
             var result = await _userProfileService.GetMyCitizenIdentityAsync(id);
@@ -284,7 +288,7 @@ namespace API.Controllers
         /// <response code="401">Unauthorized — user is not authenticated.</response>
         /// <response code="404">Driver license record not found.</response>
         [HttpGet("{id}/driver-license")]
-        [RoleAuthorize([RoleName.Admin, RoleName.Staff])]
+        [RoleAuthorize([RoleName.SuperAdmin, RoleName.Admin, RoleName.Staff])]
         public async Task<IActionResult> GetDriverLicensetByUserIdAsync(Guid id)
         {
             var result = await _userProfileService.GetMyDriverLicenseAsync(id);

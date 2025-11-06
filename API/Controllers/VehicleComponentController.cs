@@ -13,7 +13,6 @@ namespace API.Controllers
     /// </summary>
     [Route("api/vehicle-components")]
     [ApiController]
-    [RoleAuthorize(RoleName.Admin)]
     public class VehicleComponentController(IVehicleComponentService vehicleComponentService) : ControllerBase
     {
         private readonly IVehicleComponentService _vehicleComponentService = vehicleComponentService;
@@ -23,6 +22,7 @@ namespace API.Controllers
         /// </summary>
         /// <returns>The unique identifier of the created dispatch request.</returns>
         /// <param name="modelId">Vehicle model id</param>
+        /// <param name="name">Vehicle model name</param>
         /// <param name="pagination">pagination options</param>
         /// <response code="200">Success.</response>
         /// <response code="401">Unauthorized — user is not authenticated.</response>
@@ -48,6 +48,7 @@ namespace API.Controllers
             var vehicleComponent = await _vehicleComponentService.GetByIdAsync(id);
             return Ok(vehicleComponent);
         }
+        
         /// <summary>
         /// Create vehicle component.
         /// </summary>
@@ -57,6 +58,7 @@ namespace API.Controllers
         /// <response code="400">Invalid type input</response>
         /// <response code="401">Unauthorized — user is not authenticated.</response>
         [HttpPost]
+        [RoleAuthorize(RoleName.SuperAdmin)]
         public async Task<IActionResult> Create(CreateVehicleComponentReq req)
         {
             var id = await _vehicleComponentService.AddAsync(req);
@@ -74,6 +76,7 @@ namespace API.Controllers
         /// <response code="401">Unauthorized — user is not authenticated.</response>
         /// <response code="404">Vehicle component not found.</response>
         [HttpPut("{id}")]
+        [RoleAuthorize(RoleName.SuperAdmin)]
         public async Task<IActionResult> Update(Guid id, UpdateVehicleComponentReq req)
         {
             await _vehicleComponentService.UpdateAsync(id, req);
@@ -89,6 +92,7 @@ namespace API.Controllers
         /// <response code="401">Unauthorized — user is not authenticated.</response>
         /// <response code="404">Vehicle component not found.</response>
         [HttpDelete("{id}")]
+        [RoleAuthorize(RoleName.SuperAdmin)]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _vehicleComponentService.DeleteAsync(id);

@@ -229,6 +229,16 @@ namespace Application
                             if (selectedVehicle == null || v.Quantity != selectedVehicle.Quantity)
                                 throw new BadRequestException(Message.DispatchMessage.InvalidNumberOfVehicles);
                         }
+
+                        var extraModels = formatedVehicles
+                            .Select(x => x.ModelId)
+                            .Except(requireDescription.Vehicles.Select(v => v.ModelId))
+                            .ToList();
+
+                        if (extraModels.Count != 0)
+                        {
+                            throw new BadRequestException(Message.DispatchMessage.InvalidNumberOfVehicles);
+                        }
                     }
 
                     await _repository.ClearDispatchRelationsAsync(entity.Id);

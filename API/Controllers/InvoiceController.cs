@@ -196,7 +196,7 @@ namespace API.Controllers
         /// <summary>
         /// Uploads the main image for a specific invoice.
         /// </summary>
-        /// <param name="invoiceId">The unique identifier of the invoice to attach the image to.</param>
+        /// <param name="id">The unique identifier of the invoice to attach the image to.</param>
         /// <param name="file">The image file to be uploaded (multipart/form-data).</param>
         /// <returns>Returns the uploaded image URL and invoice ID if successful.</returns>
         /// <response code="200">Image uploaded successfully.</response>
@@ -215,7 +215,7 @@ namespace API.Controllers
         /// <summary>
         /// Deletes the main image of a specific invoice model.
         /// </summary>
-        /// <param name="modelId">The unique identifier of the model whose image will be deleted.</param>
+        /// <param name="id">The unique identifier of the model whose image will be deleted.</param>
         /// <returns>Success message if the image is deleted successfully.</returns>
         /// <response code="200">Image deleted successfully.</response>
         /// <response code="404">Image or model not found.</response>

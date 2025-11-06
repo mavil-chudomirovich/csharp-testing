@@ -69,7 +69,7 @@ namespace API.Controllers
         /// <response code="204">Success — feedback deleted.</response>
         /// <response code="403">Forbidden — customer does not have permission to delete this feedback.</response>
         [HttpDelete("{id}")]
-        [RoleAuthorize(RoleName.Staff)]
+        [RoleAuthorize([RoleName.SuperAdmin, RoleName.Admin, RoleName.Staff])]
         public async Task<IActionResult> Delete(Guid id)
         {
             await service.DeleteAsync(id);
