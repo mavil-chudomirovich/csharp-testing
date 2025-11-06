@@ -50,10 +50,15 @@ namespace Application
             int lastMonth = StatisticHelper.GetLastMonth();
             int previousYear = StatisticHelper.GetLastMonthYear();
 
-            var customerThisMonth = customer.Count(x => x.CreatedAt.Month == DateTimeOffset.UtcNow.Month && x.CreatedAt.Year == DateTimeOffset.UtcNow.Year && x.Email == null);
+            var customerThisMonth = customer.Count(x =>
+                x != null && x.CreatedAt.Month == DateTimeOffset.UtcNow.Month 
+                && x.CreatedAt.Year == DateTimeOffset.UtcNow.Year 
+                && x.Email == null);
 
-            var customerLastMonth = customer.Count(x => x.CreatedAt.Month == lastMonth && x.CreatedAt.Year == previousYear && x.Email == null);
-
+            var customerLastMonth = customer.Count(x =>
+                x != null && x.CreatedAt.Month == lastMonth 
+                && x.CreatedAt.Year == previousYear 
+                && x.Email == null);
 
             decimal changeRate = 0;
             if (customerLastMonth > 0)
@@ -84,11 +89,11 @@ namespace Application
             int previousYear = StatisticHelper.GetLastMonthYear();
 
             var customerThisMonth = customer.Count(x =>
-                x.CreatedAt.Month == DateTimeOffset.UtcNow.Month &&
+                x != null && x.CreatedAt.Month == DateTimeOffset.UtcNow.Month &&
                 x.CreatedAt.Year == DateTimeOffset.UtcNow.Year);
 
             var customerLastMonth = customer.Count(x =>
-                x.CreatedAt.Month == lastMonth &&
+                x != null && x.CreatedAt.Month == lastMonth &&
                 x.CreatedAt.Year == previousYear);
 
             decimal changeRate = 0;
@@ -199,8 +204,6 @@ namespace Application
             };
         }
 
-
-
         public async Task<VehicleModelsStatisticRes?> GetVehicleModelTotal(Guid? stationId)
         {
             var vehicles = await _vehicleService.GetAllAsync(stationId, null);
@@ -273,26 +276,27 @@ namespace Application
                     TotalRevenue = 0
                 });
 
-                var monthlyData = Enumerable.Range(1, 12)
-                .Select(month =>
-                {
-                    var total = invoices
-                        .Where(x =>
-                            x.CreatedAt.Month == month &&
-                            x.CreatedAt.Year == year &&
-                            (x.Contract != null && (stationId == null || x.Contract.StationId == stationId))
-                        )
-                        .Sum(x => InvoiceHelper.SafeCalculateTotal(x));
+            var monthlyData = Enumerable.Range(1, 12)
+            .Select(month =>
+            {
+                var total = invoices
+                    .Where(x =>
+                        x.CreatedAt.Month == month &&
+                        x.CreatedAt.Year == year &&
+                        (x.Contract != null && (stationId == null || x.Contract.StationId == stationId))
+                    )
+                    .Sum(x => InvoiceHelper.SafeCalculateTotal(x));
 
-                    return new RevenueByMonthRes
-                    {
-                        MonthName = new DateTime(year, month, 1).ToString("MMMM"),
-                        TotalRevenue = Math.Round(total, 2)
-                    };
-                });
+                return new RevenueByMonthRes
+                {
+                    MonthName = new DateTime(year, month, 1).ToString("MMMM"),
+                    TotalRevenue = Math.Round(total, 2)
+                };
+            });
 
             return monthlyData;
         }
+        
         public async Task<IEnumerable<InvoiceByMonthRes>> GetInvoiceByYear(Guid? stationId, int year)
         {
             var invoices = await _invoiceRepository.GetAllAsync();
