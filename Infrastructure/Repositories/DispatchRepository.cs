@@ -7,16 +7,16 @@ namespace Infrastructure.Repositories
 {
     public class DispatchRepository : GenericRepository<DispatchRequest>, IDispatchRepository
     {
-        private readonly IGreenWheelDbContext _ctx;
+        //private readonly IGreenWheelDbContext _dbContext;
 
         public DispatchRepository(IGreenWheelDbContext dbContext) : base(dbContext)
         {
-            _ctx = dbContext;
+            //_dbContext = dbContext;
         }
 
         public async Task<IEnumerable<DispatchRequest>> GetAllExpandedAsync(Guid? fromStationId, Guid? toStationId, int? status)
         {
-            var query = _ctx.DispatchRequests
+            var query = _dbContext.DispatchRequests
                 .Include(x => x.FromStation)
                 .Include(x => x.ToStation)
                 .Include(x => x.RequestAdmin).ThenInclude(a => a.User)
@@ -53,7 +53,7 @@ namespace Infrastructure.Repositories
 
         public async Task<DispatchRequest?> GetByIdWithFullInfoAsync(Guid id)
         {
-            return await _ctx.DispatchRequests
+            return await _dbContext.DispatchRequests
                 .Include(x => x.FromStation)
                 .Include(x => x.ToStation)
                 .Include(x => x.RequestAdmin)
@@ -68,29 +68,30 @@ namespace Infrastructure.Repositories
                         .ThenInclude(vm => vm.Model)
                 .FirstOrDefaultAsync(x => x.Id == id && x.DeletedAt == null);
         }
+
         public async Task ClearDispatchRelationsAsync(Guid dispatchId)
         {
-            var staffs = await _ctx.DispatchRequestStaffs
+            var staffs = await _dbContext.DispatchRequestStaffs
                 .Where(x => x.DispatchRequestId == dispatchId && x.DeletedAt == null)
                 .ToListAsync();
 
-            var vehicles = await _ctx.DispatchRequestVehicles
+            var vehicles = await _dbContext.DispatchRequestVehicles
                 .Where(x => x.DispatchRequestId == dispatchId && x.DeletedAt == null)
                 .ToListAsync();
 
-            if (staffs.Any()) _ctx.DispatchRequestStaffs.RemoveRange(staffs);
-            if (vehicles.Any()) _ctx.DispatchRequestVehicles.RemoveRange(vehicles);
+            if (staffs.Any()) _dbContext.DispatchRequestStaffs.RemoveRange(staffs);
+            if (vehicles.Any()) _dbContext.DispatchRequestVehicles.RemoveRange(vehicles);
 
-            await _ctx.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task AddDispatchRelationsAsync(
             IEnumerable<DispatchRequestStaff> staffs,
             IEnumerable<DispatchRequestVehicle> vehicles)
         {
-            await _ctx.DispatchRequestStaffs.AddRangeAsync(staffs);
-            await _ctx.DispatchRequestVehicles.AddRangeAsync(vehicles);
-            await _ctx.SaveChangesAsync();
+            await _dbContext.DispatchRequestStaffs.AddRangeAsync(staffs);
+            await _dbContext.DispatchRequestVehicles.AddRangeAsync(vehicles);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

@@ -25,8 +25,9 @@ namespace Infrastructure.Repositories
 
         //public async Task<IEnumerable<User>> GetAllAsync(string? phone, string? citizenIdNumber, string? driverLicenseNumber, string? roleName);
         public async Task<PageResult<User>> GetAllWithPaginationAsync(
-            string? phone, string? citizenIdNumber, string? driverLicenseNumber, string? roleName,
-            PaginationParams pagination)
+            PaginationParams pagination,
+            string? phone, string? citizenIdNumber, string? driverLicenseNumber, string? roleName, Guid? stationId
+        )
         {
             var query = _dbContext.Users
                 .Include(user => user.Role)
@@ -49,7 +50,10 @@ namespace Infrastructure.Repositories
 
             if (!string.IsNullOrEmpty(roleName))
                 query = query.Where(u => u.Role.Name.ToLower().Contains(roleName.ToLower()));
-            
+
+            if (stationId != null)
+                query = query.Where(u => u.Staff != null && u.Staff.StationId == stationId);
+
             var total = await query.CountAsync();
 
             //var users = await query
@@ -72,6 +76,7 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync();
             return new List<User?> { user };
         }
+
         public async Task<PageResult<User>> GetAllStaffAsync(PaginationParams pagination, string? name, Guid? stationId)
         {
             var query = _dbContext.Users
@@ -110,6 +115,7 @@ namespace Infrastructure.Repositories
                .Include(user => user.CitizenIdentity).FirstOrDefaultAsync();
             return user;
         }
+
         public async Task<User?> GetByPhoneAsync(string phone)
         {
             var user = await _dbContext.Users

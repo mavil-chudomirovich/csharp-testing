@@ -37,6 +37,7 @@ namespace API.Controllers
         /// <param name="citizenIdNumber">Optional filter for the user's citizen ID number.</param>
         /// <param name="driverLicenseNumber">Optional filter for the user's driver license number.</param>
         /// <param name="roleName">Optional filter for the user's role name.</param>
+        /// <param name="stationId">Optional filter for the staff's stationId.</param>
         /// <param name="pagination">Optional filter for the pagination.</param>
         /// <returns>List of users matching the specified filters.</returns>
         /// <response code="200">Success.</response>
@@ -44,14 +45,16 @@ namespace API.Controllers
         [HttpGet]
         [RoleAuthorize(RoleName.Admin, RoleName.Staff)]
         public async Task<IActionResult> GetAll(
+            [FromQuery] PaginationParams pagination,
             [FromQuery] string? phone,
             [FromQuery] string? citizenIdNumber,
             [FromQuery] string? driverLicenseNumber,
             [FromQuery] string? roleName,
-            [FromQuery] PaginationParams pagination)
+            [FromQuery] Guid? stationId
+        )
         {
-            var users = await _userService.GetAllWithPaginationAsync(
-                phone, citizenIdNumber, driverLicenseNumber, roleName, pagination);
+            var users = await _userService.GetAllWithPaginationAsync(pagination,
+                phone, citizenIdNumber, driverLicenseNumber, roleName, stationId);
             return Ok(users);
         }
 
@@ -287,6 +290,7 @@ namespace API.Controllers
             var result = await _userProfileService.GetMyDriverLicenseAsync(id);
             return Ok(result);
         }
+
         /*
          * Status code
          * 200 success

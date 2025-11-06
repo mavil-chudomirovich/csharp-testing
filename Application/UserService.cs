@@ -69,12 +69,12 @@ namespace Application
             return user.Id;
         }
 
-        public async Task<PageResult<UserProfileViewRes>> GetAllWithPaginationAsync(
-            string? phone, string? citizenIdNumber, string? driverLicenseNumber, string? roleName,
-            PaginationParams pagination)
+        public async Task<PageResult<UserProfileViewRes>> GetAllWithPaginationAsync(PaginationParams pagination,
+            string? phone, string? citizenIdNumber, string? driverLicenseNumber, string? roleName, Guid? stationId
+        )
         {
-            var pageResult = await _userRepository.GetAllWithPaginationAsync(
-                phone, citizenIdNumber, driverLicenseNumber, roleName, pagination);
+            var pageResult = await _userRepository.GetAllWithPaginationAsync(pagination,
+                phone, citizenIdNumber, driverLicenseNumber, roleName, stationId);
 
             var mapped = _mapper.Map<IEnumerable<UserProfileViewRes>>(pageResult.Items);
 

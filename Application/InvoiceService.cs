@@ -297,7 +297,6 @@ namespace Application
             return invoices;
         }
 
-
         public async Task<InvoiceViewRes> GetInvoiceById(Guid id, bool includeItems = false, bool includeDeposit = false)
         {
             var invoice = await _uow.InvoiceRepository.GetByIdOptionAsync(id, includeItems, includeDeposit);
@@ -377,6 +376,7 @@ namespace Application
                 }
                 if (req.Type == (int)InvoiceType.Refund)
                 {
+                    invoice.Subtotal = InvoiceHelper.CalculateSubTotalAmount(items);
                     //xử lí refund cọc
                     contract.Status = (int)RentalContractStatus.RefundPending;
                     var deposit = await _uow.DepositRepository.GetByContractIdAsync(req.ContractId)

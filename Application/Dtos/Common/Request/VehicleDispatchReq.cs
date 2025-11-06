@@ -9,6 +9,6 @@ namespace Application.Dtos.Common.Request
     public class VehicleDispatchReq
     {
         public Guid ModelId { get; set; }
-        public int NumberOfVehicle { get; set; }
+        public int Quantity { get; set; }
     }
 }
