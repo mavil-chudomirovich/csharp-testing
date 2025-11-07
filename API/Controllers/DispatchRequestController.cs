@@ -15,7 +15,6 @@ namespace API.Controllers
     /// </summary>
     [ApiController]
     [Route("api/dispatch-requests")]
-    [RoleAuthorize(RoleName.Admin)]
     public class DispatchRequestController(IDispatchRequestService dispatchRequestService, IUserService userService, IStaffRepository staffRepository) : ControllerBase
     {
         private readonly IDispatchRequestService _dispatchRequestService = dispatchRequestService;
@@ -41,6 +40,25 @@ namespace API.Controllers
         }
 
         /// <summary>
+        /// Assign a station to a dispatch request (super admin only).
+        /// </summary>
+        /// <param name="id">The unique identifier of the dispatch request to update.</param>
+        /// <param name="req">Request containing the assign station id.</param>
+        /// <returns>Success message if the dispatch request status is updated successfully.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Invalid status update data.</response>
+        /// <response code="401">Unauthorized — user is not authenticated.</response>
+        /// <response code="403">Forbidden — user does not have permission to perform this action.</response>
+        /// <response code="404">Dispatch request not found.</response>
+        [HttpPut("{id:guid}/confirm")]
+        [RoleAuthorize(RoleName.SuperAdmin)]
+        public async Task<IActionResult> Confirm([FromRoute] Guid id, [FromBody] ConfirmDispatchReq req)
+        {
+            await _dispatchRequestService.ConfirmAsync(id, req);
+            return Ok();
+        }
+
+        /// <summary>
         /// Updates the status of a dispatch request (accessible by staff or admin).
         /// </summary>
         /// <param name="id">The unique identifier of the dispatch request to update.</param>
@@ -52,6 +70,7 @@ namespace API.Controllers
         /// <response code="403">Forbidden — user does not have permission to perform this action.</response>
         /// <response code="404">Dispatch request not found.</response>
         [HttpPut("{id:guid}")]
+        [RoleAuthorize(RoleName.Admin, RoleName.SuperAdmin)]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateDispatchReq req)
         {
             var userId = Guid.Parse(User.FindFirst(JwtRegisteredClaimNames.Sid)!.Value);
@@ -73,6 +92,7 @@ namespace API.Controllers
         /// <response code="401">Unauthorized — user is not authenticated.</response>
         /// <response code="403">Forbidden — user does not have permission to perform this action.</response>
         [HttpGet]
+        [RoleAuthorize(RoleName.Admin, RoleName.SuperAdmin)]
         public async Task<IActionResult> GetAll(
             [FromQuery] Guid? fromStationId,
             [FromQuery] Guid? toStationId,
@@ -90,6 +110,7 @@ namespace API.Controllers
         /// <response code="200">Success.</response>
         /// <response code="404">Dispatch request not found.</response>
         [HttpGet("{id:guid}")]
+        [RoleAuthorize(RoleName.Admin, RoleName.SuperAdmin)]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var res = await _dispatchRequestService.GetByIdAsync(id);
@@ -97,6 +118,20 @@ namespace API.Controllers
                 return NotFound();
 
             return Ok(res);
+        }
+
+        /// <summary>
+        /// Get valid stations for dispatching a specific dispatch request (super admin only).
+        /// </summary>
+        /// <param name="id">The unique identifier of the dispatch request.</param>
+        /// <returns>Valid stations for the description dispatch</returns>
+        /// <response code="200">Success.</response>
+        [HttpGet("{id:guid}/valid-stations")]
+        [RoleAuthorize(RoleName.SuperAdmin)]
+        public async Task<IActionResult> GetValidStationsForDispatch([FromRoute] Guid id)
+        {
+            var stations = await _dispatchRequestService.GetValidStationWithDescription(id);
+            return Ok(stations);
         }
     }
 }

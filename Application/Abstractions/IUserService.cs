@@ -17,17 +17,16 @@ namespace Application.Abstractions
 {
     public interface IUserService
     {
-
-
         Task<Guid> CreateAsync(CreateUserReq req);
 
         //Task<IEnumerable<UserProfileViewRes>> GetAllAsync(string? phone, string? citizenIdNumber, string? driverLicenseNumber);
         Task<PageResult<UserProfileViewRes>> GetAllWithPaginationAsync(
-            string? phone, 
-            string? citizenIdNumber, 
-            string? driverLicenseNumber, 
+            PaginationParams pagination,
+            string? phone,
+            string? citizenIdNumber,
+            string? driverLicenseNumber,
             string? roleName,
-            PaginationParams? pagination);
+            Guid? stationId);
 
         Task<UserProfileViewRes?> GetByIdAsync(Guid id);
 
@@ -36,7 +35,7 @@ namespace Application.Abstractions
         Task<UserProfileViewRes> GetByCitizenIdentityAsync(string idNumber);
 
         Task<UserProfileViewRes> GetByDriverLicenseAsync(string number);
-        
+
         Task<PageResult<UserProfileViewRes>> GetAllStaffAsync(PaginationParams pagination, string? name, Guid? stationId);
 
         Task DeleteCustomer(Guid id);

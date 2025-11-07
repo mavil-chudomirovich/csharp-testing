@@ -1,4 +1,5 @@
-﻿using Application.Dtos.VehicleModel.Request;
+﻿using Application.Dtos.RentalContract.Respone;
+using Application.Dtos.VehicleModel.Request;
 using Application.Dtos.VehicleModel.Respone;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
@@ -28,5 +29,6 @@ namespace Application.Abstractions
         Task UpdateVehicleModelComponentsAsync(Guid id, UpdateModelComponentsReq req);
         Task<IEnumerable<VehicleModelViewRes>> GetAllAsync();
         Task<IEnumerable<string>> GetAllModelMainImage();
+        Task<IEnumerable<BestRentedModel>> GetBestRentedModelsAsync(int months, int limit);
     }
 }

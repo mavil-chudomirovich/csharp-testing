@@ -16,7 +16,7 @@ namespace Application.Abstractions
         Task DeleteAsync(Guid id);
         Task<Guid> AddAsync(CreateVehicleComponentReq req);
         Task UpdateAsync(Guid id, UpdateVehicleComponentReq req);
-        Task<PageResult<VehicleComponentViewRes>> GetAllAsync(Guid? id, string name, PaginationParams pagination);
+        Task<PageResult<VehicleComponentViewRes>> GetAllAsync(Guid? id, string? name, PaginationParams pagination);
         Task<VehicleComponentViewRes> GetByIdAsync(Guid id);
     }
 }

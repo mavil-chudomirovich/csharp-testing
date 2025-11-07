@@ -2,6 +2,7 @@
 using Application.Dtos.Common.Response;
 using Application.Dtos.Dispatch.Request;
 using Application.Dtos.Dispatch.Response;
+using Application.Dtos.Station.Respone;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,5 +23,7 @@ namespace Application.Abstractions
         Task<IEnumerable<DispatchRes>> GetAllAsync(Guid? fromStationId, Guid? toStationId, DispatchRequestStatus? status);
 
         Task<DispatchRes?> GetByIdAsync(Guid id);
+        Task ConfirmAsync(Guid id, ConfirmDispatchReq req);
+        Task<StationViewRes[]> GetValidStationWithDescription(Guid id);
     }
 }

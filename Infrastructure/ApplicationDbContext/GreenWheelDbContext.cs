@@ -72,6 +72,7 @@ public partial class GreenWheelDbContext : DbContext, IGreenWheelDbContext
 
     public virtual DbSet<VehicleSegment> VehicleSegments { get; set; }
     public virtual DbSet<BusinessVariable> BusinessVariables { get; set; }
+
     public DbSet<T> Set<T>() where T : class, IEntity => base.Set<T>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -227,9 +228,7 @@ public partial class GreenWheelDbContext : DbContext, IGreenWheelDbContext
                 .HasDefaultValueSql("(sysdatetimeoffset())")
                 .HasColumnName("created_at");
             entity.Property(e => e.DeletedAt).HasColumnName("deleted_at");
-            entity.Property(e => e.Description)
-                .HasMaxLength(255)
-                .HasColumnName("description");
+            entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.FromStationId).HasColumnName("from_station_id");
             entity.Property(e => e.RequestAdminId).HasColumnName("request_admin_id");
             entity.Property(e => e.Status).HasColumnName("status");

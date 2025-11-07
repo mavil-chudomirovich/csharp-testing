@@ -13,8 +13,8 @@ namespace Application.Validators.Dispatch
     {
         public CreateDispatchReqValidator()
         {
-            RuleFor(x => x.FromStationId)
-                .NotEmpty().WithMessage(Message.DispatchMessage.FromStationIsRequire);
+            //RuleFor(x => x.FromStationId)
+            //    .NotEmpty().WithMessage(Message.DispatchMessage.FromStationIsRequire);
         }
     }
 }

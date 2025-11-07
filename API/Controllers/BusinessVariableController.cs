@@ -38,7 +38,7 @@ namespace API.Controllers
         /// <response code="400">Missing field required</response>
         /// <response code="404">Not found</response>
         [HttpPut("{id}")]
-        [RoleAuthorize(RoleName.Admin)]
+        [RoleAuthorize(RoleName.SuperAdmin)]
         public async Task<IActionResult> UpdateBusinessVariables([FromRoute] Guid id, [FromBody] UpdateBusinessVariableReq req)
         {
             await _businessVariableService.UpdateAsync(id, req);

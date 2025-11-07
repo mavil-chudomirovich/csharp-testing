@@ -25,9 +25,8 @@ namespace API.Controllers
         /// <response code="400">Invalid vehicle data.</response>
         /// <response code="401">Unauthorized — user is not authenticated.</response>
         /// <response code="403">Forbidden — user does not have permission to perform this action.</response>
-
-        [RoleAuthorize(RoleName.Admin)]
         [HttpPost]
+        [RoleAuthorize(RoleName.Admin)]
         public async Task<IActionResult> CreateVehicle(CreateVehicleReq createVehicleReq)
         {
             var vehicleId = await _vehicleService.CreateVehicleAsync(createVehicleReq);
@@ -47,7 +46,6 @@ namespace API.Controllers
         /// <response code="401">Unauthorized — user is not authenticated.</response>
         /// <response code="403">Forbidden — user does not have permission to perform this action.</response>
         /// <response code="404">Vehicle does not exist.</response>
-
         [RoleAuthorize(RoleName.Staff, RoleName.Admin)]
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateVehicle([FromRoute] Guid id, UpdateVehicleReq updateVehicleReq)
@@ -65,9 +63,8 @@ namespace API.Controllers
         /// <response code="401">Unauthorized — user is not authenticated.</response>
         /// <response code="403">Forbidden — user does not have permission to perform this action.</response>
         /// <response code="404">Vehicle not found.</response>
-
-        [RoleAuthorize("Admin")]
         [HttpDelete("{id}")]
+        [RoleAuthorize(RoleName.Admin)]
         public async Task<IActionResult> DeleteVehicle([FromRoute] Guid id)
         {
             await _vehicleService.DeleteVehicle(id);
@@ -77,6 +74,7 @@ namespace API.Controllers
         /// <summary>
         /// Retrieves all vehicles with optional filters for name, station, status, or license plate (admin or staff only).
         /// </summary>
+        /// <param name="pagination">Optional pagination for vehicles.</param>
         /// <param name="name">Optional filter for vehicle name.</param>
         /// <param name="stationId">Optional filter for the station where the vehicle is located.</param>
         /// <param name="status">Optional filter for vehicle status (e.g., available, rented, maintenance).</param>
@@ -85,7 +83,6 @@ namespace API.Controllers
         /// <response code="200">Success.</response>
         /// <response code="401">Unauthorized — user is not authenticated.</response>
         /// <response code="403">Forbidden — user does not have permission to perform this action.</response>
-        [RoleAuthorize(RoleName.Staff, RoleName.Admin)]
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] PaginationParams pagination, string? name, Guid? stationId, int? status, string? licensePlate)
         {
@@ -102,7 +99,6 @@ namespace API.Controllers
         /// <response code="401">Unauthorized — user is not authenticated.</response>
         /// <response code="403">Forbidden — user does not have permission to perform this action.</response>
         /// <response code="404">Vehicle not found.</response>
-        [RoleAuthorize(RoleName.Staff, RoleName.Admin)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {

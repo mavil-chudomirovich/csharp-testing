@@ -11,7 +11,9 @@ namespace Application.Validators.Vehicle
         {
             RuleFor(x => x.LicensePlate)
                 .NotEmpty().WithMessage(Message.VehicleMessage.LicensePlateRequired)
-                .MaximumLength(15).WithMessage(Message.VehicleMessage.LicensePlateIsExist); 
+                .Matches(@"^(0[1-9]|[1-9][0-9])[A-Z]-\d{3}\.\d{2}$")
+                .WithMessage(Message.VehicleMessage.InvalidLicensePlateFormat);
+
             RuleFor(x => x.ModelId)
                 .NotEqual(Guid.Empty).WithMessage(Message.VehicleMessage.ModelIdRequired);
 

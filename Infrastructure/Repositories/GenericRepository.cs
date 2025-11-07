@@ -78,6 +78,18 @@ namespace Infrastructure.Repositories
             return entityFromDb;
         }
 
+        public virtual async Task<T[]> GetByIdsAsync(Guid[] ids)
+        {
+            var query = _dbSet.AsQueryable().Where(e => ids.Contains(e.Id));
+            if (typeof(SorfDeletedEntity).IsAssignableFrom(typeof(T)))
+            {
+                query = query.Cast<SorfDeletedEntity>()
+                             .Where(x => x.DeletedAt == null)
+                             .Cast<T>();
+            }
+            return await query.ToArrayAsync();
+        }
+
         public virtual async Task<int> UpdateAsync(T entity)
         {
             var entityFromDb = await GetByIdAsync(entity.Id);
@@ -106,6 +118,7 @@ namespace Infrastructure.Repositories
 
             await _dbSet.AddRangeAsync(entities);
         }
+
         public virtual async Task<IEnumerable<T>> FindAsync(
             Expression<Func<T, bool>> predicate,
             params Expression<Func<T, object>>[] includes)

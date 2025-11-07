@@ -53,7 +53,7 @@ namespace API.Controllers
         /// <response code="400">Bad request.</response>
         /// <response code="409">duplicate name.</response>
         [HttpPost]
-        [RoleAuthorize(RoleName.Admin)]
+        [RoleAuthorize(RoleName.SuperAdmin)]
         public async Task<IActionResult> CreateSegment([FromBody] CreateSegmentReq req)
         {
             var id = await _vehicleSegmentSerivce.CreateAsync(req);
@@ -69,7 +69,7 @@ namespace API.Controllers
         /// <response code="200">Success.</response>
         /// <response code="409">duplicate name.</response>
         [HttpPut("{id}")]
-        [RoleAuthorize(RoleName.Admin)]
+        [RoleAuthorize(RoleName.SuperAdmin)]
         public async Task<IActionResult> UpdateSegment([FromRoute] Guid id, [FromBody] UpdateSegmentReq req)
         {
             await _vehicleSegmentSerivce.UpdateAsync(id, req);
@@ -83,7 +83,7 @@ namespace API.Controllers
         /// <returns>List of vehicle segments.</returns>
         /// <response code="200">Success.</response>
         [HttpDelete("{id}")]
-        [RoleAuthorize(RoleName.Admin)]
+        [RoleAuthorize(RoleName.SuperAdmin)]
         public async Task<IActionResult> DeleteSegment([FromRoute] Guid id)
         {
             await _vehicleSegmentSerivce.DeleteAsync(id);

@@ -16,13 +16,19 @@ namespace Application.Repositories
         Task<Vehicle?> GetByLicensePlateAsync(string licensePlate);
 
         Task<IEnumerable<Vehicle>?> GetVehicles(Guid stationId, Guid modelId);
+
         Task<Vehicle?> GetByIdOptionAsync(Guid id, bool includeModel = false);
 
         Task<int> CountVehiclesInStationAsync(Guid[] vehicleIds, Guid stationId);
+
         Task<PageResult<Vehicle>> GetAllAsync(PaginationParams pagination, string? name, Guid? stationId, int? status, string? licensePlate);
+
         Task UpdateStationForDispatchAsync(Guid dispatchId, Guid toStationId);
+
         Task<IEnumerable<Vehicle>> GetAllAsync(Guid? stationId, int? status);
+
         Task<int> CountAvailableVehiclesByModelAsync(Guid stationId, Guid modelId);
+
         Task<List<Vehicle>> GetAvailableVehiclesByIdsAsync(Guid stationId, Guid[] vehicleIds);
     }
 }

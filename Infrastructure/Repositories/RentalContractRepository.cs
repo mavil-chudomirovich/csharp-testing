@@ -1,6 +1,7 @@
 ﻿using Application.Constants;
 using Application.Dtos.Common.Request;
 using Application.Dtos.Common.Response;
+using Application.Dtos.RentalContract.Respone;
 using Application.Repositories;
 using Domain.Entities;
 using Infrastructure.ApplicationDbContext;
@@ -241,6 +242,29 @@ namespace Infrastructure.Repositories
                                                     .Include(r => r.Station)
                                                     .ToArrayAsync();
         }
+
+        public async Task<IEnumerable<BestRentedModel>> GetBestRentedModelsAsync(int months, int limit)
+        {
+            var fromDate = DateTimeOffset.UtcNow.AddMonths(-months);
+
+            var query =
+                from vm in _dbContext.VehicleModels
+                join v in _dbContext.Vehicles on vm.Id equals v.ModelId
+                join rc in _dbContext.RentalContracts on v.Id equals rc.VehicleId
+                where rc.StartDate >= fromDate
+                      && rc.DeletedAt == null
+                group rc by new { vm.Id, vm.Name } into g
+                orderby g.Count() descending
+                select new BestRentedModel
+                {
+                    ModelId = g.Key.Id,
+                    ModelName = g.Key.Name,
+                    RentedCount = g.Count()
+                };
+
+            return await query.Take(limit).ToListAsync();
+        }
+
 
     }
 }

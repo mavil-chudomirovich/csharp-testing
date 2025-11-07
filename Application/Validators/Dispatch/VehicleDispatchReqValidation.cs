@@ -16,7 +16,7 @@ namespace Application.Validators.Dispatch
         {
             RuleFor(x => x.ModelId)
                 .NotEmpty().NotNull().WithMessage(Message.DispatchMessage.ModelRequied);
-            RuleFor(x => x.NumberOfVehicle)
+            RuleFor(x => x.Quantity)
                 .NotEmpty()
                 .GreaterThan(0)
                 .WithMessage(Message.DispatchMessage.NumberOfVehicleShouldGreaterThanZero);

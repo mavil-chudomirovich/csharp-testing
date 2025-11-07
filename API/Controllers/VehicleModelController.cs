@@ -22,53 +22,11 @@ namespace API.Controllers
         private readonly IModelImageService _modelImageService = modelImageService;
 
         /// <summary>
-        /// Creates a new vehicle model (admin only).
-        /// </summary>
-        /// <param name="createVehicleModelReq">Request containing vehicle model details such as name, brand, segment, and specifications.</param>
-        /// <returns>The unique identifier of the created vehicle model.</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">Invalid vehicle model data or type.</response>
-        /// <response code="401">Unauthorized — user is not authenticated.</response>
-        /// <response code="403">Forbidden — user does not have permission to perform this action.</response>
-
-        [RoleAuthorize(RoleName.Admin)]
-        [HttpPost]
-        public async Task<IActionResult> CreateVehicleModel([FromBody] CreateVehicleModelReq createVehicleModelReq)
-        {
-            var id = await _vehicleModelService.CreateVehicleModelAsync(createVehicleModelReq);
-            return Ok(new
-            {
-                Id = id
-            });
-        }
-
-        /// <summary>
-        /// Updates an existing vehicle model by its unique identifier (admin only).
-        /// </summary>
-        /// <param name="id">The unique identifier of the vehicle model to update.</param>
-        /// <param name="updateVehicleModelReq">Request containing updated vehicle model details such as name, specifications, or type.</param>
-        /// <returns>Success message if the vehicle model is updated successfully.</returns>
-        /// <response code="200">Success.</response>
-        /// <response code="400">Invalid vehicle model data or type.</response>
-        /// <response code="401">Unauthorized — user is not authenticated.</response>
-        /// <response code="403">Forbidden — user does not have permission to perform this action.</response>
-        /// <response code="404">Vehicle model not found.</response>
-
-        [RoleAuthorize(RoleName.Admin)]
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> UpdateVehicleModel([FromRoute] Guid id, UpdateVehicleModelReq updateVehicleModelReq)
-        {
-            await _vehicleModelService.UpdateVehicleModelAsync(id, updateVehicleModelReq);
-            return Ok();
-        }
-
-        /// <summary>
         /// Searches for vehicle models based on the provided filter criteria.
         /// </summary>
         /// <param name="vehicleFilterReq">Request containing filter parameters such as brand, segment, price range, or capacity.</param>
         /// <returns>List of vehicle models matching the filter criteria.</returns>
         /// <response code="200">Success.</response>
-
         [HttpGet("search")]
         public async Task<IActionResult> SearchVehicleModel([FromQuery] VehicleFilterReq vehicleFilterReq)
         {
@@ -101,13 +59,62 @@ namespace API.Controllers
         /// <returns>Detailed vehicle model information with availability data.</returns>
         /// <response code="200">Success.</response>
         /// <response code="404">Vehicle model not found.</response>
-
         [HttpGet("{id}")]
         public async Task<IActionResult> GetVehicelModelById([FromRoute] Guid id, Guid stationId,
                                                  DateTimeOffset startDate, DateTimeOffset endDate)
         {
             var verhicelModelView = await _vehicleModelService.GetByIdAsync(id, stationId, startDate, endDate);
             return Ok(verhicelModelView);
+        }
+
+        /// <summary>
+        /// Get All main image.
+        /// </summary>
+        /// <response code="200">Success.</response>
+        [HttpGet("main-images")]
+        public async Task<IActionResult> GetAllModelMainImage()
+        {
+            var res = await _vehicleModelService.GetAllModelMainImage();
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// Creates a new vehicle model (admin only).
+        /// </summary>
+        /// <param name="createVehicleModelReq">Request containing vehicle model details such as name, brand, segment, and specifications.</param>
+        /// <returns>The unique identifier of the created vehicle model.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Invalid vehicle model data or type.</response>
+        /// <response code="401">Unauthorized — user is not authenticated.</response>
+        /// <response code="403">Forbidden — user does not have permission to perform this action.</response>
+        [HttpPost]
+        [RoleAuthorize(RoleName.SuperAdmin, RoleName.Admin)]
+        public async Task<IActionResult> CreateVehicleModel([FromBody] CreateVehicleModelReq createVehicleModelReq)
+        {
+            var id = await _vehicleModelService.CreateVehicleModelAsync(createVehicleModelReq);
+            return Ok(new
+            {
+                Id = id
+            });
+        }
+
+        /// <summary>
+        /// Updates an existing vehicle model by its unique identifier (admin only).
+        /// </summary>
+        /// <param name="id">The unique identifier of the vehicle model to update.</param>
+        /// <param name="updateVehicleModelReq">Request containing updated vehicle model details such as name, specifications, or type.</param>
+        /// <returns>Success message if the vehicle model is updated successfully.</returns>
+        /// <response code="200">Success.</response>
+        /// <response code="400">Invalid vehicle model data or type.</response>
+        /// <response code="401">Unauthorized — user is not authenticated.</response>
+        /// <response code="403">Forbidden — user does not have permission to perform this action.</response>
+        /// <response code="404">Vehicle model not found.</response>
+        [HttpPatch("{id}")]
+        [RoleAuthorize(RoleName.SuperAdmin, RoleName.Admin)]
+        public async Task<IActionResult> UpdateVehicleModel([FromRoute] Guid id, UpdateVehicleModelReq updateVehicleModelReq)
+        {
+            await _vehicleModelService.UpdateVehicleModelAsync(id, updateVehicleModelReq);
+            return Ok();
         }
 
         /// <summary>
@@ -119,9 +126,8 @@ namespace API.Controllers
         /// <response code="401">Unauthorized — user is not authenticated.</response>
         /// <response code="403">Forbidden — user does not have permission to perform this action.</response>
         /// <response code="404">Vehicle model not found.</response>
-
-        [RoleAuthorize(RoleName.Admin)]
         [HttpDelete("{id}")]
+        [RoleAuthorize(RoleName.SuperAdmin, RoleName.Admin)]
         public async Task<IActionResult> DeleteVehicleModel([FromRoute] Guid id)
         {
             await _vehicleModelService.DeleteVehicleModleAsync(id);
@@ -141,6 +147,7 @@ namespace API.Controllers
         [HttpPost("{modelId}/sub-images")]
         [Consumes("multipart/form-data")]
         [ApiExplorerSettings(IgnoreApi = true)]
+        [RoleAuthorize(RoleName.SuperAdmin, RoleName.Admin)]
         public async Task<IActionResult> UploadSubImages([FromRoute] Guid modelId, [FromForm] UploadImagesReq req)
         {
             var res = await _modelImageService.UploadModelImagesAsync(modelId, req.Files);
@@ -159,6 +166,7 @@ namespace API.Controllers
         [HttpDelete("{modelId}/sub-images")]
         [Consumes("application/json")]
         [ApiExplorerSettings(IgnoreApi = true)]
+        [RoleAuthorize(RoleName.SuperAdmin, RoleName.Admin)]
         public async Task<IActionResult> DeleteSubImages([FromRoute] Guid modelId, [FromBody] DeleteModelImagesReq req)
         {
             await _modelImageService.DeleteModelImagesAsync(modelId, req.ImageIds);
@@ -178,6 +186,7 @@ namespace API.Controllers
         [HttpPost("{modelId}/main-image")]
         [Consumes("multipart/form-data")]
         [ApiExplorerSettings(IgnoreApi = true)]
+        [RoleAuthorize(RoleName.SuperAdmin, RoleName.Admin)]
         public async Task<IActionResult> UploadMainImage([FromRoute] Guid modelId, [FromForm(Name = "file")] IFormFile file)
         {
             var imageUrl = await _vehicleModelService.UploadMainImageAsync(modelId, file);
@@ -193,6 +202,7 @@ namespace API.Controllers
         /// <response code="404">Vehicle model or main image not found.</response>
         [HttpDelete("{modelId}/main-image")]
         [ApiExplorerSettings(IgnoreApi = true)]
+        [RoleAuthorize(RoleName.SuperAdmin, RoleName.Admin)]
         public async Task<IActionResult> DeleteMainImage([FromRoute] Guid modelId)
         {
             await _vehicleModelService.DeleteMainImageAsync(modelId);
@@ -212,6 +222,7 @@ namespace API.Controllers
         [HttpPost("{modelId}/images")]
         [Consumes("multipart/form-data")]
         [ApiExplorerSettings(IgnoreApi = true)]
+        [RoleAuthorize(RoleName.SuperAdmin, RoleName.Admin)]
         public async Task<IActionResult> UploadAllImages([FromRoute] Guid modelId, [FromForm] UploadImagesReq req)
         {
             var res = await _modelImageService.UploadAllModelImagesAsync(modelId, req.Files);
@@ -225,22 +236,33 @@ namespace API.Controllers
         /// <param name="req">Update model component req.</param>
         /// <returns>The uploaded main image and gallery image URLs with a success message.</returns>
         /// <response code="200">Success.</response>
-        [RoleAuthorize(RoleName.Admin)]
         [HttpPut("{id}/components")]
+        [RoleAuthorize(RoleName.SuperAdmin, RoleName.Admin)]
         public async Task<IActionResult> UpdateVehicleModelComponents([FromRoute] Guid id, [FromBody] UpdateModelComponentsReq req)
         {
             await _vehicleModelService.UpdateVehicleModelComponentsAsync(id, req);
             return Ok();
         }
 
+        // /// <summary>
+        // /// Get All main image.
+        // /// </summary>
+        // /// <response code="200">Success.</response>
+        // [HttpGet("main-images")]
+        // public async Task<IActionResult> GetAllModelMainImage()
+        // {
+        //     var res = await _vehicleModelService.GetAllModelMainImage();
+        //     return Ok(res);
+        // }
+
         /// <summary>
-        /// Get All main image.
+        /// Get best sellers 
         /// </summary>
         /// <response code="200">Success.</response>
-        [HttpGet("main-images")]
-        public async Task<IActionResult> GetAllModelMainImage()
+        [HttpGet("best-booking")]
+        public async Task<IActionResult> GetBestRentedModelsAsync([FromQuery] int? months = 3, [FromQuery] int? limit = 3)
         {
-            var res = await _vehicleModelService.GetAllModelMainImage();
+            var res = await _vehicleModelService.GetBestRentedModelsAsync((int)months!, (int)limit!);
             return Ok(res);
         }
     }

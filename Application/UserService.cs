@@ -53,7 +53,8 @@ namespace Application
 
             var user = _mapper.Map<User>(req);
             var roles = _cache.Get<List<Role>>(Common.SystemCache.AllRoles);
-            var userRoleId = roles.FirstOrDefault(r => string.Compare(r.Name, req.RoleName, StringComparison.OrdinalIgnoreCase) == 0)!.Id;
+            var userRoleId = roles
+                .FirstOrDefault(r => string.Compare(r.Name, req.RoleName, StringComparison.OrdinalIgnoreCase) == 0)!.Id;
             user.RoleId = userRoleId;
             await _userRepository.AddAsync(user);
 
@@ -69,12 +70,12 @@ namespace Application
             return user.Id;
         }
 
-        public async Task<PageResult<UserProfileViewRes>> GetAllWithPaginationAsync(
-            string? phone, string? citizenIdNumber, string? driverLicenseNumber, string? roleName,
-            PaginationParams pagination)
+        public async Task<PageResult<UserProfileViewRes>> GetAllWithPaginationAsync(PaginationParams pagination,
+            string? phone, string? citizenIdNumber, string? driverLicenseNumber, string? roleName, Guid? stationId
+        )
         {
-            var pageResult = await _userRepository.GetAllWithPaginationAsync(
-                phone, citizenIdNumber, driverLicenseNumber, roleName, pagination);
+            var pageResult = await _userRepository.GetAllWithPaginationAsync(pagination,
+                phone, citizenIdNumber, driverLicenseNumber, roleName, stationId);
 
             var mapped = _mapper.Map<IEnumerable<UserProfileViewRes>>(pageResult.Items);
 

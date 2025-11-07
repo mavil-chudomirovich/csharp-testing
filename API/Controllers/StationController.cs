@@ -38,7 +38,6 @@ namespace API.Controllers
         /// <response code="200">Station found.</response>
         /// <response code="404">Station not found.</response>
         [HttpGet("{id:guid}")]
-        [RoleAuthorize(RoleName.SuperAdmin)]
         public async Task<IActionResult> GetById(Guid id)
         {
             var station = await _stationService.GetByIdAsync(id);

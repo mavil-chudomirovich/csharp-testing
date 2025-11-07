@@ -94,7 +94,7 @@ namespace Application
                 var contract = new RentalContract()
                 {
                     Id = contractId,
-                    Description = $"This contract was created by the customer through the online booking system." +
+                    Description = $"This booking was created by the customer through the online booking system." +
                     $"\r\nThe vehicle will be reserved at {station.Name} from {createReq.StartDate} to {createReq.EndDate}." +
                     $"\r\nCustomer rented the vehicle for {days} days.",
                     Notes = createReq.Notes,
@@ -353,7 +353,7 @@ namespace Application
             {
                 throw new ForbidenException(Message.UserMessage.DoNotHavePermission);
             }
-            contract.Description += "\r\nThe contract was canceled by the customer.";
+            contract.Description += "\r\nThe booking was canceled by the customer.";
             if (contract.Status != (int)RentalContractStatus.PaymentPending && contract.Status != (int)RentalContractStatus.RequestPeding)
             {
                 throw new BadRequestException(Message.RentalContractMessage.CanNotCancel);
@@ -489,7 +489,7 @@ namespace Application
                 else
                 {
                     rentalContract.Status = (int)RentalContractStatus.Cancelled;
-                    rentalContract.Description += "\r\nThe contract was canceled by the staff due to vehicle unavailability.";
+                    rentalContract.Description += "\r\nThe booking was canceled by the staff due to vehicle unavailability.";
                     await _uow.RentalContractRepository.UpdateAsync(rentalContract);
                     subject = "[GreenWheel] Vehicle Unavailable, Booking Cancelled";
                     templatePath = Path.Combine(basePath, "Templates", "RejectRentalContractEmailTempate.html");
@@ -567,7 +567,7 @@ namespace Application
                                     {
                                         contract_.VehicleId = vehicle.Id;
                                     }
-                                    var subject = "[GreenWheel] Issue Detected in Your GreenWheel Rental Contract";
+                                    var subject = "[GreenWheel] Issue Detected in Your GreenWheel Booking";
                                     var templatePath = Path.Combine(AppContext.BaseDirectory, "Templates", "VehicleIssueNotification.html");
                                     var body = System.IO.File.ReadAllText(templatePath);
                                     var customer = contract_.Customer;
@@ -814,7 +814,7 @@ namespace Application
             {
                 return;
             }
-            var subject = "[GreenWheel] Rental Contract Cancelled – Pickup Deadline Missed";
+            var subject = "[GreenWheel] Booking Cancelled – Pickup Deadline Missed";
             await _uow.BeginTransactionAsync();
             try
             {

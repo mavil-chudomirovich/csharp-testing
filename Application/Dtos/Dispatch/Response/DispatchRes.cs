@@ -7,9 +7,9 @@ namespace Application.Dtos.Dispatch.Response
         public Guid Id { get; init; }
         public DispatchDescriptionDto? Description { get; init; }
 
-        public Guid FromStationId { get; init; }
+        public Guid? FromStationId { get; init; }
         public Guid ToStationId { get; init; }
-        public string FromStationName { get; init; } = default!;
+        public string? FromStationName { get; init; } = default!;
         public string ToStationName { get; init; } = default!;
 
         public DispatchRequestStatus Status { get; init; }
@@ -38,7 +38,7 @@ namespace Application.Dtos.Dispatch.Response
 
     public class DispatchDescriptionDto
     {
-        public int NumberOfStaff { get; set; }
+        public int NumberOfStaffs { get; set; }
         public IList<DispatchDescriptionVehicleDto>? Vehicles { get; set; }
     }
 }

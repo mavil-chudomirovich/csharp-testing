@@ -1,5 +1,6 @@
 ﻿using Application.Dtos.Common.Request;
 using Application.Dtos.Common.Response;
+using Application.Dtos.RentalContract.Respone;
 using Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,7 @@ namespace Application.Repositories
         Task<IEnumerable<RentalContract>> GetLateReturnContract();
         Task<IEnumerable<RentalContract>> GetExpiredContractAsync();
         Task<IEnumerable<RentalContract?>> GetAllRentalContractsAsync();
+        Task<IEnumerable<BestRentedModel>> GetBestRentedModelsAsync(int months, int limit);
 
     }
 }
