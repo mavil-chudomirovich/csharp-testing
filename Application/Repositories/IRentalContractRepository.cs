@@ -23,6 +23,7 @@ namespace Application.Repositories
             int? status, Guid? stationId = null);
         Task<IEnumerable<RentalContract>> GetLateReturnContract();
         Task<IEnumerable<RentalContract>> GetExpiredContractAsync();
+        Task<IEnumerable<RentalContract?>> GetAllRentalContractsAsync();
         Task<IEnumerable<BestRentedModel>> GetBestRentedModelsAsync(int months, int limit);
 
     }
