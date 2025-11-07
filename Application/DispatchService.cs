@@ -190,9 +190,6 @@ namespace Application
             switch ((DispatchRequestStatus)req.Status)
             {
                 case DispatchRequestStatus.Assigned:
-                    if (entity.FromStationId == null)
-                        throw new Exception(Message.DispatchMessage.FromStationIsRequire);
-
                     DispatchValidationHelper.EnsureCanUpdate(
                         currentAdminStationId,
                         entity.FromStationId!.Value,
@@ -201,12 +198,17 @@ namespace Application
                         Message.UserMessage.DoNotHavePermission,
                         Message.DispatchMessage.OnlyApproveCanAssign);
 
-                    //if (req.StaffIds == null || req.VehicleIds == null)
-                    //    throw new BadRequestException(Message.DispatchMessage.IdNull);
+                    // check if any required field is null
+                    if (entity.FromStationId == null)
+                        throw new Exception(Message.DispatchMessage.FromStationIsRequire);
+                    if (entity.FinalDescription == null)
+                        throw new Exception(Message.DispatchMessage.FinalDescriptionIsRequire);
 
-                    var requireDescription = JsonHelper.DeserializeJSON<DispatchDescriptionDto>(entity.Description)
+                    // parse final description to object
+                    var requireDescription = JsonHelper.DeserializeJSON<DispatchDescriptionDto>(entity.FinalDescription)
                         ?? throw new Exception(Message.JsonMessage.ParsingFailed);
 
+                    // validate number of staffs
                     var staffs = await _staffRepository.GetByIdsAsync(req.StaffIds);
                     var filteredStaffs = staffs
                         .Where(s => s.StationId == entity.FromStationId)
@@ -215,6 +217,7 @@ namespace Application
                     if (requireDescription.NumberOfStaffs != filteredStaffs.Length)
                         throw new BadRequestException(Message.DispatchMessage.InvalidNumberOfStaffs);
 
+                    // validate number of vehicles
                     var vehicles = await _vehicleRepository.GetByIdsAsync(req.VehicleIds);
                     var formatedVehicles = vehicles
                         .Where(v => v.Status == (int)VehicleStatus.Available
@@ -247,6 +250,7 @@ namespace Application
                         }
                     }
 
+                    // clear old relations
                     await _repository.ClearDispatchRelationsAsync(entity.Id);
 
                     var newStaffs = req.StaffIds.Select(staffId => new DispatchRequestStaff
@@ -268,18 +272,6 @@ namespace Application
                     entity.ApprovedAdminId = currentAdminId;
                     entity.Status = (int)DispatchRequestStatus.Assigned;
                     break;
-
-                //case DispatchRequestStatus.Assigned:
-                //    DispatchValidationHelper.EnsureCanUpdate(
-                //        currentAdminStationId,
-                //        entity.ToStationId,
-                //        currentStatus,
-                //        [DispatchRequestStatus.Approved],
-                //        Message.UserMessage.DoNotHavePermission,
-                //        Message.DispatchMessage.OnlyApproveCanConfirm);
-
-                //    entity.Status = (int)DispatchRequestStatus.Assigned;
-                //    break;
 
                 case DispatchRequestStatus.Received:
                     DispatchValidationHelper.EnsureCanUpdate(
@@ -320,6 +312,9 @@ namespace Application
             var dispatch = await _repository.GetByIdAsync(id)
                 ?? throw new NotFoundException(Message.DispatchMessage.NotFound);
 
+            var description = JsonHelper.DeserializeJSON<DispatchDescriptionDto>(dispatch.Description)
+                ?? throw new JsonException(Message.JsonMessage.ParsingFailed);
+
             switch ((DispatchRequestStatus)req.Status)
             {
                 case DispatchRequestStatus.Approved:
@@ -327,9 +322,46 @@ namespace Application
                         if (dispatch.Status != (int)DispatchRequestStatus.Pending)
                             throw new BadRequestException(Message.DispatchMessage.OnlyPendingCanApproveReject);
 
-                        await ValidateNumberOfStaffsAndVehiclesAsync(dispatch.Description, req.FromStationId!.Value);
+                        if (req.FinalDescription == null)
+                            throw new BadRequestException(Message.DispatchMessage.FinalDescriptionIsRequire);
+
+                        if (req.FinalDescription.NumberOfStaffs > description.NumberOfStaffs)
+                            throw new BadRequestException(Message.DispatchMessage.InvalidNumberOfStaffs);
+
+                        if (req.FinalDescription.Vehicles != null && req.FinalDescription.Vehicles.Count > 0)
+                        {
+                            if (description.Vehicles == null
+                                || description.Vehicles.Count == 0
+                                || req.FinalDescription.Vehicles.Count != description.Vehicles.Count
+                            )
+                                throw new BadRequestException(Message.DispatchMessage.InvalidNumberOfVehicles);
+
+                            foreach (var v in req.FinalDescription.Vehicles)
+                            {
+                                var originVehicle = description.Vehicles
+                                    .FirstOrDefault(x => x.ModelId == v.ModelId)
+                                    ?? throw new BadRequestException(Message.DispatchMessage.InvalidNumberOfVehicles);
+
+                                if (v.Quantity > originVehicle.Quantity)
+                                    throw new BadRequestException(Message.DispatchMessage.InvalidNumberOfVehicles);
+                            }
+                        }
+
+                        if (req.FinalDescription.NumberOfStaffs == 0 &&
+                            (req.FinalDescription.Vehicles == null ||
+                             req.FinalDescription.Vehicles.All(v => v.Quantity == 0)))
+                        {
+                            throw new BadRequestException(Message.DispatchMessage.NoStaffNoVehicleReject);
+                        }
+
+                        var rawFinalDesc = JsonSerializer.Serialize(req.FinalDescription);
+                        await ValidateNumberOfStaffsAndVehiclesAsync(
+                            rawFinalDesc,
+                            req.FromStationId!.Value
+                        );
 
                         dispatch.FromStationId = req.FromStationId;
+                        dispatch.FinalDescription = rawFinalDesc;
                         break;
                     }
                 case DispatchRequestStatus.Rejected:
@@ -389,10 +421,10 @@ namespace Application
                     var availableVehicles = formatVehicles.FirstOrDefault(x => x.ModelId == v.ModelId)?.Quantity ?? 0;
 
                     if (v.Quantity > availableVehicles)
-                        throw new BadRequestException(Message.DispatchMessage.VehicleOrStaffNotInFromStation);
+                        throw new BadRequestException(Message.DispatchMessage.VehicleNotEnoughtInFromStation);
 
-                    if (v.Quantity == availableVehicles)
-                        throw new BadRequestException(Message.DispatchMessage.VehicleLimitInFromStation);
+                    //if (v.Quantity == availableVehicles)
+                    //    throw new BadRequestException(Message.DispatchMessage.VehicleLimitInFromStation);
 
                     availableDescription.Vehicles.Add(new DispatchDescriptionVehicleDto
                     {

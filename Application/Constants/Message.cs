@@ -167,8 +167,10 @@ namespace Application.Constants
 
             public const string InvalidNumberOfVehicles = "dispatch.invalid_number_of_vehicles";
             public const string VehicleNotInFromStation = "dispatch.vehicle_not_in_from_station";
+            public const string VehicleNotEnoughtInFromStation = "dispatch.vehicle_not_enought_in_from_station";
             public const string VehicleLimitInFromStation = "dispatch.vehicle_limit_in_from_station";
             public const string VehicleOrStaffNotInFromStation = "dispatch.vehicle_or_staff_not_in_from_station";
+            public const string NoStaffNoVehicleReject = "dispatch.no_staff_no_vehicle_reject";
 
             // Flow cập nhật trạng thái
 

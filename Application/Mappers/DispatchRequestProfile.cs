@@ -29,7 +29,9 @@ namespace Application.Mappers
                         ? src.ApprovedAdmin.User.FirstName + " " + src.ApprovedAdmin.User.LastName
                         : null))
                 .ForMember(dest => dest.Description,
-                    opt => opt.MapFrom(src => JsonHelper.DeserializeJSON<DispatchDescriptionDto>(src.Description)));
+                    opt => opt.MapFrom(src => JsonHelper.DeserializeJSON<DispatchDescriptionDto>(src.Description)))
+                .ForMember(dest => dest.FinalDescription,
+                    opt => opt.MapFrom(src => JsonHelper.DeserializeJSON<DispatchDescriptionDto>(src.FinalDescription)));
 
             // Staffs + Vehicles
             CreateMap<DispatchRequestStaff, DispatchRequestStaffRes>();
