@@ -188,6 +188,7 @@ namespace Application.Constants
 
             public const string IdNull = "dispatch.id_null";
             public const string FromStationIsRequire = "dispatch.from_station_is_required";
+            public const string FinalDescriptionIsRequire = "dispatch.final_description_is_required";
         }
 
         //Rental Contract

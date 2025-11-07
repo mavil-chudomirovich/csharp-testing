@@ -23,7 +23,9 @@ namespace Application.Abstractions
         Task<IEnumerable<DispatchRes>> GetAllAsync(Guid? fromStationId, Guid? toStationId, DispatchRequestStatus? status);
 
         Task<DispatchRes?> GetByIdAsync(Guid id);
+
         Task ConfirmAsync(Guid id, ConfirmDispatchReq req);
-        Task<StationViewRes[]> GetValidStationWithDescription(Guid id);
+
+        Task<IEnumerable<StationForDispatchRes>> GetValidStationWithDescription(Guid id);
     }
 }

@@ -12,6 +12,7 @@ using Application.Repositories;
 using AutoMapper;
 using Domain.Commons;
 using Domain.Entities;
+using Google.Apis.Upload;
 using Microsoft.AspNetCore.Components;
 
 namespace Application
@@ -141,7 +142,7 @@ namespace Application
             return entity == null ? null : _mapper.Map<DispatchRes>(entity);
         }
 
-        public async Task<StationViewRes[]> GetValidStationWithDescription(Guid id)
+        public async Task<IEnumerable<StationForDispatchRes>> GetValidStationWithDescription(Guid id)
         {
             var entity = await _repository.GetByIdAsync(id)
                 ?? throw new NotFoundException(Message.DispatchMessage.NotFound);
@@ -149,24 +150,29 @@ namespace Application
                 ?? throw new JsonException(Message.JsonMessage.ParsingFailed);
 
             var stations = (await _stationRepository.GetAllAsync()).Where(s => s.Id != entity.ToStationId);
-            var validStations = new List<Station>();
+            var validStations = new List<StationForDispatchRes>();
             if (description.NumberOfStaffs > 0 || (description.Vehicles != null && description.Vehicles.Count > 0))
             {
                 foreach (var station in stations)
                 {
                     try
                     {
-                        await ValidateNumberOfStaffsAndVehiclesAsync(entity, station.Id);
-                        validStations.Add(station);
+                        var availableDescription = await ValidateNumberOfStaffsAndVehiclesAsync(entity.Description, station.Id);
+                        validStations.Add(new StationForDispatchRes
+                        {
+                            Id = station.Id,
+                            Name = station.Name,
+                            Address = station.Address,
+                            AvailableDescription = availableDescription
+                        });
                     }
                     catch (Exception)
                     {
                         continue;
                     }
                 }
-                return _mapper.Map<StationViewRes[]>(validStations);
             }
-            return [];
+            return validStations;
         }
 
         // ================= UPDATE STATUS =================
@@ -312,7 +318,8 @@ namespace Application
         public async Task ConfirmAsync(Guid id, ConfirmDispatchReq req)
         {
             var dispatch = await _repository.GetByIdAsync(id)
-                        ?? throw new NotFoundException(Message.DispatchMessage.NotFound);
+                ?? throw new NotFoundException(Message.DispatchMessage.NotFound);
+
             switch ((DispatchRequestStatus)req.Status)
             {
                 case DispatchRequestStatus.Approved:
@@ -320,7 +327,7 @@ namespace Application
                         if (dispatch.Status != (int)DispatchRequestStatus.Pending)
                             throw new BadRequestException(Message.DispatchMessage.OnlyPendingCanApproveReject);
 
-                        await ValidateNumberOfStaffsAndVehiclesAsync(dispatch, req.FromStationId!.Value);
+                        await ValidateNumberOfStaffsAndVehiclesAsync(dispatch.Description, req.FromStationId!.Value);
 
                         dispatch.FromStationId = req.FromStationId;
                         break;
@@ -339,10 +346,16 @@ namespace Application
             await _repository.UpdateAsync(dispatch);
         }
 
-        private async Task ValidateNumberOfStaffsAndVehiclesAsync(DispatchRequest dispatch, Guid fromStationId)
+        private async Task<DispatchDescriptionDto> ValidateNumberOfStaffsAndVehiclesAsync(string? rawDispatchDescription, Guid fromStationId)
         {
-            var description = JsonHelper.DeserializeJSON<DispatchDescriptionDto>(dispatch.Description)
+            var description = JsonHelper.DeserializeJSON<DispatchDescriptionDto>(rawDispatchDescription)
                 ?? throw new JsonException(Message.JsonMessage.ParsingFailed);
+
+            var availableDescription = new DispatchDescriptionDto
+            {
+                NumberOfStaffs = 0,
+                Vehicles = []
+            };
 
             //Validate staff
             if (description.NumberOfStaffs > 0)
@@ -353,6 +366,8 @@ namespace Application
 
                 if (description.NumberOfStaffs == availableStaffCount)
                     throw new BadRequestException(Message.DispatchMessage.StaffLimitInFromStation);
+
+                availableDescription.NumberOfStaffs = availableStaffCount;
             }
 
             //Validate vehicles
@@ -378,8 +393,17 @@ namespace Application
 
                     if (v.Quantity == availableVehicles)
                         throw new BadRequestException(Message.DispatchMessage.VehicleLimitInFromStation);
+
+                    availableDescription.Vehicles.Add(new DispatchDescriptionVehicleDto
+                    {
+                        ModelId = v.ModelId,
+                        ModelName = v.ModelName,
+                        Quantity = availableVehicles
+                    });
                 }
             }
+
+            return availableDescription;
         }
     }
 }

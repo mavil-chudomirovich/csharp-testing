@@ -12,6 +12,10 @@ namespace Application.Validators.Dispatch
             RuleFor(x => x.FromStationId)
                 .NotEmpty().WithMessage(DispatchMessage.FromStationIsRequire)
                 .When(x => x.Status == (int)DispatchRequestStatus.Approved);
+
+            RuleFor(x => x.FinalDescription)
+                .NotEmpty().WithMessage(DispatchMessage.FinalDescriptionIsRequire)
+                .When(x => x.Status == (int)DispatchRequestStatus.Approved);
         }
     }
 }

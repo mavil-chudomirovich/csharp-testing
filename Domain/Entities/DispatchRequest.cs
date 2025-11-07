@@ -10,6 +10,8 @@ public partial class DispatchRequest : SorfDeletedEntity, IEntity
 
     public string? Description { get; set; }
 
+    public string? FinalDescription { get; set; }
+
     public int Status { get; set; }
 
     public DateTimeOffset CreatedAt { get; set; }

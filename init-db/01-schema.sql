@@ -467,6 +467,7 @@ GO
 CREATE TABLE [dispatch_requests] (
     [id] uniqueidentifier PRIMARY KEY DEFAULT NEWID(),
     [description] nvarchar(max),
+    [final_description] nvarchar(max),
     [status] int NOT NULL DEFAULT 0, -- Pending, Approved, Rejected, Received
 
     [created_at] datetimeoffset NOT NULL DEFAULT SYSDATETIMEOFFSET(),

@@ -6,6 +6,7 @@ namespace Application.Dtos.Dispatch.Response
     {
         public Guid Id { get; init; }
         public DispatchDescriptionDto? Description { get; init; }
+        public DispatchDescriptionDto? FinalDescription { get; init; }
 
         public Guid? FromStationId { get; init; }
         public Guid ToStationId { get; init; }
