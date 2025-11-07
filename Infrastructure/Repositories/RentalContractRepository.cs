@@ -171,6 +171,19 @@ namespace Infrastructure.Repositories
                 total
             );
         }
+
+        public async Task<IEnumerable<RentalContract?>> GetAllRentalContractsAsync()
+        {
+            return await _dbContext.RentalContracts
+                .Include(x => x.Vehicle).ThenInclude(v => v == null ? null : v.Model)
+                .Include(x => x.Station)
+                .Include(x => x.HandoverStaff).ThenInclude(h => h == null ? null : h.User)
+                .Include(x => x.ReturnStaff).ThenInclude(h => h == null ? null : h.User)
+                .Include(x => x.Customer).ThenInclude(u => u.CitizenIdentity)
+                .Include(x => x.Customer).ThenInclude(u => u.DriverLicense)
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
+        }
         public async Task<PageResult<RentalContract>> GetMyContractsAsync(
             Guid customerId, PaginationParams pagination,
             int? status, Guid? stationId = null)

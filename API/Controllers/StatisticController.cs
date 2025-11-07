@@ -116,5 +116,28 @@ namespace API.Controllers
             var result = await _statisticService.GetInvoiceByYear(stationId, targetYear);
             return Ok(result);
         }
+
+
+        /// <summary>
+        /// Get total contracts for each month in a specific year.
+        /// </summary>
+        /// <param name="year">
+        /// The target year to calculate contracts.  
+        /// If not provided, defaults to the current year.
+        /// </param>
+        /// <param name="stationId">
+        /// Optional station ID.  
+        /// If not provided, returns contracts from all stations.
+        /// </param>
+        /// <returns>List of months with total contracts per month.</returns>
+        [HttpGet("contract-by-year")]
+        public async Task<IActionResult> GetContractByYear([FromQuery] int? year, [FromQuery] Guid? stationId)
+        {
+            var targetYear = year ?? DateTime.UtcNow.Year;
+
+            var result = await _statisticService.GetContractByYear(stationId, targetYear);
+            return Ok(result);
+        }
+
     }
 }

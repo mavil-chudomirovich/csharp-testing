@@ -19,5 +19,6 @@ namespace Application.Abstractions
         Task<VehicleModelsStatisticRes?> GetVehicleModelTotal(Guid? stationId);
         Task<IEnumerable<RevenueByMonthRes>> GetRevenueByYear(Guid? stationId, int year);
         Task<IEnumerable<InvoiceByMonthRes>> GetInvoiceByYear(Guid? stationId, int year);
+        Task<IEnumerable<ContractByMonthRes>> GetContractByYear(Guid? stationId, int year);
     }
 }

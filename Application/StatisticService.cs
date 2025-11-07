@@ -19,6 +19,7 @@ namespace Application
         private readonly IVehicleModelService _vehicleModelService;
         private readonly IInvoiceRepository _invoiceRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IRentalContractRepository _rentalContractRepository;
 
         public StatisticService(
             IUserService userService,
@@ -26,7 +27,8 @@ namespace Application
             IInvoiceService invoiceService,
             IVehicleModelService vehicleModelService,
             IInvoiceRepository invoiceRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            IRentalContractRepository rentalContractRepository)
         {
             _userService = userService;
             _vehicleService = vehicleService;
@@ -34,6 +36,7 @@ namespace Application
             _vehicleModelService = vehicleModelService;
             _invoiceRepository = invoiceRepository;
             _userRepository = userRepository;
+            _rentalContractRepository = rentalContractRepository;
         }
 
         public async Task<CustomerAnonymusRes?> GetAnonymusCustomer()
@@ -127,7 +130,7 @@ namespace Application
                 .Where(x =>
                     x.CreatedAt.Month == DateTimeOffset.Now.Month &&
                     x.CreatedAt.Year == DateTimeOffset.Now.Year &&
-                    stationId == null || (x.Contract != null && x.Contract.StationId == stationId)
+                    (stationId == null || (x.Contract != null && x.Contract.StationId == stationId))
                 );
 
             foreach (var item in currentMonthInvoices)
@@ -137,7 +140,7 @@ namespace Application
                 .Where(x =>
                     x.CreatedAt.Month == lastMonth &&
                     x.CreatedAt.Year == previousYear &&
-                    stationId == null || (x.Contract != null && x.Contract.StationId == stationId)
+                    (stationId == null || (x.Contract != null && x.Contract.StationId == stationId))
                 );
 
             foreach (var item in lastMonthInvoices)
@@ -176,14 +179,15 @@ namespace Application
             var invoiceThisMonth = invoice.Count(x =>
                 x.CreatedAt.Month == DateTimeOffset.Now.Month &&
                 x.CreatedAt.Year == DateTimeOffset.Now.Year &&
-                stationId == null || (x.Contract != null && x.Contract.StationId == stationId)
+                (stationId == null || (x.Contract != null && x.Contract.StationId == stationId))
             );
 
             var invoiceLastMonth = invoice.Count(x =>
                 x.CreatedAt.Month == lastMonth &&
                 x.CreatedAt.Year == previousYear &&
-                stationId == null || (x.Contract != null && x.Contract.StationId == stationId)
+                (stationId == null || (x.Contract != null && x.Contract.StationId == stationId))
             );
+
 
             decimal changeRate = 0;
             if (invoiceLastMonth > 0)
@@ -321,5 +325,35 @@ namespace Application
 
             return monthlyData;
         }
+        public async Task<IEnumerable<ContractByMonthRes>> GetContractByYear(Guid? stationId, int year)
+        {
+            var rentalContracts = await _rentalContractRepository.GetAllRentalContractsAsync();
+
+            if (rentalContracts == null || !rentalContracts.Any())
+                return Enumerable.Range(1, 12).Select(m => new ContractByMonthRes
+                {
+                    MonthName = new DateTime(year, m, 1).ToString("MMMM"),
+                    TotalContract = 0
+                });
+
+            var monthlyData = Enumerable.Range(1, 12)
+                .Select(month =>
+                {
+                    var total = rentalContracts.Count(x =>
+                        x.CreatedAt.Month == month &&
+                        x.CreatedAt.Year == year &&
+                        (stationId == null || x.StationId == stationId)
+                    );
+
+                    return new ContractByMonthRes
+                    {
+                        MonthName = new DateTime(year, month, 1).ToString("MMMM"),
+                        TotalContract = total
+                    };
+                });
+
+            return monthlyData;
+        }
+
     }
 }
