@@ -253,7 +253,10 @@ namespace Application
                     contract.IsSignedByStaff = req.IsSignedByStaff;
                     contract.HandoverStaffId = Guid.Parse(userId);
                 }
-                contract.IsSignedByCustomer = req.IsSignedByCustomer;
+                if(contract.IsSignedByCustomer == false)
+                {
+                    contract.IsSignedByCustomer = req.IsSignedByCustomer;
+                }
                 if (contract.IsSignedByCustomer && contract.IsSignedByStaff)
                 {
                     contract.ActualStartDate = DateTimeOffset.UtcNow;
