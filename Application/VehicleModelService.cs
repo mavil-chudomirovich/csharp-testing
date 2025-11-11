@@ -227,5 +227,12 @@ namespace Application
         {
             return await _rentalContractRepository.GetBestRentedModelsAsync(months, limit) ?? [];
         }
+
+        public async Task<VehicleModelViewRes> GetWithoutSearchAsync(Guid id)
+        {
+            var model = await _vehicleModelRepository.GetWithoutSearchAsync(id)
+                ?? throw new NotFoundException(Message.VehicleModelMessage.NotFound);
+            return _mapper.Map<VehicleModelViewRes>(model);
+        }
     }
 }

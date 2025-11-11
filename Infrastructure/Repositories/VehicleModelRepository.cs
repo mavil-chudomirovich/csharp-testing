@@ -139,5 +139,19 @@ namespace Infrastructure.Repositories
             );
             return !overlap;
         }
+
+        public async Task<VehicleModel?> GetWithoutSearchAsync(Guid id)
+        {
+            var model = await _dbContext.VehicleModels
+               .Include(vm => vm.ModelImages)
+               .Include(vm => vm.Vehicles)
+                   .ThenInclude(v => v.RentalContracts)
+               .Include(vm => vm.Brand)
+               .Include(vm => vm.Segment)
+               .OrderByDescending(vm => vm.Vehicles.Min(v => v.Status))
+               .AsNoTracking()
+               .FirstOrDefaultAsync(vm => vm.Id == id);
+            return model;
+        }
     }
 }

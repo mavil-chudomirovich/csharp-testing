@@ -22,6 +22,7 @@ namespace Application.Abstractions
         Task DeleteVehicleModleAsync(Guid id);
 
         Task<VehicleModelViewRes> GetByIdAsync(Guid id, Guid stationId, DateTimeOffset startDate, DateTimeOffset endDate);
+        Task<VehicleModelViewRes> GetWithoutSearchAsync(Guid id);
 
         Task<string> UploadMainImageAsync(Guid modelId, IFormFile file);
         Task<IEnumerable<VehicleModelViewRes>> GetAllAsync(string? name, Guid? segmentId);

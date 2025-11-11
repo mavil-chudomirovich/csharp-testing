@@ -59,11 +59,25 @@ namespace API.Controllers
         /// <returns>Detailed vehicle model information with availability data.</returns>
         /// <response code="200">Success.</response>
         /// <response code="404">Vehicle model not found.</response>
-        [HttpGet("{id}")]
+        [HttpGet("{id}/search")]
         public async Task<IActionResult> GetVehicelModelById([FromRoute] Guid id, Guid stationId,
                                                  DateTimeOffset startDate, DateTimeOffset endDate)
         {
             var verhicelModelView = await _vehicleModelService.GetByIdAsync(id, stationId, startDate, endDate);
+            return Ok(verhicelModelView);
+        }
+
+        /// <summary>
+        /// Retrieves detailed information of a specific vehicle model by its unique identifier,
+        /// including availability data for a given station and rental period.
+        /// </summary>
+        /// <param name="id">The unique identifier of the vehicle model.</param>
+        /// <response code="200">Success.</response>
+        /// <response code="404">Vehicle model not found.</response>
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetWithoutSearchById([FromRoute] Guid id)
+        {
+            var verhicelModelView = await _vehicleModelService.GetWithoutSearchAsync(id);
             return Ok(verhicelModelView);
         }
 
