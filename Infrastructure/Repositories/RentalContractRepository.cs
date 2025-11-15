@@ -67,7 +67,7 @@ namespace Infrastructure.Repositories
             {
                 rentalContracts = rentalContracts.Where(rc => rc.Customer.DriverLicense!.Number == driverLicenseNumber);
             }
-            if(stationId != null)
+            if (stationId != null)
             {
                 rentalContracts = rentalContracts.Where(rc => rc.StationId == stationId);
             }
@@ -108,7 +108,6 @@ namespace Infrastructure.Repositories
             var vehicleChecklist = (await _dbContext.VehicleChecklists.Where(vc => vc.Id == id)
                 .Include(vc => vc.Contract)
                     .ThenInclude(r => r == null ? null : r.Invoices).OrderBy(x => x.CreatedAt).FirstOrDefaultAsync());
-                
 
             return vehicleChecklist == null ? null : vehicleChecklist.Contract;
         }
@@ -173,9 +172,9 @@ namespace Infrastructure.Repositories
             );
         }
 
-        public async Task<IEnumerable<RentalContract?>> GetAllRentalContractsAsync()
+        public async Task<IEnumerable<RentalContract?>> GetAllRentalContractsAsync(Guid? stationId)
         {
-            return await _dbContext.RentalContracts
+            var query = _dbContext.RentalContracts
                 .Include(x => x.Vehicle).ThenInclude(v => v == null ? null : v.Model)
                 .Include(x => x.Station)
                 .Include(x => x.HandoverStaff).ThenInclude(h => h == null ? null : h.User)
@@ -183,8 +182,16 @@ namespace Infrastructure.Repositories
                 .Include(x => x.Customer).ThenInclude(u => u.CitizenIdentity)
                 .Include(x => x.Customer).ThenInclude(u => u.DriverLicense)
                 .OrderByDescending(x => x.CreatedAt)
-                .ToListAsync();
+                .AsQueryable();
+
+            if (stationId != null)
+            {
+                query = query.Where(rc => rc.StationId == stationId);
+            }
+
+            return await query.ToListAsync();
         }
+
         public async Task<PageResult<RentalContract>> GetMyContractsAsync(
             Guid customerId, PaginationParams pagination,
             int? status, Guid? stationId = null)
@@ -264,7 +271,5 @@ namespace Infrastructure.Repositories
 
             return await query.Take(limit).ToListAsync();
         }
-
-
     }
 }

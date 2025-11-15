@@ -46,9 +46,14 @@ namespace Application.Mappers
                 .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.User.DateOfBirth))
                 .ForMember(dest => dest.AvatarUrl, opt => opt.MapFrom(src => src.User.AvatarUrl))
                 .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.User.Phone))
-                .ForMember(dest => dest.LicenseUrl, opt => opt.MapFrom(src => src.User.DriverLicense.FrontImageUrl))
-                .ForMember(dest => dest.CitizenUrl, opt => opt.MapFrom(src => src.User.CitizenIdentity.FrontImageUrl));
-            CreateMap<UserProfileViewRes, CustomerRes>();
+                .ForMember(dest => dest.LicenseUrl, opt => opt.MapFrom(src =>
+                    src.User.DriverLicense != null
+                        ? src.User.DriverLicense.FrontImageUrl
+                        : null))
+                .ForMember(dest => dest.CitizenUrl, opt => opt.MapFrom(src =>
+                    src.User.CitizenIdentity != null
+                        ? src.User.CitizenIdentity.FrontImageUrl
+                        : null));
         }
     }
 }

@@ -16,17 +16,15 @@ namespace API.Controllers
     [Route("api/statistic")]
     [ApiController]
     [RoleAuthorize(RoleName.SuperAdmin, RoleName.Admin)]
-    public class StatisticController(IStatisticService statisticService, IStaffRepository staffRepository) : ControllerBase
+    public class StatisticController(IStatisticService statisticService) : ControllerBase
     {
         private readonly IStatisticService _statisticService = statisticService;
-        private readonly IStaffRepository _staffRepository = staffRepository;
-
 
         /// <summary>
         /// Get statistics for registered customers this and last month.
         /// </summary>
         [HttpGet("customers")]
-        public async Task<ActionResult<CustomerRes>> GetCustomers()
+        public async Task<ActionResult> GetCustomers()
         {
             var result = await _statisticService.GetCustomer();
             return Ok(result);
@@ -36,7 +34,7 @@ namespace API.Controllers
         /// Get statistics for anonymous customers (no email).
         /// </summary>
         [HttpGet("customers/anonymous")]
-        public async Task<ActionResult<CustomerAnonymusRes>> GetAnonymousCustomers()
+        public async Task<ActionResult> GetAnonymousCustomers()
         {
             var result = await _statisticService.GetAnonymusCustomer();
             return Ok(result);
@@ -46,7 +44,7 @@ namespace API.Controllers
         /// Get revenue summary for this and last month.
         /// </summary>
         [HttpGet("revenue")]
-        public async Task<ActionResult<TotalRevenueRes>> GetTotalRevenue([FromQuery] Guid? stationId)
+        public async Task<ActionResult> GetTotalRevenue([FromQuery] Guid? stationId)
         {
             var result = await _statisticService.GetTotalRevenue(stationId);
             return Ok(result);
@@ -56,9 +54,19 @@ namespace API.Controllers
         /// Get total invoices created for this and last month.
         /// </summary>
         [HttpGet("invoices")]
-        public async Task<ActionResult<TotalStatisticRes>> GetTotalStatistic([FromQuery] Guid? stationId)
+        public async Task<ActionResult> GetTotalInvoice([FromQuery] Guid? stationId)
         {
-            var result = await _statisticService.GetTotalStatistic(stationId);
+            var result = await _statisticService.GetTotalInvoice(stationId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Get total contracts created for this and last month.
+        /// </summary>
+        [HttpGet("contracts")]
+        public async Task<ActionResult> GetTotalContracts([FromQuery] Guid? stationId)
+        {
+            var result = await _statisticService.GetTotalContracts(stationId);
             return Ok(result);
         }
 
@@ -66,11 +74,12 @@ namespace API.Controllers
         /// Get total number of vehicles by status for current station.
         /// </summary>
         [HttpGet("vehicles")]
-        public async Task<ActionResult<VehicleTotalRes>> GetVehicleTotal([FromQuery] Guid? stationId)
+        public async Task<ActionResult> GetVehicleTotal([FromQuery] Guid? stationId)
         {
             var result = await _statisticService.GetVehicleTotal(stationId);
             return Ok(result);
         }
+
         /// <summary>
         /// Get total number of vehicles by status for current station.
         /// </summary>
@@ -85,7 +94,7 @@ namespace API.Controllers
         /// Get total revenue for each month in a specific year.
         /// </summary>
         /// <param name="year">
-        /// The target year to calculate revenue.  
+        /// The target year to calculate revenue.
         /// If not provided, defaults to the current year.
         /// </param>
         /// <param name="stationId"></param>
@@ -93,7 +102,7 @@ namespace API.Controllers
         [HttpGet("revenue-by-year")]
         public async Task<IActionResult> GetRevenueByYear([FromQuery] int? year, [FromQuery] Guid? stationId)
         {
-            var targetYear = year ?? DateTime.UtcNow.Year; 
+            var targetYear = year ?? DateTime.UtcNow.Year;
 
             var result = await _statisticService.GetRevenueByYear(stationId, targetYear);
             return Ok(result);
@@ -103,7 +112,7 @@ namespace API.Controllers
         /// Get total invoice for each month in a specific year.
         /// </summary>
         /// <param name="year">
-        /// The target year to calculate revenue.  
+        /// The target year to calculate revenue.
         /// If not provided, defaults to the current year.
         /// </param>
         /// <param name="stationId"></param>
@@ -111,22 +120,21 @@ namespace API.Controllers
         [HttpGet("invoice-by-year")]
         public async Task<IActionResult> GetInvoiceByYear([FromQuery] int? year, [FromQuery] Guid? stationId)
         {
-            var targetYear = year ?? DateTime.UtcNow.Year; 
+            var targetYear = year ?? DateTime.UtcNow.Year;
 
             var result = await _statisticService.GetInvoiceByYear(stationId, targetYear);
             return Ok(result);
         }
 
-
         /// <summary>
         /// Get total contracts for each month in a specific year.
         /// </summary>
         /// <param name="year">
-        /// The target year to calculate contracts.  
+        /// The target year to calculate contracts.
         /// If not provided, defaults to the current year.
         /// </param>
         /// <param name="stationId">
-        /// Optional station ID.  
+        /// Optional station ID.
         /// If not provided, returns contracts from all stations.
         /// </param>
         /// <returns>List of months with total contracts per month.</returns>
@@ -138,6 +146,5 @@ namespace API.Controllers
             var result = await _statisticService.GetContractByYear(stationId, targetYear);
             return Ok(result);
         }
-
     }
 }

@@ -16,8 +16,11 @@ namespace Application.Repositories
         Task<Invoice?> GetByIdOptionAsync(Guid id, bool includeItems = false, bool includeDeposit = false);
 
         Task<PageResult<Invoice>> GetAllWithPaginationAsync(PaginationParams pagination);
-        Task<IEnumerable<Invoice>> GetAllAsync();
+
+        Task<IEnumerable<Invoice>> GetAllInvoicesAsync(Guid? stationId);
+
         Task<IEnumerable<Invoice>?> GetInvoiceByContractIdAndStatus(Guid? contractId, int? status);
+
         Task<IEnumerable<Invoice>> GetRefundInvoiceWarningAsync();
     }
 }

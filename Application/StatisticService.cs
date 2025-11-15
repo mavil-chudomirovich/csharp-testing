@@ -39,14 +39,14 @@ namespace Application
             _rentalContractRepository = rentalContractRepository;
         }
 
-        public async Task<CustomerAnonymusRes?> GetAnonymusCustomer()
+        public async Task<TotalStatisticRes<int>?> GetAnonymusCustomer()
         {
             var customer = await _userRepository.GetAllAsync(RoleName.Customer);
             if (customer == null || !customer.Any())
-                return new CustomerAnonymusRes
+                return new TotalStatisticRes<int>
                 {
-                    CustomerAnonymusInThisMonth = 0,
-                    CustomerAnonymusInLastMonth = 0,
+                    TotalThisMonth = 0,
+                    TotalLastMonth = 0,
                     ChangeRate = 0
                 };
 
@@ -54,13 +54,13 @@ namespace Application
             int previousYear = StatisticHelper.GetLastMonthYear();
 
             var customerThisMonth = customer.Count(x =>
-                x != null && x.CreatedAt.Month == DateTimeOffset.UtcNow.Month 
-                && x.CreatedAt.Year == DateTimeOffset.UtcNow.Year 
+                x != null && x.CreatedAt.Month == DateTimeOffset.UtcNow.Month
+                && x.CreatedAt.Year == DateTimeOffset.UtcNow.Year
                 && x.Email == null);
 
             var customerLastMonth = customer.Count(x =>
-                x != null && x.CreatedAt.Month == lastMonth 
-                && x.CreatedAt.Year == previousYear 
+                x != null && x.CreatedAt.Month == lastMonth
+                && x.CreatedAt.Year == previousYear
                 && x.Email == null);
 
             decimal changeRate = 0;
@@ -69,22 +69,22 @@ namespace Application
             else if (customerThisMonth > 0)
                 changeRate = 100;
 
-            return new CustomerAnonymusRes
+            return new TotalStatisticRes<int>
             {
-                CustomerAnonymusInThisMonth = customerThisMonth,
-                CustomerAnonymusInLastMonth = customerLastMonth,
+                TotalThisMonth = customerThisMonth,
+                TotalLastMonth = customerLastMonth,
                 ChangeRate = Math.Round(changeRate, 2)
             };
         }
 
-        public async Task<CustomerRes?> GetCustomer()
+        public async Task<TotalStatisticRes<int>?> GetCustomer()
         {
             var customer = await _userRepository.GetAllAsync(RoleName.Customer);
             if (customer == null || !customer.Any())
-                return new CustomerRes
+                return new TotalStatisticRes<int>
                 {
-                    CustomerInThisMonth = 0,
-                    CustomerInLastMonth = 0,
+                    TotalThisMonth = 0,
+                    TotalLastMonth = 0,
                     ChangeRate = 0
                 };
 
@@ -105,23 +105,23 @@ namespace Application
             else if (customerThisMonth > 0)
                 changeRate = 100;
 
-            return new CustomerRes
+            return new TotalStatisticRes<int>
             {
-                CustomerInThisMonth = customerThisMonth,
-                CustomerInLastMonth = customerLastMonth,
+                TotalThisMonth = customerThisMonth,
+                TotalLastMonth = customerLastMonth,
                 ChangeRate = Math.Round(changeRate, 2)
             };
         }
 
-        public async Task<TotalRevenueRes?> GetTotalRevenue(Guid? stationId)
+        public async Task<TotalStatisticRes<decimal>?> GetTotalRevenue(Guid? stationId)
         {
-            var invoice = await _invoiceRepository.GetAllAsync();
+            var invoice = await _invoiceRepository.GetAllInvoicesAsync(stationId);
             if (invoice == null || !invoice.Any())
             {
-                return new TotalRevenueRes
+                return new TotalStatisticRes<decimal>
                 {
-                    TotalRevenueThisMonth = 0,
-                    TotalRevenueLastMonth = 0,
+                    TotalThisMonth = 0,
+                    TotalLastMonth = 0,
                     ChangeRate = 0
                 };
             }
@@ -134,8 +134,7 @@ namespace Application
             var currentMonthInvoices = invoice
                 .Where(x =>
                     x.CreatedAt.Month == DateTimeOffset.Now.Month &&
-                    x.CreatedAt.Year == DateTimeOffset.Now.Year &&
-                    (stationId == null || (x.Contract != null && x.Contract.StationId == stationId))
+                    x.CreatedAt.Year == DateTimeOffset.Now.Year
                 );
 
             foreach (var item in currentMonthInvoices)
@@ -144,8 +143,7 @@ namespace Application
             var lastMonthInvoices = invoice
                 .Where(x =>
                     x.CreatedAt.Month == lastMonth &&
-                    x.CreatedAt.Year == previousYear &&
-                    (stationId == null || (x.Contract != null && x.Contract.StationId == stationId))
+                    x.CreatedAt.Year == previousYear
                 );
 
             foreach (var item in lastMonthInvoices)
@@ -157,23 +155,23 @@ namespace Application
             else if (totalThisMonth > 0)
                 changeRate = 100;
 
-            return new TotalRevenueRes
+            return new TotalStatisticRes<decimal>
             {
-                TotalRevenueThisMonth = Math.Round(totalThisMonth, 2),
-                TotalRevenueLastMonth = Math.Round(totalLastMonth, 2),
+                TotalThisMonth = Math.Round(totalThisMonth, 2),
+                TotalLastMonth = Math.Round(totalLastMonth, 2),
                 ChangeRate = Math.Round(changeRate, 2)
             };
         }
 
-        public async Task<TotalStatisticRes?> GetTotalStatistic(Guid? stationId)
+        public async Task<TotalStatisticRes<int>?> GetTotalInvoice(Guid? stationId)
         {
-            var invoice = await _invoiceRepository.GetAllAsync();
+            var invoice = await _invoiceRepository.GetAllInvoicesAsync(stationId);
             if (invoice == null || !invoice.Any())
             {
-                return new TotalStatisticRes
+                return new TotalStatisticRes<int>
                 {
-                    TotalStatisticThisMonth = 0,
-                    TotalStatisticLastMonth = 0,
+                    TotalThisMonth = 0,
+                    TotalLastMonth = 0,
                     ChangeRate = 0
                 };
             }
@@ -183,16 +181,13 @@ namespace Application
 
             var invoiceThisMonth = invoice.Count(x =>
                 x.CreatedAt.Month == DateTimeOffset.Now.Month &&
-                x.CreatedAt.Year == DateTimeOffset.Now.Year &&
-                (stationId == null || (x.Contract != null && x.Contract.StationId == stationId))
+                x.CreatedAt.Year == DateTimeOffset.Now.Year
             );
 
             var invoiceLastMonth = invoice.Count(x =>
                 x.CreatedAt.Month == lastMonth &&
-                x.CreatedAt.Year == previousYear &&
-                (stationId == null || (x.Contract != null && x.Contract.StationId == stationId))
+                x.CreatedAt.Year == previousYear
             );
-
 
             decimal changeRate = 0;
             if (invoiceLastMonth > 0)
@@ -200,10 +195,50 @@ namespace Application
             else if (invoiceThisMonth > 0)
                 changeRate = 100;
 
-            return new TotalStatisticRes
+            return new TotalStatisticRes<int>
             {
-                TotalStatisticThisMonth = invoiceThisMonth,
-                TotalStatisticLastMonth = invoiceLastMonth,
+                TotalThisMonth = invoiceThisMonth,
+                TotalLastMonth = invoiceLastMonth,
+                ChangeRate = Math.Round(changeRate, 2)
+            };
+        }
+
+        public async Task<TotalStatisticRes<int>?> GetTotalContracts(Guid? stationId)
+        {
+            var contracts = await _rentalContractRepository.GetAllRentalContractsAsync(stationId);
+            if (contracts == null || !contracts.Any())
+            {
+                return new TotalStatisticRes<int>
+                {
+                    TotalThisMonth = 0,
+                    TotalLastMonth = 0,
+                    ChangeRate = 0
+                };
+            }
+
+            int lastMonth = StatisticHelper.GetLastMonth();
+            int previousYear = StatisticHelper.GetLastMonthYear();
+
+            var totalThisMonth = contracts.Count(x =>
+                x.CreatedAt.Month == DateTimeOffset.Now.Month &&
+                x.CreatedAt.Year == DateTimeOffset.Now.Year
+            );
+
+            var totalLastMonth = contracts.Count(x =>
+                x.CreatedAt.Month == lastMonth &&
+                x.CreatedAt.Year == previousYear
+            );
+
+            decimal changeRate = 0;
+            if (totalLastMonth > 0)
+                changeRate = ((decimal)(totalThisMonth - totalLastMonth) / totalLastMonth) * 100;
+            else if (totalThisMonth > 0)
+                changeRate = 100;
+
+            return new TotalStatisticRes<int>
+            {
+                TotalThisMonth = totalThisMonth,
+                TotalLastMonth = totalLastMonth,
                 ChangeRate = Math.Round(changeRate, 2)
             };
         }
@@ -272,7 +307,7 @@ namespace Application
 
         public async Task<IEnumerable<RevenueByMonthRes>> GetRevenueByYear(Guid? stationId, int year)
         {
-            var invoices = await _invoiceRepository.GetAllAsync();
+            var invoices = await _invoiceRepository.GetAllInvoicesAsync(stationId);
             if (invoices == null || !invoices.Any())
                 return Enumerable.Range(1, 12).Select(m => new RevenueByMonthRes
                 {
@@ -286,8 +321,7 @@ namespace Application
                 var total = invoices
                     .Where(x =>
                         x.CreatedAt.Month == month &&
-                        x.CreatedAt.Year == year &&
-                        (x.Contract != null && (stationId == null || x.Contract.StationId == stationId))
+                        x.CreatedAt.Year == year
                     )
                     .Sum(x => InvoiceHelper.SafeCalculateTotal(x));
 
@@ -300,10 +334,10 @@ namespace Application
 
             return monthlyData;
         }
-        
+
         public async Task<IEnumerable<InvoiceByMonthRes>> GetInvoiceByYear(Guid? stationId, int year)
         {
-            var invoices = await _invoiceRepository.GetAllAsync();
+            var invoices = await _invoiceRepository.GetAllInvoicesAsync(stationId);
             if (invoices == null || !invoices.Any())
                 return Enumerable.Range(1, 12).Select(m => new InvoiceByMonthRes
                 {
@@ -311,27 +345,28 @@ namespace Application
                     TotalInvoice = 0
                 });
 
-                var monthlyData = Enumerable.Range(1, 12)
-                .Select(month =>
-                {
-                    var total = invoices
-                    .Count(x =>
-                         x.CreatedAt.Month == month &&
-                         x.CreatedAt.Year == year &&
-                         (x.Contract != null && (stationId == null || x.Contract.StationId == stationId)));
+            var monthlyData = Enumerable.Range(1, 12)
+            .Select(month =>
+            {
+                var total = invoices
+                .Count(x =>
+                     x.CreatedAt.Month == month &&
+                     x.CreatedAt.Year == year
+                );
 
-                    return new InvoiceByMonthRes
-                    {
-                        MonthName = new DateTime(year, month, 1).ToString("MMMM"),
-                        TotalInvoice = total
-                    };
-                });
+                return new InvoiceByMonthRes
+                {
+                    MonthName = new DateTime(year, month, 1).ToString("MMMM"),
+                    TotalInvoice = total
+                };
+            });
 
             return monthlyData;
         }
+
         public async Task<IEnumerable<ContractByMonthRes>> GetContractByYear(Guid? stationId, int year)
         {
-            var rentalContracts = await _rentalContractRepository.GetAllRentalContractsAsync();
+            var rentalContracts = await _rentalContractRepository.GetAllRentalContractsAsync(stationId);
 
             if (rentalContracts == null || !rentalContracts.Any())
                 return Enumerable.Range(1, 12).Select(m => new ContractByMonthRes
@@ -345,8 +380,7 @@ namespace Application
                 {
                     var total = rentalContracts.Count(x =>
                         x.CreatedAt.Month == month &&
-                        x.CreatedAt.Year == year &&
-                        (stationId == null || x.StationId == stationId)
+                        x.CreatedAt.Year == year
                     );
 
                     return new ContractByMonthRes
@@ -358,6 +392,5 @@ namespace Application
 
             return monthlyData;
         }
-
     }
 }
