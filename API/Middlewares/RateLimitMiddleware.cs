@@ -50,8 +50,6 @@ namespace API.Middlewares
             {
                 // Khi bị giới hạn
                 throw new RateLimitExceededException(Message.CommonMessage.TooManyRequest);
-
-                
             }
         }
     }

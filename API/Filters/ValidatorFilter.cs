@@ -29,7 +29,7 @@ namespace API.Filters
                 if (validator != null)
                 {
                     var method = validatorType.GetMethod("Validate", new[] { paramType });
-                    var result = (FluentValidation.Results.ValidationResult)method.Invoke(validator, new[] { arg.Value });
+                    var result = (FluentValidation.Results.ValidationResult)method!.Invoke(validator, new[] { arg.Value })!;
 
                     if (!result.IsValid)
                     {

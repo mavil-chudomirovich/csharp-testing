@@ -271,7 +271,8 @@ INSERT INTO business_variables (id, created_at, updated_at, [key], [value]) VALU
 (NEWID(), SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET(), 1, 10000),   -- CleaningFee
 (NEWID(), SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET(), 2, 0.1),     -- BaseVAT
 (NEWID(), SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET(), 3, 1),       -- MaxLateReturnHours
-(NEWID(), SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET(), 4, 10);      -- BufferDay
+(NEWID(), SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET(), 4, 10),      -- BufferDay
+(NEWID(), SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET(), 5, 10);      -- RefundCreationDelayDays
 GO
 /* ============================================================
     SECTION 14 — PROCEDURE: CREATE INVOICES & DEPOSIT
