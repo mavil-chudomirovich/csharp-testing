@@ -17,6 +17,19 @@ namespace API.Controllers
     {
         private readonly ITicketService _service = service;
 
+        /// <summary>
+        /// Creates a new contact ticket for guest.
+        /// </summary>
+        /// <param name="req">Request containing ticket title, description.</param>
+        /// <returns>The unique identifier of the created ticket.</returns>
+        /// <response code="200">Success — ticket created.</response>
+        [HttpPost("contact")]
+        public async Task<IActionResult> CreateContact([FromBody] CreateContactReq req)
+        {
+            var id = await _service.CreateContactAsync(req);
+            return Ok(new { Id = id });
+        }
+
         // ==========
         // for customer
         // ==========
@@ -108,6 +121,7 @@ namespace API.Controllers
         }
 
         #region escalated
+
         /// <summary>
         /// Escalates a specific ticket to the admin for further review or action.
         /// </summary>

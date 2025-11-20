@@ -18,5 +18,6 @@ namespace Application.Abstractions
         Task EscalateToAdminAsync(Guid id);
 
         Task<PageResult<TicketRes>> GetEscalatedTicketsAsync(PaginationParams pagination);
+        Task<Guid> CreateContactAsync(CreateContactReq req);
     }
 }

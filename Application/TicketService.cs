@@ -47,6 +47,21 @@ namespace Application
 
         #region customer
 
+        public async Task<Guid> CreateContactAsync(CreateContactReq req)
+        {
+            var ticket = new Ticket
+            {
+                Id = Guid.NewGuid(),
+                Title = req.Title,
+                Description = req.Description,
+                Type = (int)TicketType.Contact,
+                Status = (int)TicketStatus.Pending
+            };
+
+            await _repo.AddAsync(ticket);
+            return ticket.Id;
+        }
+
         public async Task<Guid> CreateAsync(Guid? requesterId, CreateTicketReq req)
         {
             var requester = requesterId.HasValue
