@@ -103,8 +103,8 @@ INSERT INTO vehicle_models
 VALUES
 -- VF3
 (N'VinFast VF 3',N'Mini EV',8000,5000,4,4,50,20,210,180,@brand,@segCompact,
-'http://res.cloudinary.com/dsnnghkez/image/upload/v1762873276/models/a926d4aa-c47c-4f0a-b428-5da4e95b753a/main/upwle3e71wfowd5c0oss.jpg',
-'models/a926d4aa-c47c-4f0a-b428-5da4e95b753a/main/upwle3e71wfowd5c0oss',10000),
+'http://res.cloudinary.com/dsnnghkez/image/upload/v1763744812/models/b3112edf-b21b-448e-91f1-05206ba7a1e3/main/xxmh2cqwwdjfsgb4s1ul.jpg',
+'models/b3112edf-b21b-448e-91f1-05206ba7a1e3/main/xxmh2cqwwdjfsgb4s1ul',10000),
 
 -- VF5
 (N'VinFast VF 5',N'Compact SUV điện hạng A',11000,8000,5,4,70,37,300,260,@brand,@segCompact,
@@ -113,8 +113,8 @@ VALUES
 
 -- VF6
 (N'VinFast VF 6',N'EV C-Class',14000,12000,5,6,150,59,380,320,@brand,@segSUV,
-'http://res.cloudinary.com/dsnnghkez/image/upload/v1762873059/models/ffa560be-d42e-401a-9ee8-e5b4b105bbc1/main/qjroaw6y2ieszesqeqzm.jpg',
-'models/ffa560be-d42e-401a-9ee8-e5b4b105bbc1/main/qjroaw6y2ieszesqeqzm',10000),
+'http://res.cloudinary.com/dsnnghkez/image/upload/v1763745120/models/e6130878-0854-4d66-8c25-cafd65035abd/main/ajtbxgtkws4q5inspwmy.jpg',
+'models/e6130878-0854-4d66-8c25-cafd65035abd/main/ajtbxgtkws4q5inspwmy',10000),
 
 -- VF7
 (N'VinFast VF 7',N'EV D-Class',17000,14000,5,6,180,75,420,360,@brand,@segSUV,
@@ -170,21 +170,21 @@ INSERT INTO model_images (url, public_id, model_id) VALUES
  'models/21dc600f-367c-4b81-9d3b-11dc3b6a886a/gallery/n3lm6ipstseackbwz8al', @mVF7),
 
 -- VF3
-('http://res.cloudinary.com/dsnnghkez/image/upload/v1762873283/models/a926d4aa-c47c-4f0a-b428-5da4e95b753a/gallery/krsm95fe7psrq9vbw0xh.jpg',
- 'models/a926d4aa-c47c-4f0a-b428-5da4e95b753a/gallery/krsm95fe7psrq9vbw0xh', @mVF3),
-('http://res.cloudinary.com/dsnnghkez/image/upload/v1762873280/models/a926d4aa-c47c-4f0a-b428-5da4e95b753a/gallery/nd0ysefdgpifahx9fpjp.jpg',
- 'models/a926d4aa-c47c-4f0a-b428-5da4e95b753a/gallery/nd0ysefdgpifahx9fpjp', @mVF3),
-('http://res.cloudinary.com/dsnnghkez/image/upload/v1762873279/models/a926d4aa-c47c-4f0a-b428-5da4e95b753a/gallery/qtifhw8urgwaycrzjbwh.jpg',
- 'models/a926d4aa-c47c-4f0a-b428-5da4e95b753a/gallery/qtifhw8urgwaycrzjbwh', @mVF3),
+('http://res.cloudinary.com/dsnnghkez/image/upload/v1763744816/models/b3112edf-b21b-448e-91f1-05206ba7a1e3/gallery/lvhoncqb41ddrdp29axj.jpg',
+ 'models/b3112edf-b21b-448e-91f1-05206ba7a1e3/gallery/lvhoncqb41ddrdp29axj', @mVF3),
+('http://res.cloudinary.com/dsnnghkez/image/upload/v1763744814/models/b3112edf-b21b-448e-91f1-05206ba7a1e3/gallery/njqvhepokoukrpre5kdg.jpg',
+ 'models/b3112edf-b21b-448e-91f1-05206ba7a1e3/gallery/njqvhepokoukrpre5kdg', @mVF3),
+('http://res.cloudinary.com/dsnnghkez/image/upload/v1763744815/models/b3112edf-b21b-448e-91f1-05206ba7a1e3/gallery/leqascx1ckxmyazc7dkz.jpg',
+ 'models/b3112edf-b21b-448e-91f1-05206ba7a1e3/gallery/leqascx1ckxmyazc7dkz', @mVF3),
 
 
 -- VF6
-('http://res.cloudinary.com/dsnnghkez/image/upload/v1762873061/models/ffa560be-d42e-401a-9ee8-e5b4b105bbc1/gallery/jnxl5djqc5rqlx7i00in.jpg',
- 'models/ffa560be-d42e-401a-9ee8-e5b4b105bbc1/gallery/jnxl5djqc5rqlx7i00in', @mVF6),
-('http://res.cloudinary.com/dsnnghkez/image/upload/v1762873065/models/ffa560be-d42e-401a-9ee8-e5b4b105bbc1/gallery/v2pwwsrfpqtavulaeqbv.jpg',
- 'models/ffa560be-d42e-401a-9ee8-e5b4b105bbc1/gallery/v2pwwsrfpqtavulaeqbv', @mVF6),
-('http://res.cloudinary.com/dsnnghkez/image/upload/v1762873067/models/ffa560be-d42e-401a-9ee8-e5b4b105bbc1/gallery/pwaukj8ej6rmx8phh8t5.jpg',
- 'models/ffa560be-d42e-401a-9ee8-e5b4b105bbc1/gallery/pwaukj8ej6rmx8phh8t5', @mVF6);
+('http://res.cloudinary.com/dsnnghkez/image/upload/v1763745124/models/e6130878-0854-4d66-8c25-cafd65035abd/gallery/cxrhlsecwy8fcizk4enq.jpg',
+ 'models/e6130878-0854-4d66-8c25-cafd65035abd/gallery/cxrhlsecwy8fcizk4enq', @mVF6),
+('http://res.cloudinary.com/dsnnghkez/image/upload/v1763745127/models/e6130878-0854-4d66-8c25-cafd65035abd/gallery/sr99c3gbqtw5pidsplzc.jpg',
+ 'models/e6130878-0854-4d66-8c25-cafd65035abd/gallery/sr99c3gbqtw5pidsplzc', @mVF6),
+('http://res.cloudinary.com/dsnnghkez/image/upload/v1763745122/models/e6130878-0854-4d66-8c25-cafd65035abd/gallery/jvcbi7vxkod6kogtjhxz.jpg',
+ 'models/e6130878-0854-4d66-8c25-cafd65035abd/gallery/jvcbi7vxkod6kogtjhxz ', @mVF6);
 
 
 /* ============================================================
