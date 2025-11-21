@@ -52,5 +52,26 @@ namespace Application.Helpers
                 parts[i] = char.ToUpper(parts[i][0]) + parts[i].Substring(1);
             return string.Join(' ', parts);
         }
+        public static void ValidateCitizenIdNumber(string number)
+        {
+            number = number.Trim();
+
+            if (!number.All(char.IsDigit))
+                throw new BadRequestException(Message.UserMessage.InvalidCitizenIdFormat);
+
+            if (number.Length != 12 && number.Length != 9)
+                throw new BadRequestException(Message.UserMessage.InvalidCitizenIdFormat);
+        }
+
+        public static void ValidateDriverLicenseNumber(string number)
+        {
+            number = number.Trim();
+
+            if (!number.All(char.IsDigit))
+                throw new BadRequestException(Message.UserMessage.InvalidDriverLicenseFormat);
+
+            if (number.Length < 10 || number.Length > 12)
+                throw new BadRequestException(Message.UserMessage.InvalidDriverLicenseFormat);
+        }
     }
 }

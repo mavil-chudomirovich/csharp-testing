@@ -77,6 +77,7 @@ namespace Application.Constants
             public const string InvalidCitizenIdDocumentType = "user.invalid_citizen_id_document_type";
             public const string InvalidNameOnOtherPaper = "user.invalid_paper_name_on_other_document";
             public const string InvalidDateOnOtherPaper = "user.invalid_paper_date_on_other_document";
+            public const string InvalidCitizenIdFormat = "user.invalid_citizen_id_format";
             
 
 
@@ -87,7 +88,7 @@ namespace Application.Constants
             public const string DriverLicenseDuplicate = "user.driver_license_duplicate";
             public const string InvalidDriverLicenseImagesAmount = "user.invalid_driver_license_images_amount";
             public const string InvalidDriverLicenseDocumentType = "user.invalid_driver_license_document_type";
-
+            public const string InvalidDriverLicenseFormat = "user.invalid_driver_license_format";
             // Staff
             public const string StationIdIsRequired = "user.station_id_require";
 

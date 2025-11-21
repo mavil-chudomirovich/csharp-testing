@@ -298,8 +298,11 @@ namespace Application
 
             if (!string.IsNullOrWhiteSpace(req.Number) && req.Number != entity.Number)
                 await VerifyUniqueNumberAsync.VerifyUniqueIdentityNumberAsync(req.Number, userId, _citizenIdentityRepository);
-
-            if (!string.IsNullOrWhiteSpace(req.Number)) entity.Number = req.Number.Trim();
+            if (!string.IsNullOrWhiteSpace(req.Number))
+            {
+                LisenceHelper.ValidateCitizenIdNumber(req.Number);
+                entity.Number = req.Number.Trim();
+            }
             if (!string.IsNullOrWhiteSpace(req.FullName)) entity.FullName = req.FullName.Trim();
             if (!string.IsNullOrWhiteSpace(req.Nationality)) entity.Nationality = req.Nationality.Trim();
             if (req.DateOfBirth.HasValue)
@@ -319,11 +322,11 @@ namespace Application
                     ? req.FullName.Trim()
                     : entity.FullName;
 
-                var finalDob = req.DateOfBirth ?? entity.DateOfBirth;
+                DateTimeOffset finalDob = req.DateOfBirth ?? entity.DateOfBirth;
 
                 LisenceHelper.EnsureMatch(
                     finalName,
-                    (DateTimeOffset)finalDob,
+                    finalDob,
                     existingLicense.FullName ?? "",
                     existingLicense.DateOfBirth
                 );
@@ -351,7 +354,11 @@ namespace Application
                 entity.Class = (int)req.Class.Value;
             }
 
-            if (!string.IsNullOrWhiteSpace(req.Number)) entity.Number = req.Number.Trim();
+            if (!string.IsNullOrWhiteSpace(req.Number))
+            {
+                LisenceHelper.ValidateDriverLicenseNumber(req.Number);
+                entity.Number = req.Number.Trim();
+            }
             if (!string.IsNullOrWhiteSpace(req.FullName)) entity.FullName = req.FullName.Trim();
             if (!string.IsNullOrWhiteSpace(req.Nationality)) entity.Nationality = req.Nationality.Trim();
             if (req.Sex.HasValue) entity.Sex = req.Sex.Value;
@@ -371,11 +378,11 @@ namespace Application
                     ? req.FullName.Trim()
                     : entity.FullName;
 
-                var finalDob = req.DateOfBirth ?? entity.DateOfBirth;
+                DateTimeOffset finalDob = req.DateOfBirth ?? entity.DateOfBirth;
 
                 LisenceHelper.EnsureMatch(
                     finalName,
-                    (DateTimeOffset)finalDob,
+                    finalDob,
                     existingCccd.FullName ?? "",
                     existingCccd.DateOfBirth
                 );
