@@ -59,6 +59,10 @@ namespace Application
             await _uow.BeginTransactionAsync();
             try
             {
+                if(createReq.StartDate < DateTimeOffset.Now || (createReq.EndDate - createReq.StartDate).Hours < 24)
+                {
+                    throw new BadRequestException(Message.VehicleModelMessage.RentTimeIsNotAvailable);
+                }
                 //ktra xem có cccd hay chưa
                 var citizenIdentity = await _uow.CitizenIdentityRepository.GetByUserIdAsync(userID);
                 if (citizenIdentity == null)

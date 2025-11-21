@@ -20,7 +20,7 @@ namespace Application.Validators.InvoiceItem
                 .GreaterThan(0).WithMessage(Message.InvoiceMessage.InvalidQuantity);
 
             RuleFor(x => x.Type)
-                .InclusiveBetween(0, 5).WithMessage(Message.InvoiceMessage.InvoiceItemInvalidType);
+                .InclusiveBetween(0, 6).WithMessage(Message.InvoiceMessage.InvoiceItemInvalidType);
 
         }
     }

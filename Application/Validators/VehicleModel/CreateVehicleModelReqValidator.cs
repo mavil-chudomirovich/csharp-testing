@@ -2,7 +2,7 @@
 using FluentValidation;
 using Application.Constants;
 
-namespace Application.Validators.VehicelChecklistItem
+namespace Application.Validators.VehicleModel
 {
     public class CreateVehicleModelReqValidator : AbstractValidator<CreateVehicleModelReq>
     {

@@ -17,6 +17,9 @@ namespace Application.Validators.VehicleModel
                 .NotEqual(Guid.Empty)
                 .WithMessage(Message.VehicleMessage.StationIdRequired);
 
+            RuleFor(x => x.StartDate)
+                .GreaterThan(_ => DateTimeOffset.UtcNow)
+                .WithMessage(Message.RentalContractMessage.StartDateMustBeFuture);
 
             RuleFor(x => x.EndDate)
                 .GreaterThan(x => x.StartDate)

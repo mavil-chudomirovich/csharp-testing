@@ -15,7 +15,7 @@ namespace Application.Validators.User
         {
             RuleFor(x => x.Password)
               .NotEmpty().WithMessage(Message.UserMessage.PasswordCanNotEmpty)
-              .MinimumLength(6).WithMessage(Message.UserMessage.PasswordTooShort);
+              .MinimumLength(8).WithMessage(Message.UserMessage.PasswordTooShort);
 
             RuleFor(x => x.ConfirmPassword)
                 .Equal(x => x.Password).WithMessage(Message.UserMessage.ConfirmPasswordIsIncorrect);

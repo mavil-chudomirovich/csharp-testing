@@ -37,18 +37,18 @@ namespace Application.Validators.Staff
                 .WithMessage(Message.UserMessage.SexIsRequired);
 
             RuleFor(x => x.DateOfBirth)
-                .LessThan(DateTimeOffset.UtcNow.AddYears(-18))
+                .LessThan(_ => DateTimeOffset.UtcNow.AddYears(-18))
                 .WithMessage(Message.UserMessage.InvalidUserAge);
 
             RuleFor(x => x.StationId)
                 .NotEqual(Guid.Empty)
                 .WithMessage(Message.UserMessage.StationIdIsRequired);
 
-            // Optional: validate role name if needed
-            RuleFor(x => x.RoleName)
-                .MaximumLength(50)
-                .WithMessage("user.role_name_too_long")
-                .When(x => !string.IsNullOrWhiteSpace(x.RoleName));
+            //// Optional: validate role name if needed
+            //RuleFor(x => x.RoleName)
+            //    .MaximumLength(50)
+            //    .WithMessage("user.role_name_too_long")
+            //    .When(x => !string.IsNullOrWhiteSpace(x.RoleName));
         }
     }
 }

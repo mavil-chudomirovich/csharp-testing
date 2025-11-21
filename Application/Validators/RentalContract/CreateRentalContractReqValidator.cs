@@ -22,16 +22,16 @@ namespace Application.Validators.RentalContract
                 .WithMessage(Message.RentalContractMessage.StationIdRequired);
 
             RuleFor(x => x.StartDate)
-                .GreaterThan(DateTimeOffset.UtcNow)
+                .GreaterThan(_ => DateTimeOffset.UtcNow)
                 .WithMessage(Message.RentalContractMessage.StartDateMustBeFuture);
 
             RuleFor(x => x.EndDate)
-                .GreaterThan(x => x.StartDate)
+                .GreaterThanOrEqualTo(x => x.StartDate.AddHours(24))
                 .WithMessage(Message.RentalContractMessage.EndDateMustBeAfterStart);
 
             RuleFor(x => x.Notes)
                 .MaximumLength(255)
-                .WithMessage("rental_contract.notes_too_long")
+                .WithMessage(Message.RentalContractMessage.NoteIsTooLong)
                 .When(x => !string.IsNullOrWhiteSpace(x.Notes));
         }
     }

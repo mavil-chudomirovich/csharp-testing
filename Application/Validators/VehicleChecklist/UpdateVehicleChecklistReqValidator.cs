@@ -2,6 +2,7 @@
 using Application.Constants;
 using Application.Dtos.VehicleChecklist.Request;
 using Application.Dtos.VehicleChecklistItem.Request;
+using Application.Validators.VehicelChecklistItem;
 
 namespace Application.Validators.VehicleChecklist
 {

@@ -215,6 +215,8 @@ namespace Application.Constants
             public const string AtLeastOnePartyMustSign = "rental_contract.at_least_one_party_must_sign";
 
             public static string ContractNotStartYet = "rental_contract.not_start_yet";
+
+            public static string NoteIsTooLong = "rental_contract.notes_too_long";
         }
 
         //Station
@@ -235,7 +237,7 @@ namespace Application.Constants
 
             public static string FallBackUrlIsRequired = "payment.fallback_url_required";
 
-            public static string ỊnvalidFallBackUrl = "payment.fallback_url_invalid";
+            public static string InvalidFallBackUrl = "payment.fallback_url_invalid";
             public static string InvalidPaymentMethod = "payment.invalid_payment_method";
         }
 
@@ -258,6 +260,7 @@ namespace Application.Constants
             public static string InvalidQuantity = "invoice_item.invalid_quantity";
 
             public static string InvoiceItemInvalidType = "invoice_item.invalid_type";
+            public static string InvalidRefundTime = "invoice.invalid_refund_time";
         }
 
         public static class JsonMessage

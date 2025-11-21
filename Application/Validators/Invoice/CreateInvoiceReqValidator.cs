@@ -16,7 +16,7 @@ namespace Application.Validators.Invoice
                 .WithMessage(RentalContractMessage.NotFound);
 
             RuleFor(x => x.Type)
-                .InclusiveBetween(0, 5)
+                .InclusiveBetween(0, 4)
                 .WithMessage(InvoiceMessage.InvalidInvoiceType);
         }
     }

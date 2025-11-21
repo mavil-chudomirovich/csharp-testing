@@ -391,6 +391,10 @@ namespace Application
                 }
                 if (req.Type == (int)InvoiceType.Refund)
                 {
+                    if((DateTimeOffset.Now < contract.ActualEndDate!.Value.AddHours(9).AddMinutes(30)))
+                    {
+                        throw new BadHttpRequestException(Message.InvoiceMessage.InvalidRefundTime);
+                    }
                     invoice.Subtotal = InvoiceHelper.CalculateSubTotalAmount(items);
                     //xử lí refund cọc
                     contract.Status = (int)RentalContractStatus.RefundPending;

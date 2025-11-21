@@ -18,7 +18,7 @@ namespace Application.Validators.MomoPayment
 
             RuleFor(x => x.FallbackUrl)
                 .NotEmpty().WithMessage(Message.PaymentMessage.FallBackUrlIsRequired)
-                .Must(IsValidUrl).WithMessage(Message.PaymentMessage.ỊnvalidFallBackUrl);
+                .Must(IsValidUrl).WithMessage(Message.PaymentMessage.InvalidFallBackUrl);
         }
 
         private bool IsValidUrl(string url)

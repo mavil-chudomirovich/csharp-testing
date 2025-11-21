@@ -18,7 +18,7 @@ namespace Application.Validators.Payment
 
             RuleFor(x => x.FallbackUrl)
                 .NotEmpty().WithMessage(Message.PaymentMessage.FallBackUrlIsRequired)
-                .Must(IsValidUrl).WithMessage(Message.PaymentMessage.ỊnvalidFallBackUrl);
+                .Must(IsValidUrl).WithMessage(Message.PaymentMessage.InvalidFallBackUrl);
 
             RuleFor(x => x.Amount)
                 .GreaterThan(0).WithMessage(Message.InvoiceMessage.InvalidAmount)
