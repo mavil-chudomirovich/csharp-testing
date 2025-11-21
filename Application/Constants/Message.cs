@@ -113,6 +113,7 @@ namespace Application.Constants
             public const string StationIdRequired = "vehicle.station_id_required";
             public const string ModelIdRequired = "vehicle.model_id_required";
             public const string InvalidLicensePlateFormat = "vehicle.invalid_license_plate_format";
+            public const string InvalidStatusForMaintenanceComplete = "vehicle.invalid_status_for_maintenance_complete";
         }
 
         public static class VehicleModelMessage

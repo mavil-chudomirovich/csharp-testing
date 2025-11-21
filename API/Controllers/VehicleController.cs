@@ -105,5 +105,13 @@ namespace API.Controllers
             var vehicle = await _vehicleService.GetVehicleById(id);
             return Ok(vehicle);
         }
+
+        [RoleAuthorize(RoleName.Staff, RoleName.Admin)]
+        [HttpPut("{id}/maintenance-complete")]
+                public async Task<IActionResult> MarkAsMaintained([FromRoute] Guid id)
+        {
+            await _vehicleService.MaintainaceComplete(id);
+            return Ok();
+        }
     }
 }
