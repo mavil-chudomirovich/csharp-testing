@@ -114,7 +114,10 @@ namespace Application
                 throw new NotFoundException(Message.BrandMessage.NotFound);
             }
             _mapper.Map(req, model);
-
+            if(model.CostPerDay <= model.ReservationFee)
+            {
+                throw new BadRequestException(Message.VehicleModelMessage.ReservationFeeMustBeLessThanCostPerDay);
+            }
             return await _vehicleModelRepository.UpdateAsync(model);
         }
 

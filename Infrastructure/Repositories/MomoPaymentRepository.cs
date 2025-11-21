@@ -1,4 +1,4 @@
-﻿using Application.AppSettingConfigurations;
+﻿ using Application.AppSettingConfigurations;
 using Application.Repositories;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;

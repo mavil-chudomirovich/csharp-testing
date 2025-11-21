@@ -12,31 +12,34 @@ namespace Application.Validators.VehicleModel
                 .NotEmpty().WithMessage(Message.VehicleModelMessage.NameIsRequire);
 
             RuleFor(x => x.CostPerDay)
-                .GreaterThan(0).WithMessage(Message.VehicleModelMessage.CostDayIdsRequired);
+                .GreaterThan(0).WithMessage(Message.VehicleModelMessage.CosPerDayMustBeGreaterThanZero);
 
             RuleFor(x => x.DepositFee)
-                .GreaterThanOrEqualTo(0).WithMessage(Message.VehicleModelMessage.DepositFeeIsRequired);
+                .GreaterThanOrEqualTo(0).WithMessage(Message.VehicleModelMessage.DepositFeeMustBeGreaterThanZero);
 
             RuleFor(x => x.ReservationFee)
-                .GreaterThanOrEqualTo(0).WithMessage(Message.VehicleModelMessage.ReservationFeeIsRequired);
+                .GreaterThanOrEqualTo(0).WithMessage(Message.VehicleModelMessage.ReservationFeeMustBeGreaterThanZero);
 
+            RuleFor(x => x.ReservationFee)
+                .LessThan(x => x.CostPerDay)
+                .WithMessage(Message.VehicleModelMessage.ReservationFeeMustBeLessThanCostPerDay);
             RuleFor(x => x.SeatingCapacity)
-                .GreaterThan(0).WithMessage(Message.VehicleModelMessage.SeatingCapacityIsRequired);
+                .GreaterThan(0).WithMessage(Message.VehicleModelMessage.SeatingCapacityMustBeGreaterThanZero);
 
             RuleFor(x => x.NumberOfAirbags)
-                .GreaterThanOrEqualTo(0).WithMessage(Message.VehicleModelMessage.NumberOfAirbagIsRequire);
+                .GreaterThanOrEqualTo(0).WithMessage(Message.VehicleModelMessage.NumberOfAirbagsMustBeGreaterThanZero);
 
             RuleFor(x => x.MotorPower)
-                .GreaterThan(0).WithMessage(Message.VehicleModelMessage.MotorPowerIsRequired);
+                .GreaterThan(0).WithMessage(Message.VehicleModelMessage.MotorPowerMustBeGreaterThanZero);
 
             RuleFor(x => x.BatteryCapacity)
-                .GreaterThan(0).WithMessage(Message.VehicleModelMessage.BatteryCapacityIsRequired);
+                .GreaterThan(0).WithMessage(Message.VehicleModelMessage.BatteryCapacityMustBeGreaterThanZero);
 
             RuleFor(x => x.EcoRangeKm)
-                .GreaterThan(0).WithMessage(Message.VehicleModelMessage.EcoRangeKmIsRequired);
+                .GreaterThan(0).WithMessage(Message.VehicleModelMessage.EcoRangeKmMustBeGreaterThanZero);
 
             RuleFor(x => x.SportRangeKm)
-                .GreaterThan(0).WithMessage(Message.VehicleModelMessage.SportRangeKmIsRequired);
+                .GreaterThan(0).WithMessage(Message.VehicleModelMessage.SportRangeKmMustBeGreaterThanZero);
 
             RuleFor(x => x.BrandId)
                 .NotEqual(Guid.Empty).WithMessage(Message.VehicleModelMessage.BrandIdIsRequired);

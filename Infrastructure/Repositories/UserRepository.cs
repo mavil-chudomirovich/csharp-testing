@@ -87,7 +87,7 @@ namespace Infrastructure.Repositories
                    .ThenInclude(staff => staff.Station)
                 .Where(u => u.Staff != null && u.Role.Name == RoleName.Staff)
                .AsQueryable()
-               .OrderBy(x => x.CreatedAt)
+               .OrderByDescending(x => x.CreatedAt)
                .AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(name))

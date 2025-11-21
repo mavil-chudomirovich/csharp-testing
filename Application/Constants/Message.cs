@@ -2,6 +2,7 @@
 using Application.Dtos.Vehicle.Request;
 using Application.Dtos.VehicleChecklist.Request;
 using Application.Dtos.VehicleChecklistItem.Request;
+using Application.Dtos.VehicleModel.Request;
 using Application.Dtos.VehicleSegment.Request;
 
 namespace Application.Constants
@@ -137,6 +138,19 @@ namespace Application.Constants
             public const string CostDayIdsRequired = "vehicle_model.cost_per_day_invalid";
             public const string DepositFeeIsRequired = "vehicle_model.deposit_fee_invalid";
             public const string ReservationFeeIsRequired = "vehicle_model.reservation_fee_invalid";
+
+            public const string ReservationFeeMustBeLessThanCostPerDay = "vehicle_model.reservation_fee_must_be_less_than_cost_per_day";
+
+            public const string CosPerDayMustBeGreaterThanZero = "vehicle_model.cost_per_day_must_be_greater_than_zero";
+            public const string DepositFeeMustBeGreaterThanZero = "vehicle_model.deposit_fee_must_be_greater_than_zero";
+            public const string ReservationFeeMustBeGreaterThanZero = "vehicle_model.reservation_fee_must_be_greater_than_zero";
+            public const string EcoRangeKmMustBeGreaterThanZero = "vehicle_model.eco_range_km_must_be_greater_than_zero";
+            public const string SportRangeKmMustBeGreaterThanZero = "vehicle_model.sport_range_km_must_be_greater_than_zero";
+
+            public const string SeatingCapacityMustBeGreaterThanZero = "vehicle_model.seating_capacity_must_be_greater_than_zero";
+            public const string NumberOfAirbagsMustBeGreaterThanZero = "vehicle_model.number_of_airbags_must_be_greater_than_zero";
+            public const string BatteryCapacityMustBeGreaterThanZero = "vehicle_model.battery_capacity_must_be_greater_than_zero";
+            public const string MotorPowerMustBeGreaterThanZero = "vehicle_model.motor_power_must_be_greater_than_zero";
         }
 
         //change password
@@ -246,21 +260,21 @@ namespace Application.Constants
             public const string NotFound = "invoice.not_found";
             public const string ThisInvoiceWasPaidOrCancel = "invoice.this_invoice_was_paid_or_cancel";
 
-            public static string AmountRequired = "invoice.amount_required";
-            public static string InvalidAmount = "invoice.invalid_amount";
+            public const string AmountRequired = "invoice.amount_required";
+            public const string InvalidAmount = "invoice.invalid_amount";
 
-            public static string NotHandoverPayment = "invoice.not_handover_payment";
+            public const string NotHandoverPayment = "invoice.not_handover_payment";
 
-            public static string? InvalidInvoiceType = "invoice.invalid_invoice_type";
+            public const string InvalidInvoiceType = "invoice.invalid_invoice_type";
 
-            public static string ForbiddenInvoiceAccess = "invoice.forbidden_invoice_access";
+            public const string ForbiddenInvoiceAccess = "invoice.forbidden_invoice_access";
 
-            public static string InvalidUnitPrice = "invoice_item.invalid_unit_price";
+            public const string InvalidUnitPrice = "invoice_item.invalid_unit_price";
 
-            public static string InvalidQuantity = "invoice_item.invalid_quantity";
+            public const string InvalidQuantity = "invoice_item.invalid_quantity";
 
-            public static string InvoiceItemInvalidType = "invoice_item.invalid_type";
-            public static string InvalidRefundTime = "invoice.invalid_refund_time";
+            public const string InvoiceItemInvalidType = "invoice_item.invalid_type";
+            public const string InvalidRefundTime = "invoice.invalid_refund_time";
         }
 
         public static class JsonMessage
@@ -321,27 +335,27 @@ namespace Application.Constants
         {
             public const string NotFound = "vehicle_component.not_found";
 
-            public static string NameIsRequired = "vehicle_component.name_required";
+            public const string NameIsRequired = "vehicle_component.name_required";
 
-            public static string DescriptionIsRequired = "vehicle_component.description_required";
+            public const string DescriptionIsRequired = "vehicle_component.description_required";
 
-            public static string DamageFeeIsRequired = "vehicle_component.damage_fee_required";
+            public const string DamageFeeIsRequired = "vehicle_component.damage_fee_required";
 
-            public static string DamageFeeMustBePositive = "vehicle_component.damage_fee_must_be_non_negative";
+            public const string DamageFeeMustBePositive = "vehicle_component.damage_fee_must_be_non_negative";
 
-            public static string InvalidComponentIds = "vehicle_component.invalid_component_ids";
+            public const string InvalidComponentIds = "vehicle_component.invalid_component_ids";
         }
 
         public static class VehicleChecklistMessage
         {
             public const string NotFound = "vehicle_checklist.not_found";
 
-            public static string ThisChecklistAlreadyProcess = "vehicle_checklist.already_process";
-            public static string AtLeastOnePartyMustSign = "vehicle_checklist.at_least_one_party_must_sign";
+            public const string ThisChecklistAlreadyProcess = "vehicle_checklist.already_process";
+            public const string AtLeastOnePartyMustSign = "vehicle_checklist.at_least_one_party_must_sign";
 
-            public static string InvalidType = "vehicle_checklist.invalid_type";
+            public const string InvalidType = "vehicle_checklist.invalid_type";
 
-            public static string InvalidStatus = "vehicle_checklist.invalid_status";
+            public const string InvalidStatus = "vehicle_checklist.invalid_status";
         }
 
         public static class VehicleChecklistItemMessage

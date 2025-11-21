@@ -59,7 +59,7 @@ namespace Application
             await _uow.BeginTransactionAsync();
             try
             {
-                if(createReq.StartDate < DateTimeOffset.Now || (createReq.EndDate - createReq.StartDate).Hours < 24)
+                if(createReq.StartDate <= DateTimeOffset.Now || (createReq.EndDate - createReq.StartDate).Hours < 24)
                 {
                     throw new BadRequestException(Message.VehicleModelMessage.RentTimeIsNotAvailable);
                 }
