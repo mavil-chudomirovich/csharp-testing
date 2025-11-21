@@ -776,7 +776,7 @@ INSERT INTO rental_contracts
  vehicle_id,customer_id,handover_staff_id,station_id)
 VALUES
 (@cE,'Active VF7A U9',
- '2025-10-29T00:00:00+07:00','2025-11-04T09:00:00+07:00',
+ '2025-10-29T00:00:00+07:00','2025-11-20T09:00:00+07:00',
  2,1,1,@vVF7A,@u9,@staff,@sA);
 
 EXEC dbo.__seed_create_invoices @cE,1,1;
@@ -790,7 +790,7 @@ INSERT INTO rental_contracts
  vehicle_id,customer_id,handover_staff_id,station_id,actual_start_date)
 VALUES
 (@cF,'Active VF7B U10',
- '2025-10-29T00:00:00+07:00','2025-11-04T09:00:00+07:00',
+ '2025-10-29T00:00:00+07:00','2025-11-20T09:00:00+07:00',
  2,1,1,@vVF7B,@u10,@staff,@sA,'2025-10-29T00:00:00+07:00');
 
 EXEC dbo.__seed_create_invoices @cF,1,1;

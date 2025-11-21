@@ -236,10 +236,6 @@ namespace Application
                 }
                 if (contract.Status == (int)RentalContractStatus.Active && handoverInvoice.Status == (int)InvoiceStatus.Paid)
                 {
-                    if (vehicle == null)
-                    {
-                        throw new NotFoundException(Message.VehicleMessage.NotFound);
-                    }
                     vehicle.Status = (int)VehicleStatus.Rented;
                     await _uow.VehicleRepository.UpdateAsync(vehicle);
                     //lụm xe đi chơi đi bạn
@@ -466,12 +462,6 @@ namespace Application
                 {
                     rentalContract.Status = (int)RentalContractStatus.PaymentPending;
                     await _uow.RentalContractRepository.UpdateAsync(rentalContract);
-                    //Lấy invoice
-                    var invoice = (await _uow.RentalContractRepository.GetAllAsync(
-                        [rc => rc.Invoices]
-                    )).Where(rc => rc.Id == id)
-                    .Select(rc => rc.Invoices).FirstOrDefault();
-
                     subject = "[GreenWheel] Confirm Your Booking by Completing Payment";
                     templatePath = Path.Combine(basePath, "Templates", "PaymentEmailTemplate.html");
                     body = System.IO.File.ReadAllText(templatePath);
@@ -682,7 +672,7 @@ namespace Application
                         Id = invoiceId,
                         ContractId = contract.Id,
                         Status = (int)InvoiceStatus.Pending,
-                        Tax = Common.Tax.NoneVAT, //10% dạng decimal
+                        Tax = Common.Tax.NoneVAT,
                         Notes = $"GreenWheel – Invoice for your order {contract.Id}",
                         Type = (int)InvoiceType.Refund
                     };
@@ -698,11 +688,11 @@ namespace Application
                     var reservation = contract.Invoices.FirstOrDefault(i => i.Type == (int)InvoiceType.Reservation);
                     if (handoverInvoice!.Status == (int)InvoiceStatus.Paid)
                     {
-                        item.UnitPrice += (decimal)handoverInvoice.PaidAmount!;
+                        item.UnitPrice += InvoiceHelper.CalculateTotalAmount(handoverInvoice);
                     }
                     if (reservation!.Status == (int)InvoiceStatus.Paid)
                     {
-                        item.UnitPrice += (decimal)reservation.PaidAmount!;
+                        item.UnitPrice += InvoiceHelper.CalculateTotalAmount(reservation);
                     }
                     await _uow.InvoiceRepository.AddAsync(invoice);
                     await _uow.InvoiceItemRepository.AddAsync(item);

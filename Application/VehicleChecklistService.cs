@@ -1,4 +1,4 @@
-﻿using Application.Abstractions;
+﻿ using Application.Abstractions;
 using Application.AppExceptions;
 using Application.Constants;
 using Application.Dtos.Common.Request;
@@ -175,7 +175,10 @@ namespace Application
                     }
                 }
                 checklist.IsSignedByStaff = req.IsSignedByStaff;
-                checklist.IsSignedByCustomer = req.IsSignedByCustomer;
+                if (checklist.IsSignedByCustomer == false)
+                {
+                    checklist.IsSignedByCustomer = req.IsSignedByCustomer;
+                }
 
                 await _uow.SaveChangesAsync();
                 await _uow.CommitAsync();
