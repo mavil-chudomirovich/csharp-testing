@@ -802,4 +802,32 @@ GO
 DROP PROCEDURE dbo.__seed_create_invoices;
 DROP PROCEDURE dbo.__seed_create_handover_checklist;
 GO
+/* ============================================================
+    SECTION 20 — Seeding feedback
+============================================================ */
+DECLARE @sA UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM stations WHERE name LIKE N'%A%');
+DECLARE @sB UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM stations WHERE name LIKE N'%B%');
 
+
+DECLARE @u5 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='huyngse183274@fpt.edu.vn');
+DECLARE @u6 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='ngogiahuy.work@gmail.com');
+DECLARE @u7 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='duck05gaming@gmai.com');
+DECLARE @u8 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='duck.test.dev.05@gmail.com');
+DECLARE @u9 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='Huycungbaobinh@gmail.com');
+DECLARE @u10 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='Nguyenquanghuy14022005@gmail.com');
+DECLARE @u11 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='Quanghuynguyen14022005@gmail.com');
+DECLARE @u12 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='Huyquangnguyen14022005@gmail.com');
+DECLARE @u13 UNIQUEIDENTIFIER = (SELECT id FROM users WHERE email='Huytradecoin@gmail.com');
+INSERT INTO station_feedbacks (content, rating, station_id, customer_id)
+Values (N'Nhân viên tên Duy đẹp trai', 5, @sA, @u5),
+       (N'Nhân viên tên Phúc khó chịu với khách hàng', 3, @sA, @u6),
+	   (N'Nhân viên tên Phúc rất là thái độ với khách hàng, không bao giờ ghé lại trạm này', 1, @sA, @u11),
+	   (N'Nhân viên nhiệt tình, cụ thể là anh Duy', 5, @sA, @u5),
+	   (N'Sao chỉ cho đánh giá tới 5 sao vậy, 5 sao cho trạm, 10 sao cho anh Duy', 5, @sA, @u7),
+	   (N'Nhân viên nhiệt tình, xe quá oke', 5, @sA, @u10),
+       (N'Xe chạy êm, nhân viên xử lí nhiệt tình', 5, @sB, @u11),
+	   (N'Nhân viên nhiệt tình, xe chạy êm', 5, @sB, @u12),
+	   (N'Xe mới, chạy rất thích', 5, @sB, @u13),
+	   (N'Nhân viên nhiệt tình, xử lí cụ thể rõ ràng', 5, @sB, @u8),
+	   (N'Cảm ơn trạm vì đã đến', 5, @sB, @u6);
+GO
