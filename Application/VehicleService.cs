@@ -15,11 +15,13 @@ namespace Application
     {
         private readonly IVehicleRepository _vehicleRepository;
         private readonly IMapper _mapper;
+        private readonly IRentalContractRepository _rentalContractRepository;
 
-        public VehicleService(IVehicleRepository vehicleRepository, IMapper mapper)
+        public VehicleService(IVehicleRepository vehicleRepository, IMapper mapper, IRentalContractRepository rentalContractRepository)
         {
             _vehicleRepository = vehicleRepository;
             _mapper = mapper;
+            _rentalContractRepository = rentalContractRepository;
         }
 
         public async Task<Guid> CreateVehicleAsync(CreateVehicleReq createVehicleReq)
@@ -69,6 +71,24 @@ namespace Application
             var vehicle = await _vehicleRepository.GetByIdOptionAsync(id, includeModel: true);
             if (vehicle == null) throw new NotFoundException(Message.VehicleMessage.NotFound);
             return _mapper.Map<VehicleViewRes>(vehicle);
+        }
+
+        public async Task MaintainaceComplete(Guid id)
+        {
+            var vehicle = await _vehicleRepository.GetByIdAsync(id)
+                ?? throw new NotFoundException(Message.VehicleMessage.NotFound);
+            if(vehicle.Status != (int)VehicleStatus.Maintenance)
+            {
+                throw new BadRequestException(Message.VehicleMessage.InvalidStatusForMaintenanceComplete);
+            }
+            var contracts = await _rentalContractRepository.GetByVehicleIdAsync(id);
+            if (contracts != null && contracts.Any(c => c.Status == (int)RentalContractStatus.Active))
+            {
+                vehicle.Status = (int)VehicleStatus.Unavaible;
+            }
+            else vehicle.Status = (int)VehicleStatus.Available;
+
+            await _vehicleRepository.UpdateAsync(vehicle);
         }
 
         //public async Task<Vehicle> GetVehicle(Guid stationId, Guid modelId,

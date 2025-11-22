@@ -15,8 +15,11 @@ namespace Application.Validators.User
         public UserRegisterReqValidator()
         {
             RuleFor(x => x.Password)
-                .NotEmpty().WithMessage(Message.UserMessage.PasswordCanNotEmpty)
-                .MinimumLength(8).WithMessage(Message.UserMessage.PasswordTooShort);
+             .NotEmpty().WithMessage(Message.UserMessage.PasswordCanNotEmpty)
+             .MinimumLength(8).WithMessage(Message.UserMessage.PasswordTooShort)
+             .Matches("^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&])[A-Za-z0-9!@#$%^&*]{8,}$")
+             .WithMessage(Message.UserMessage.PasswordStrength);
+
 
             RuleFor(x => x.ConfirmPassword)
                 .Equal(x => x.Password).WithMessage(Message.UserMessage.ConfirmPasswordIsIncorrect);
