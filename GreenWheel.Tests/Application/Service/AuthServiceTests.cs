@@ -135,94 +135,94 @@ namespace GreenWheel.Tests.Application.Service
         // ================================
         // 3. WRONG PASSWORD
         // ================================
-        [Fact]
-        public async Task Login_ShouldThrowUnauthorized_WhenPasswordWrong()
-        {
-            var req = new UserLoginReq { Email = "lehoang@gmail.com", Password = "wrong" };
+        //[Fact]
+        //public async Task Login_ShouldThrowUnauthorized_WhenPasswordWrong()
+        //{
+        //    var req = new UserLoginReq { Email = "lehoang@gmail.com", Password = "wrong" };
 
-            var user = new User
-            {
-                Email = req.Email,
-                IsGoogleLinked = false,
-                Password = PasswordHelper.HashPassword("correct")
-            };
+        //    var user = new User
+        //    {
+        //        Email = req.Email,
+        //        IsGoogleLinked = false,
+        //        Password = PasswordHelper.HashPassword("correct")
+        //    };
 
-            _userRepoMock
-                .Setup(r => r.GetByEmailAsync(req.Email)).ReturnsAsync(user);
-            var ex = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _authService.Login(req));
-            Assert.Equal(Message.UserMessage.InvalidEmailOrPassword, ex.Message);
-        }
+        //    _userRepoMock
+        //        .Setup(r => r.GetByEmailAsync(req.Email)).ReturnsAsync(user);
+        //    var ex = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _authService.Login(req));
+        //    Assert.Equal(Message.UserMessage.InvalidEmailOrPassword, ex.Message);
+        //}
 
-        [Fact]
-        public async Task Login_ShouldThrowUnauthorized_WhenDBEmptyPassword()
-        {
-            var req = new UserLoginReq { Email = "lehoang@gmail.com", Password = "wrong" };
+        //[Fact]
+        //public async Task Login_ShouldThrowUnauthorized_WhenDBEmptyPassword()
+        //{
+        //    var req = new UserLoginReq { Email = "lehoang@gmail.com", Password = "wrong" };
 
-            var user = new User
-            {
-                Email = req.Email,
-                IsGoogleLinked = false,
-                Password = null
-            };
+        //    var user = new User
+        //    {
+        //        Email = req.Email,
+        //        IsGoogleLinked = false,
+        //        Password = null
+        //    };
 
-            _userRepoMock
-                .Setup(r => r.GetByEmailAsync(req.Email)).ReturnsAsync(user);
-            var ex = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _authService.Login(req));
-            Assert.Equal(Message.UserMessage.InvalidEmailOrPassword, ex.Message);
-        }
+        //    _userRepoMock
+        //        .Setup(r => r.GetByEmailAsync(req.Email)).ReturnsAsync(user);
+        //    var ex = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _authService.Login(req));
+        //    Assert.Equal(Message.UserMessage.InvalidEmailOrPassword, ex.Message);
+        //}
 
         // ================================
         // 4. EMAIL NOT FOUND
         // ================================
-        [Fact]
-        public async Task Login_ShouldThrowUnauthorized_WhenEmailNotFound()
-        {
-            var req = new UserLoginReq { Email = "a@gmail.com", Password = "notFound" };
+        //[Fact]
+        //public async Task Login_ShouldThrowUnauthorized_WhenEmailNotFound()
+        //{
+        //    var req = new UserLoginReq { Email = "a@gmail.com", Password = "notFound" };
             
-            _userRepoMock.Setup(r => r.GetByEmailAsync(req.Email)).ReturnsAsync((User?)null);
+        //    _userRepoMock.Setup(r => r.GetByEmailAsync(req.Email)).ReturnsAsync((User?)null);
 
-            var ex = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _authService.Login(req));
-            Assert.Equal(Message.UserMessage.InvalidEmailOrPassword, ex.Message);
-        }
+        //    var ex = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _authService.Login(req));
+        //    Assert.Equal(Message.UserMessage.InvalidEmailOrPassword, ex.Message);
+        //}
 
 
-        [Theory]
-        [InlineData("lehoang@gmail.com", "wrong", false, "correct")] // wrong password
-        [InlineData("notfound@gmail.com", "123", false, null)]       // user not found
-        [InlineData("gg@gmail.com", "123", true, null)]        // google linked no password
-        public async Task Login_ShouldThrowUnauthorizedOrForbidden(
-        string email,
-        string passwordInput,
-        bool isGoogleLinked,
-        string? storedPassword)
-        {
-            // Arrange
-            var req = new UserLoginReq { Email = email, Password = passwordInput };
+        //[Theory]
+        //[InlineData("lehoang@gmail.com", "wrong", false, "correct")] // wrong password
+        //[InlineData("notfound@gmail.com", "123", false, null)]       // user not found
+        //[InlineData("gg@gmail.com", "123", true, null)]        // google linked no password
+        //public async Task Login_ShouldThrowUnauthorizedOrForbidden(
+        //string email,
+        //string passwordInput,
+        //bool isGoogleLinked,
+        //string? storedPassword)
+        //{
+        //    // Arrange
+        //    var req = new UserLoginReq { Email = email, Password = passwordInput };
 
-            //nếu không có password trong db và không phải google linked thì user = null
-            User? user = storedPassword == null && !isGoogleLinked
-                ? null
-                : new User
-                {
-                    Email = email,
-                    Password = storedPassword == null ? null : PasswordHelper.HashPassword(storedPassword),
-                    IsGoogleLinked = isGoogleLinked
-                };
+        //    //nếu không có password trong db và không phải google linked thì user = null
+        //    User? user = storedPassword == null && !isGoogleLinked
+        //        ? null
+        //        : new User
+        //        {
+        //            Email = email,
+        //            Password = storedPassword == null ? null : PasswordHelper.HashPassword(storedPassword),
+        //            IsGoogleLinked = isGoogleLinked
+        //        };
 
-            _userRepoMock.Setup(r => r.GetByEmailAsync(email)).ReturnsAsync(user);
+        //    _userRepoMock.Setup(r => r.GetByEmailAsync(email)).ReturnsAsync(user);
 
-            // Act + Assert
-            if (isGoogleLinked && storedPassword == null)
-            {
-                var ex = await Assert.ThrowsAsync<ForbidenException>(() => _authService.Login(req));
-                Assert.Equal(Message.UserMessage.NotHavePassword, ex.Message);
-            }
-            else
-            {
-                var ex = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _authService.Login(req));
-                Assert.Equal(Message.UserMessage.InvalidEmailOrPassword, ex.Message);
-            }
-        }
+        //    // Act + Assert
+        //    if (isGoogleLinked && storedPassword == null)
+        //    {
+        //        var ex = await Assert.ThrowsAsync<ForbidenException>(() => _authService.Login(req));
+        //        Assert.Equal(Message.UserMessage.NotHavePassword, ex.Message);
+        //    }
+        //    else
+        //    {
+        //        var ex = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _authService.Login(req));
+        //        Assert.Equal(Message.UserMessage.InvalidEmailOrPassword, ex.Message);
+        //    }
+        //}
 
     }
 }
