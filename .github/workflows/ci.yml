@@ -1,0 +1,63 @@
+name: CI - AuthService Strict Coverage (Line + Branch)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore
+
+      - name: Run coverage (AuthService only)
+        run: |
+          dotnet tool install --global coverlet.console
+
+          coverlet ./GreenWheel.Tests/bin/Debug/net8.0/GreenWheel.Tests.dll \
+            --target "dotnet" \
+            --targetargs "test --no-build" \
+            --include "[Application]*AuthSerivce*" \
+            --format opencover \
+            --output "coverage_auth.xml"
+
+      - name: Generate text summary (Line + Branch)
+        run: |
+          dotnet tool install -g dotnet-reportgenerator-globaltool
+          reportgenerator -reports:coverage_auth.xml -targetdir:coveragetxt -reporttypes:TextSummary
+
+          echo "===== Coverage Summary ====="
+          cat coveragetxt/Summary.txt
+
+      - name: Enforce Coverage Thresholds (Line >= 80%, Branch >= 80%)
+        run: |
+          line=$(awk '/Line coverage/ {print int($3)}' coveragetxt/Summary.txt)
+          branch=$(awk '/Branch coverage/ {print int($3)}' coveragetxt/Summary.txt)
+
+          echo "Line coverage   = $line%"
+          echo "Branch coverage = $branch%"
+
+          if [ "$line" -lt 80 ]; then
+            echo "❌ Line coverage too low!"
+            exit 1
+          fi
+
+          if [ "$branch" -lt 80 ]; then
+            echo "❌ Branch coverage too low!"
+            exit 1
+          fi
+
+          echo "✔ Coverage OK: Line >= 80% and Branch >= 80%"

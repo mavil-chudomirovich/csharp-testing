@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{2191789B-29DA-45E7-9345-224B39C3F354}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GreenWheel.Tests", "GreenWheel.Tests\GreenWheel.Tests.csproj", "{FDF81D66-67FD-4B0E-AEF1-4FD836DCCE1F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{2191789B-29DA-45E7-9345-224B39C3F354}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2191789B-29DA-45E7-9345-224B39C3F354}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2191789B-29DA-45E7-9345-224B39C3F354}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDF81D66-67FD-4B0E-AEF1-4FD836DCCE1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDF81D66-67FD-4B0E-AEF1-4FD836DCCE1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDF81D66-67FD-4B0E-AEF1-4FD836DCCE1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDF81D66-67FD-4B0E-AEF1-4FD836DCCE1F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

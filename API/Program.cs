@@ -171,6 +171,7 @@ namespace API
             builder.Services.AddScoped<IVehicleComponentService, VehicleComponentService>();
             builder.Services.AddScoped<IBrandService, BrandService>();
             builder.Services.AddScoped<IBusinessVariableService, BusinessVariableService>();
+            builder.Services.AddScoped<ITokenService, TokenService>();
             //Interceptor
             builder.Services.AddScoped<UpdateTimestampInterceptor>();
             //Add Client
